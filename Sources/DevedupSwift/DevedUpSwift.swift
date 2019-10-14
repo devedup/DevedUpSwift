@@ -1,3 +1,3 @@
-struct DevedupSwift {
+struct DevedUpSwift {
     var text = "Hello, World!"
 }
