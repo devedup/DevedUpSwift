@@ -2,6 +2,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension NSMutableAttributedString {
     
