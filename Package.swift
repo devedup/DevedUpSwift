@@ -31,7 +31,7 @@ let package = Package(
             dependencies: [],
             path: "Sources/Localisation"),
         .testTarget(
-            name: "DevedUpSwiftTests",
+            name: "SwiftTests",
             dependencies: ["General"]),
     ]
 )
