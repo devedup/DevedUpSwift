@@ -3,16 +3,16 @@
 
 import Foundation
 
-class Currency {
+public class Currency {
     
-    static func calculateFee(amount: Int, percent: Double) -> Decimal {
+    public static func calculateFee(amount: Int, percent: Double) -> Decimal {
         let decimalAmount = Decimal(integerLiteral: amount)
         let decimalFee = Decimal(percent) / Decimal(integerLiteral: 100)
         let fee = decimalAmount * decimalFee
         return fee
     }
     
-    static func formatted(amount: Decimal, locale: Locale = Locale(identifier: "en_GB")) -> String {
+    public static func formatted(amount: Decimal, locale: Locale = Locale(identifier: "en_GB")) -> String {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.usesGroupingSeparator = true
         currencyFormatter.numberStyle = .currency
