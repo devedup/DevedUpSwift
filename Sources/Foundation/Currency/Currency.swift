@@ -1,7 +1,3 @@
-//
-//  File.swift
-//  
-//
 //  Created by David Casserly on 02/11/2019.
 //
 
