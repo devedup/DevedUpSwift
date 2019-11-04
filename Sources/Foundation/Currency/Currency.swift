@@ -5,9 +5,9 @@ import Foundation
 
 public class Currency {
     
-    public static func calculateFee(amount: Int, percent: Double) -> Decimal {
+    public static func calculateFee(amount: Int, percent: Decimal) -> Decimal {
         let decimalAmount = Decimal(integerLiteral: amount)
-        let decimalFee = Decimal(percent) / Decimal(integerLiteral: 100)
+        let decimalFee = percent / Decimal(integerLiteral: 100)
         let fee = decimalAmount * decimalFee
         return fee
     }
