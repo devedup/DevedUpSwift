@@ -35,7 +35,7 @@ let package = Package(
             path: "Sources/Localisation"),
         .target(
             name: "DevedUpSwiftUI",
-            dependencies: [],
+            dependencies: ["DevedUpSwiftLocalisation"],
             path: "Sources/UI"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
