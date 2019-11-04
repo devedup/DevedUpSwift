@@ -17,7 +17,7 @@ import DevedUpSwiftLocalisation
  */
 
 /// Presenter views which want to display errors should implement this protocol
-protocol MessagePresentable {
+public protocol MessagePresentable {
     func presentAppUpgrade(appID: String)
     func present(title: String, message: String, onDismiss: (() -> Void)?)
     func presentOption(message: String, confirmTitle: String, cancelTitle: String, onOK: (() -> Void)?, onCancel: (() -> Void)?)
