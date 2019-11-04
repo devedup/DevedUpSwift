@@ -6,7 +6,11 @@ import Foundation
 extension String {
     
     public var localized: String {
-        return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: "")
+        let value = NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "NOTFOUND", comment: "")
+        if value == "NOTFOUND" {
+            assertionFailure("String \(self) was not found in Bundle.main .strings file")
+        }
+        return value
     }
     
     public func localized(with varargs:CVarArg...) -> String {
