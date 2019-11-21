@@ -26,6 +26,7 @@ public class Currency {
         currencyFormatter.usesGroupingSeparator = false
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.locale = Locale(identifier: "en_GB") // obviously this isn't going to work long term with multiple currencies
         return currencyFormatter
     }()
     

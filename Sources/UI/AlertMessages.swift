@@ -16,11 +16,32 @@ import DevedUpSwiftLocalisation
  
  */
 
+public struct OptionMessage {
+    let title: String
+    let confirmTitle: String
+    let cancelTitle: String
+    let confirmAction: () -> Void
+    let cancelAction: () -> Void
+}
+
+//extension OptionMessage {
+//    
+//    public init(title: String, confirmTitle: String, cancelTitle: String, confirmAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
+//        self.title = title
+//        self.confirmTitle = confirmTitle
+//        self.cancelTitle = cancelTitle
+//        self.confirmAction = confirmAction
+//        self.cancelAction = cancelAction
+//    }
+//    
+//}
+
 /// Presenter views which want to display errors should implement this protocol
 public protocol MessagePresentable {
     func presentAppUpgrade(appID: String)
     func present(title: String, message: String, onDismiss: (() -> Void)?)
     func presentOption(message: String, confirmTitle: String, cancelTitle: String, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    func presentOption(optionMessage: OptionMessage)
 }
 
 extension MessagePresentable {
@@ -79,6 +100,10 @@ extension UIViewController: MessagePresentable {
         alertController.addAction(OKAction)
         alertController.addAction(cancelAction)
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    public func presentOption(optionMessage: OptionMessage) {
+        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
     }
     
 }
