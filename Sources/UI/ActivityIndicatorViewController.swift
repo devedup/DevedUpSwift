@@ -25,7 +25,7 @@ extension UIViewController: ActivityIndicatorPresentable {
         presentActivityIndicator(inNavigationController: true)
     }
     
-    public func presentActivityIndicator(inNavigationController inNav: Bool = true) {
+    public func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white) {
         dismissActivityIndicator()
         var view: UIView! = self.view
         
@@ -49,7 +49,7 @@ extension UIViewController: ActivityIndicatorPresentable {
         let activityIndicator =  UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.style = UIActivityIndicatorView.Style.white
+        activityIndicator.style = style
         view.addSubview(activityIndicator)
 
         activityIndicator.centreInSuperview()
@@ -62,12 +62,10 @@ extension UIViewController: ActivityIndicatorPresentable {
     }
     
     public func dismissActivityIndicator() {
-        if let activityIndicator = objc_getAssociatedObject(self,
-                                                            &AssociatedKeys.ActivityIndicator) as?  UIActivityIndicatorView {
+        if let activityIndicator = objc_getAssociatedObject(self, &AssociatedKeys.ActivityIndicator) as?  UIActivityIndicatorView {
             activityIndicator.stopAnimating()
         }
-        if let modalView = objc_getAssociatedObject(self,
-                                                    &AssociatedKeys.ModalView) as?  UIView {
+        if let modalView = objc_getAssociatedObject(self, &AssociatedKeys.ModalView) as?  UIView {
             modalView.removeFromSuperview()
         }
     }
