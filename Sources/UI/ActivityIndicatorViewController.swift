@@ -9,7 +9,7 @@ import UIKit
 /// Presenter views which want to display activity should implement this protocol
 public protocol ActivityIndicatorPresentable {
     func presentActivityIndicator()
-    func presentActivityIndicator(inNavigationController inNav: Bool)
+    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style)
     func dismissActivityIndicator()
 }
 
