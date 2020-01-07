@@ -14,7 +14,13 @@ public struct SegueData<T> {
     public let sender: Any
     public let data: T
     
+    public init(sender: Any, data: T) {
+        self.sender = sender
+        self.data = data
+    }
+    
 }
+
 
 /// Uses the Swift type system for handling segues, instead of strings which can be mistyped
 public protocol Segueable {
