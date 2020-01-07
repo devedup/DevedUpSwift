@@ -49,3 +49,16 @@ extension Segueable where Self: UIViewController, Segue.RawValue == String {
     }
     
 }
+
+extension UIStoryboardSegue {
+    
+    /// Returns the destinatino ViewController or the topViewController if it's embedded in a UINavigationController
+    public func viewController<T: UIViewController>() -> T? {
+        if let navigationController = self.destination as? UINavigationController {
+            return navigationController.topViewController as? T
+        } else {
+            return self.destination as? T
+        }
+    }
+    
+}
