@@ -11,8 +11,8 @@ import UIKit
 /// I pass this in performSegue(withIdentifier: sender:) as the sender argument. I could just pass the object directly, but that smelt funny. I dunno. This gives a bit more flexibility. 
 public struct SegueData<T> {
     
-    let sender: Any
-    let data: T
+    public let sender: Any
+    public let data: T
     
 }
 
