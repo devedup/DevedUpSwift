@@ -14,6 +14,8 @@ public enum GenericError: ErrorType {
     case network(Error?)
     case networkLoad(code: Int?)
     case generalError(Error?)
+    case sessionExpired
+    case invalidLogin
     
     public var title: String {
         switch self {
@@ -31,6 +33,10 @@ public enum GenericError: ErrorType {
             return "Error.Network.Load".localized(with: statusCode ?? 0)
         case .generalError:
             return "Error.General".localized
+        case .sessionExpired:
+            return "Error.SessionExpired".localized
+        case .invalidLogin:
+            return "Login.Error.Message".localized
         }
     }
 
