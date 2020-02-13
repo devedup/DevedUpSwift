@@ -16,6 +16,7 @@ public enum GenericError: ErrorType {
     case generalError(Error?)
     case sessionExpired
     case invalidLogin
+    case appUpgradeRequired
     
     public var title: String {
         switch self {
@@ -37,6 +38,8 @@ public enum GenericError: ErrorType {
             return "Error.SessionExpired".localized
         case .invalidLogin:
             return "Login.Error.Message".localized
+        case .appUpgradeRequired:
+            return "Error.AppUpgradeRequired.Description".localized
         }
     }
 
