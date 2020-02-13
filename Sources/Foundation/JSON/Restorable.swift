@@ -14,7 +14,7 @@ public protocol Restorable {
     static func restore() -> CodableType?
 }
 
-extension Restorable where Self: Codable {
+public extension Restorable where Self: Codable {
     
     func save() {
         do {
