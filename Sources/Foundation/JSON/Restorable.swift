@@ -39,3 +39,19 @@ extension Restorable where Self: Codable {
     }
     
 }
+
+/*
+ 
+ Example use of a struct you want to be able to save and restore
+ 
+ struct SavedBasket: Restorable, Codable {
+     
+     typealias CodableType = SavedBasket
+     static var restoreKey: String { "SavedBasket" }
+     
+     let savedItems: [ProjectID]
+     
+ }
+ 
+ 
+ */
