@@ -1,0 +1,16 @@
+//
+//  NetworkAuthentication.swift
+//  ManchesterFC
+//
+//  Created by David Casserly on 13/02/2020.
+//  Copyright © 2020 DevedUp Ltd. All rights reserved.
+//
+
+import Foundation
+
+public protocol NetworkAuthentication {
+    var accessToken: String? { get set }
+    func processResponseHeaders(_ allHeaderFields: [AnyHashable : Any])
+    func processSessionExpiry(isLoginRequest: Bool) -> ErrorType?
+    func prepareHeadersWithAccessToken(_ accessTokenNeeded: Bool) -> [String: String]
+}
