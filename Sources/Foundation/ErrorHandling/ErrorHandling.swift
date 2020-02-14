@@ -13,6 +13,7 @@ public enum GenericError: ErrorType {
     
     case network(Error?)
     case networkLoad(code: Int?)
+    case networkDataError(details: String)
     case generalError(Error?)
     case sessionExpired
     case invalidLogin
@@ -40,6 +41,8 @@ public enum GenericError: ErrorType {
             return "Login.Error.Message".localized
         case .appUpgradeRequired:
             return "Error.AppUpgradeRequired.Description".localized
+        case .networkDataError(let details):
+            return "Error.Network.Data".localized(with: details)
         }
     }
 
