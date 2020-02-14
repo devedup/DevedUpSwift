@@ -4,19 +4,19 @@
 import Foundation
 
 /// A completion handler can return this object to encapsulate the object you want, generically, or an error object and you can switch at the call site on the result
-enum AsyncResult<T> {
+public enum AsyncResult<T> {
     
     case success(T)
     case failure(ErrorType)
  
-    var value: T? {
+    public var value: T? {
         guard case .success(let value) = self else {
             return nil
         }
         return value
     }
     
-    var error: Error? {
+    public var error: Error? {
         guard case .failure(let error) = self else {
             return nil
         }
@@ -26,4 +26,4 @@ enum AsyncResult<T> {
 }
 
 /// Typealias to make the method signatures easier to read
-typealias AsyncResultCompletion<T> = (AsyncResult<T>) -> Void
+public typealias AsyncResultCompletion<T> = (AsyncResult<T>) -> Void
