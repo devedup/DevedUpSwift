@@ -18,6 +18,7 @@ public enum GenericError: ErrorType {
     case sessionExpired
     case invalidLogin
     case appUpgradeRequired
+    case networkNoContent
     
     public var title: String {
         switch self {
@@ -43,6 +44,8 @@ public enum GenericError: ErrorType {
             return "Error.AppUpgradeRequired.Description".localized
         case .networkDataError(let details):
             return "Error.Network.Data".localized(with: details)
+        case .networkNoContent:
+            return ""
         }
     }
 
