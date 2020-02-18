@@ -5,6 +5,12 @@ import Foundation
 import UIKit
 import DevedUpSwiftFoundation
 
+extension Notification {
+    func userInfoValue(forKey key: String) -> String? {
+        return userInfo?[key] as? String
+    }
+}
+
 extension Notification.Name {
     public static let presentAlert = Notification.Name("presentAlert")
 }
