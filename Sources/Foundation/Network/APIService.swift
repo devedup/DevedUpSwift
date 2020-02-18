@@ -30,8 +30,8 @@ public class DefaultAPIServiceLogger: APIServiceLogger {
 }
 
 public extension String {
-    var urlEncoded: String {
-        return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+    var urlQueryEncoded: String {
+        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
     }
 }
 
