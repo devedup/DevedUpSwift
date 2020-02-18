@@ -22,19 +22,15 @@ public struct OptionMessage {
     let cancelTitle: String
     let confirmAction: () -> Void
     let cancelAction: () -> Void
+    
+    public init(title: String, confirmTitle: String, cancelTitle: String, confirmAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
+        self.title = title
+        self.confirmTitle = confirmTitle
+        self.cancelTitle = cancelTitle
+        self.confirmAction = confirmAction
+        self.cancelAction = cancelAction
+    }
 }
-
-//extension OptionMessage {
-//    
-//    public init(title: String, confirmTitle: String, cancelTitle: String, confirmAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
-//        self.title = title
-//        self.confirmTitle = confirmTitle
-//        self.cancelTitle = cancelTitle
-//        self.confirmAction = confirmAction
-//        self.cancelAction = cancelAction
-//    }
-//    
-//}
 
 /// Presenter views which want to display errors should implement this protocol
 public protocol MessagePresentable {
