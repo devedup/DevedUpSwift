@@ -33,6 +33,9 @@ public extension String {
     var urlQueryEncoded: String {
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
     }
+    var urlPathEncoded: String {
+        return addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+    }
 }
 
 public class DefaultAPIService: APIService {
