@@ -31,12 +31,12 @@ public class DefaultAPIServiceLogger: APIServiceLogger {
 
 public extension String {
     var urlQueryEncoded: String {
-        return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-    }
-    var urlPathEncoded: String {
         var characterSet = CharacterSet.urlQueryAllowed
         characterSet.remove("+")
         return addingPercentEncoding(withAllowedCharacters: characterSet)!
+    }
+    var urlPathEncoded: String {
+        return addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
     }
 }
 
