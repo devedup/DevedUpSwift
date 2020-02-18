@@ -6,7 +6,7 @@ import UIKit
 import DevedUpSwiftFoundation
 
 extension Notification {
-    func userInfoValue(forKey key: String) -> String? {
+    public func userInfoValue(forKey key: String) -> String? {
         return userInfo?[key] as? String
     }
 }
