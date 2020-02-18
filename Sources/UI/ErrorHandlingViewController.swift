@@ -8,7 +8,7 @@ import DevedUpSwiftFoundation
 extension Notification {
     public func userInfoValue(forKey key: String) -> String? {
         return userInfo?[key] as? String
-    }
+    } 
 }
 
 extension Notification.Name {
