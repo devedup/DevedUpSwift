@@ -29,7 +29,7 @@ public struct OptionMessage {
         self.cancelTitle = cancelTitle
         self.confirmAction = confirmAction
         self.cancelAction = cancelAction
-    }
+    } 
 }
 
 /// Presenter views which want to display errors should implement this protocol
