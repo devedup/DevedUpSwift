@@ -29,7 +29,7 @@ public class DefaultAPIServiceLogger: APIServiceLogger {
     }
 }
 
-private extension String {
+public extension String {
     var urlEncoded: String {
         return addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
     }
@@ -59,8 +59,7 @@ public class DefaultAPIService: APIService {
         
     public func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>) {
         // Check we have a valid URL, if not return an error
-        let encodedPath = endpoint.path.urlEncoded
-        guard let url = URL(string: encodedPath) else {
+        guard let url = URL(string: endpoint.path) else {
             let error = GenericError.network(nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
