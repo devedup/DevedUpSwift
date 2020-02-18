@@ -34,7 +34,9 @@ public extension String {
         return addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
     }
     var urlPathEncoded: String {
-        return addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+        var characterSet = CharacterSet.urlQueryAllowed
+        characterSet.insert("+")
+        return addingPercentEncoding(withAllowedCharacters: characterSet)!
     }
 }
 
