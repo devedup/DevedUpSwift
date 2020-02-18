@@ -12,7 +12,7 @@ public protocol PickerSource: UIPickerViewDataSource, UIPickerViewDelegate  {
     
 }
 
-extension PickerSource {
+public extension PickerSource {
     
     var doneButtonTitle: String {
         "General.Button.Done".localized
