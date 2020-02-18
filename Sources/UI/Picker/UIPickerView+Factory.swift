@@ -37,8 +37,8 @@ public extension PickerSource {
 public class PickerHelper: NSObject {
     
     private let source: PickerSource
-    let picker: UIPickerView
-    weak var textField: UITextField?
+    public let picker: UIPickerView
+    public private (set) weak var textField: UITextField?
     
     init(picker: UIPickerView, textField: UITextField) {
         self.picker = picker
