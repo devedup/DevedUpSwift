@@ -1,10 +1,14 @@
 import Foundation
 import UIKit
 
-//@IBDesignable
-public extension UIView {
-    
-    @IBInspectable
+
+public protocol DevedupInspectable {
+    var cornerRadius: CGFloat { get set }
+    var borderWidth: CGFloat { get set }
+}
+
+extension DevedupInspectable where Self:UIView {
+//    @IBInspectable
     var cornerRadius: CGFloat {
         set (radius) {
             self.layer.cornerRadius = radius
@@ -14,7 +18,7 @@ public extension UIView {
         }
     }
     
-    @IBInspectable
+//    @IBInspectable
     var borderWidth: CGFloat {
         set (width) {
             self.layer.borderWidth = width
@@ -23,5 +27,4 @@ public extension UIView {
             return self.layer.borderWidth
         }
     }
-    
 }
