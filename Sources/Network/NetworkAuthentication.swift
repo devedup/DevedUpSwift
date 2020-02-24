@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import DevedUpSwiftFoundation
 
 public protocol NetworkAuthentication {
     var accessToken: String? { get set }

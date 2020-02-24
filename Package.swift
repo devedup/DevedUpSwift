@@ -16,7 +16,10 @@ let package = Package(
             targets: ["DevedUpSwiftUI"]),
         .library(
             name: "DevedUpSwiftLocalisation",
-            targets: ["DevedUpSwiftLocalisation"])
+            targets: ["DevedUpSwiftLocalisation"]),
+        .library(
+            name: "DevedUpSwiftNetwork",
+            targets: ["DevedUpSwiftNetwork"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -37,6 +40,10 @@ let package = Package(
             name: "DevedUpSwiftUI",
             dependencies: ["DevedUpSwiftLocalisation", "DevedUpSwiftFoundation"],
             path: "Sources/UI"),
+        .target(
+            name: "DevedUpSwiftNetwork",
+            dependencies: ["DevedUpSwiftFoundation"],
+            path: "Sources/Network"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
             dependencies: ["DevedUpSwiftFoundation"]),
