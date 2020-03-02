@@ -30,6 +30,13 @@ public protocol Segueable {
     
 }
 
+public protocol SegueableDestination {
+    
+    associatedtype SegueParams: Any
+    func injectSegueDesination(with params: SegueParams)
+    
+}
+
 extension Segueable where Self: UIViewController, Segue.RawValue == String {
     
     public func segueIdentifierCase(for segue: UIStoryboardSegue) -> Segue {
@@ -50,10 +57,19 @@ extension Segueable where Self: UIViewController, Segue.RawValue == String {
     
 }
 
+
 extension UIStoryboardSegue {
     
     /// Returns the destinatino ViewController or the topViewController if it's embedded in a UINavigationController
     public func viewController<T: UIViewController>() -> T? {
+        if let navigationController = self.destination as? UINavigationController {
+            return navigationController.topViewController as? T
+        } else {
+            return self.destination as? T
+        }
+    }
+    
+    public func segueableDestination<T: UIViewController & SegueableDestination>() -> T? {
         if let navigationController = self.destination as? UINavigationController {
             return navigationController.topViewController as? T
         } else {

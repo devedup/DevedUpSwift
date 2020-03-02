@@ -91,11 +91,11 @@ extension UIViewController: MessagePresentable {
         let OKAction = UIAlertAction(title: confirmTitle, style: .default) { (action) in
             onOK?()
         }
-        let cancelAction = UIAlertAction(title: cancelTitle, style: .default) { (action) in
+        let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { (action) in
             onCancel?()
         }
-        alertController.addAction(OKAction)
         alertController.addAction(cancelAction)
+        alertController.addAction(OKAction)
         self.present(alertController, animated: true, completion: nil)
     }
     

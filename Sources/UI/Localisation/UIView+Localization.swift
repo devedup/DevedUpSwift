@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 
-@IBDesignable
 public extension UILabel {
     
     @IBInspectable
@@ -16,7 +15,6 @@ public extension UILabel {
     
 }
 
-@IBDesignable
 public extension UITextField {
     
     @IBInspectable
@@ -31,7 +29,6 @@ public extension UITextField {
     
 }
 
-@IBDesignable
 public extension UIButton {
     
     @IBInspectable
