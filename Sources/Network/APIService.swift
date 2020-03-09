@@ -17,19 +17,6 @@ public protocol APIService {
     func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>)
 }
 
-public protocol APIServiceLogger {
-    func log(_ message: String)
-}
-
-public class DefaultAPIServiceLogger: APIServiceLogger {
-    
-    public init() {}
-    
-    public func log(_ message: String) {
-        print(message)
-    }
-}
-
 public extension String {
     var urlQueryEncoded: String {
         var characterSet = CharacterSet.urlQueryAllowed
@@ -87,11 +74,11 @@ public class DefaultAPIService: APIService {
 
         // Now schedule the request onto the session
         let task = session.dataTask(with: request) { data, response, error in
-            self.logger.log("Request URL -> \(String(describing: request.url?.absoluteString))")
+            
+            self.logger.log(request: request, response: response as? HTTPURLResponse, responseData: data, isLogin: !endpoint.isAuthenticatedRequest)
             
             // Now it's back, lets put it back on main thread
             DispatchQueue.main.async {
-
                 guard let httpResponse = response as? HTTPURLResponse else {
                     let generalError = GenericError.generalError(error ?? nil)
                     completion(AsyncResult.failure(generalError))
@@ -101,13 +88,6 @@ public class DefaultAPIService: APIService {
                 // Handle response headers
                 self.networkAuth.processResponseHeaders(httpResponse.allHeaderFields)
 
-                // Log the response
-                #if DEBUG
-                if let data = data, let responseString = String(data: data, encoding: String.Encoding.utf8) {
-                    self.logger.log("[RESPONSE BODY]: \(responseString)")
-                }
-                #endif
-                
                 // Now process the response
                 switch self.processResponse(httpResponse) {
                 case .success(let status):

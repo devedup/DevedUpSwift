@@ -2,7 +2,7 @@
 import Foundation
 import DevedUpSwiftLocalisation
 
-public protocol ErrorType: Error, CustomStringConvertible {
+public protocol ErrorType: Error {
     
     var title: String { get }
     var description: String { get }
@@ -22,8 +22,22 @@ public enum GenericError: ErrorType {
     
     public var title: String {
         switch self {
-        default:
-            return ""
+        case .network:
+            return "network"
+        case .networkLoad:
+            return "networkLoad"
+        case .networkDataError:
+            return "networkDataError"
+        case .generalError:
+            return "generalError"
+        case .sessionExpired:
+            return "sessionExpired"
+        case .invalidLogin:
+            return "invalidLogin"
+        case .appUpgradeRequired:
+            return "appUpgradeRequired"
+        case .networkNoContent:
+            return "networkNoContent"
         }
     }
     
@@ -45,7 +59,7 @@ public enum GenericError: ErrorType {
         case .networkDataError(let details):
             return "Error.Network.Data".localized(with: details)
         case .networkNoContent:
-            return ""
+            return "networkNoContent"
         }
     }
 

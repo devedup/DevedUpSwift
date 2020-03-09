@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DevedUpSwiftUI
 
 protocol ___VARIABLE_sceneName___View: class, ActivityIndicatorPresentable, ErrorPresentable  {
 

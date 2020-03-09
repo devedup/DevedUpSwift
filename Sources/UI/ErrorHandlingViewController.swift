@@ -17,20 +17,21 @@ extension Notification.Name {
 
 extension String {
     public struct Constant {
+        public static let alertErrorObjectKey = "alertErrorObjectKey"
+        public static let alertTitleKey = "AlertTitleKey"
         public static let alertMessageKey = "AlertMessageKey"
     }
 }
 
 extension NotificationCenter {
     
-    public static func presentAlert(message: String) {
-        let userInfo = [String.Constant.alertMessageKey: message]
+    public static func presentAlert(message: String, title: String, error: ErrorType) {
+        let userInfo = [String.Constant.alertMessageKey: message, String.Constant.alertTitleKey: title, String.Constant.alertErrorObjectKey: error as ErrorType] as [String : Any]
         NotificationCenter.default.post(name: .presentAlert, object: nil, userInfo: userInfo)
     }
     
     public static func present(error: ErrorType) {
-        let errorMessage = error.description
-        presentAlert(message: errorMessage)
+        presentAlert(message: error.description, title: error.title, error: error)
     }
     
 }
