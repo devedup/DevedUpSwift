@@ -24,7 +24,9 @@ public extension String {
         return addingPercentEncoding(withAllowedCharacters: characterSet)!
     }
     var urlPathEncoded: String {
-        return addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+        var characterSet = CharacterSet.urlPathAllowed
+        characterSet.remove("@")
+        return addingPercentEncoding(withAllowedCharacters: characterSet)!
     }
 }
 
