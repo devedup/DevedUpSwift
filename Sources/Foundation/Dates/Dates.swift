@@ -7,6 +7,7 @@ fileprivate extension Calendar {
     
     static let devedupCalendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone.autoupdatingCurrent
         calendar.firstWeekday = 2
         return calendar
     }()
@@ -14,6 +15,12 @@ fileprivate extension Calendar {
 }
 
 extension Date {
+    
+    public var year: Int {
+        let calendar = Calendar.devedupCalendar
+        let year = calendar.component(.year, from: self)
+        return year
+    }
     
     public var yesterday: Date {
         let calendar = Calendar.devedupCalendar
@@ -101,6 +108,12 @@ extension Date {
         return secondsLater
     }
     
+    public var currentYear: Int {
+        let calendar = Calendar.devedupCalendar
+        let year = calendar.component(.year, from: self)
+        return year
+    }
+    
 }
 
 fileprivate struct TimeOffset {
@@ -152,7 +165,7 @@ extension Date {
     
     public func threeMonthsAgo() -> Date {
         var calendar = Calendar.autoupdatingCurrent
-        calendar.timeZone = TimeZone.autoupdatingCurrent
+        calendar.timeZone = TimeZone(abbreviation: "UTC")!
         let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: self)
         return threeMonthsAgo!
     }
@@ -160,8 +173,17 @@ extension Date {
     public func dateByRemovingTime() -> Date {
         // Use the user's current calendar and time zone
         var calendar = Calendar.autoupdatingCurrent
-        calendar.timeZone = TimeZone.autoupdatingCurrent
+        calendar.timeZone = TimeZone(abbreviation: "UTC")!
         let dateComps = calendar.dateComponents([.year, .month, .day], from: self)
+        let beginningOfDay: Date? = calendar.date(from: dateComps)
+        return beginningOfDay!
+    }
+    
+    public func dateWithYearAndMonth() -> Date {
+        // Use the user's current calendar and time zone
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = TimeZone(abbreviation: "UTC")!
+        let dateComps = calendar.dateComponents([.year, .month], from: self)
         let beginningOfDay: Date? = calendar.date(from: dateComps)
         return beginningOfDay!
     }
@@ -169,7 +191,7 @@ extension Date {
     public func isBetween13and18years() -> Bool {
         let today = Date()
         var calendar = Calendar.autoupdatingCurrent
-        calendar.timeZone = TimeZone.autoupdatingCurrent
+        calendar.timeZone = TimeZone(abbreviation: "UTC")!
         let age: DateComponents =  calendar.dateComponents([Calendar.Component.year], from: self, to: today)
         if age.year! < 13 || age.year! >= 18 {
             return false

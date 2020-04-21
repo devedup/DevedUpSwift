@@ -8,6 +8,14 @@ import UIKit
 
 extension UIView {
     
+    public func pinTo(layoutGuide: UILayoutGuide) {
+        translatesAutoresizingMaskIntoConstraints = false
+        leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor).isActive = true
+        trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor).isActive = true
+        topAnchor.constraint(equalTo: layoutGuide.topAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: layoutGuide.bottomAnchor).isActive = true
+    }
+    
     /// Convenience method to centre this view in its superview
     public func pinToSuperview() {
         guard let superview = self.superview else {

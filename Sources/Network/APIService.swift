@@ -32,12 +32,12 @@ public extension String {
 
 public class DefaultAPIService: APIService {
     
-    private var logger: APIServiceLogger
+    private let logger: APILogger
     private let session = URLSession(configuration: .default)
     private let networkAuth: NetworkAuthentication
     
-    public init(logger: APIServiceLogger = DefaultAPIServiceLogger(), networkAuth: NetworkAuthentication) {
-        self.logger = logger
+    public init(logger: Loggable = FileLogger(fileNamePrefix: "devedupnetwork"), networkAuth: NetworkAuthentication) {
+        self.logger = APILogger(logger: logger)
         self.networkAuth = networkAuth
     }
         
@@ -47,7 +47,7 @@ public class DefaultAPIService: APIService {
             return .success(response)
         } catch {
             let errorString = "Error parsing response into \(ResponseModel.self) [\(error)]"
-            logger.log(errorString)
+            logger.log(message: errorString)
             return .failure(GenericError.networkLoad(code: nil))
         }
     }
