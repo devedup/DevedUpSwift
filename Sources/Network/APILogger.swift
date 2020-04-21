@@ -33,7 +33,7 @@ public final class APILogger {
     public func log(request: URLRequest?, response: HTTPURLResponse?, responseData: Data?, isLogin: Bool = false) {
         APILogger.backgroundQueue.async {
             if let request = request, let response = response {
-                if let url = request.url {
+                if request.url != nil {
                     var logString = "\n[>>>>> START REQUEST \(APILogger.logDateFormatter.string(from: Date()))]\n"
                     logString.append("\(request.httpMethod ?? "GET") \(request)")
                     

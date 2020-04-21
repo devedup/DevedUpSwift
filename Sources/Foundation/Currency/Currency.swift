@@ -16,7 +16,7 @@ extension Decimal {
     }
     
     public var asCurrencyStringWithPound: String {
-        var currencyFormatter = Currency.formatter
+        let currencyFormatter = Currency.formatter
         currencyFormatter.numberStyle = .currency
         print(currencyFormatter)
         if let feeString = currencyFormatter.string(from: self as NSDecimalNumber) {
