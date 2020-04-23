@@ -12,17 +12,27 @@ extension UIControl {
     
 }
 
-@objc class ClosureWrapper: NSObject {
+@objc public class ClosureWrapper: NSObject {
     
     let closure: ()->()
-    
+        
     init (_ closure: @escaping ()->()) {
         self.closure = closure
         super.init()
     }
     
-    @objc func invoke () {
+    @objc public func invoke () {
         closure()
+    }
+    
+}
+
+@objc
+public class DevedUpSwiftUITest: NSObject {
+    
+    @objc
+    public static func testMethod() {
+        print("My package worked");
     }
     
 }
