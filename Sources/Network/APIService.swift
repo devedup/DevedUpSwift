@@ -65,7 +65,7 @@ public class DefaultAPIService: APIService {
         // Prepare headers
         var headers = networkAuth.prepareHeadersWithAccessToken(endpoint.isAuthenticatedRequest)
         headers["Content-Type"] = "application/json"
-        headers["Accepte"] = "application/json"
+        headers["Accept"] = "application/json"
         
         // Create the request
         var request = URLRequest(url: url)
