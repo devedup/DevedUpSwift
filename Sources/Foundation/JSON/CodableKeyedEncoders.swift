@@ -13,35 +13,16 @@ public enum ImageEncodingQuality: Float {
 
 // This is a really naive implementation, as it's not generic.. but will do for now until I need to add more
 extension KeyedDecodingContainer {
-//    public func decodeIfPresent(_ type: Double.Type, forKey key: K, transformFrom: String.Type) throws -> Double {
-//        let context = DecodingError.Context(codingPath: [key], debugDescription: "The key isn't there")
-//        guard let value = try decodeIfPresent(transformFrom, forKey: key) else {
-//            throw DecodingError.keyNotFound(key, context)
-//        }
-//        guard let doubleValue = Double(value) else {
-//            throw DecodingError.dataCorrupted(context)
-//        }
-//        return doubleValue
-//    }
-//
-//    public func decode(_ type: Double.Type, forKey key: K, transformFrom: String.Type) throws -> Double {
-//        let context = DecodingError.Context(codingPath: [key], debugDescription: "The key isn't there")
-//        guard let doubleValue = Double(try decode(transformFrom, forKey: key)) else {
-//            throw DecodingError.dataCorrupted(context)
-//        }
-//        return doubleValue
-//    }
-
     
     public func decodeIfPresent(_ type: Double.Type, forKey key: K) throws -> Double? {
         guard let stringValue = try decodeIfPresent(String.self, forKey: key) else {
             return nil
         }
-        guard let decimalValue = Double(stringValue) else {
+        guard let doubleValue = Double(stringValue) else {
             let context = DecodingError.Context(codingPath: [key], debugDescription: "The key \(key) couldn't be converted to a Double value")
             throw DecodingError.typeMismatch(type, context)
         }
-        return decimalValue
+        return doubleValue
     }
     
     public func decode(_ type: Double.Type, forKey key: K) throws -> Double {
@@ -50,7 +31,7 @@ extension KeyedDecodingContainer {
             let context = DecodingError.Context(codingPath: [key], debugDescription: "The key \(key) couldn't be converted to a Double value")
             throw DecodingError.typeMismatch(type, context)
         }
-        return decimalValue
+        return doubleValue
     }
     
     /// Decimal for monetary values
