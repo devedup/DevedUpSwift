@@ -14,4 +14,6 @@ public protocol NetworkAuthentication {
     func processResponseHeaders(_ allHeaderFields: [AnyHashable : Any])
     func processSessionExpiry(isLoginRequest: Bool) -> ErrorType?
     func prepareHeadersWithAccessToken(_ accessTokenNeeded: Bool) -> [String: String]
+    func queryItemsToAppend() -> [URLQueryItem]?
+    func removeAccessToken()
 }

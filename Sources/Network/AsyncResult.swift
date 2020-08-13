@@ -17,7 +17,7 @@ public enum AsyncResult<T> {
         return value
     }
     
-    public var error: Error? {
+    public var error: ErrorType? {
         guard case .failure(let error) = self else {
             return nil
         }

@@ -32,6 +32,27 @@ extension KeyedDecodingContainer {
 //        return doubleValue
 //    }
 
+    
+    public func decodeIfPresent(_ type: Double.Type, forKey key: K) throws -> Double? {
+        guard let stringValue = try decodeIfPresent(String.self, forKey: key) else {
+            return nil
+        }
+        guard let decimalValue = Double(stringValue) else {
+            let context = DecodingError.Context(codingPath: [key], debugDescription: "The key \(key) couldn't be converted to a Double value")
+            throw DecodingError.typeMismatch(type, context)
+        }
+        return decimalValue
+    }
+    
+    public func decode(_ type: Double.Type, forKey key: K) throws -> Double {
+        let stringValue = try decode(String.self, forKey: key)
+        guard let doubleValue = Double(stringValue) else {
+            let context = DecodingError.Context(codingPath: [key], debugDescription: "The key \(key) couldn't be converted to a Double value")
+            throw DecodingError.typeMismatch(type, context)
+        }
+        return decimalValue
+    }
+    
     /// Decimal for monetary values
     public func decodeIfPresent(_ type: Decimal.Type, forKey key: K) throws -> Decimal? {
         guard let stringValue = try decodeIfPresent(String.self, forKey: key) else {

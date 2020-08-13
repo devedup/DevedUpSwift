@@ -9,7 +9,7 @@ import UIKit
 /// Presenter views which want to display activity should implement this protocol
 public protocol ActivityIndicatorPresentable {
     func presentActivityIndicator()
-    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style)
+    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool)
     func dismissActivityIndicator()
 }
 
@@ -21,11 +21,13 @@ extension UIViewController: ActivityIndicatorPresentable {
         static var ModalView = "ModalView"
     }
     
-    public func presentActivityIndicator() {
+    @objc
+    open func presentActivityIndicator() {
         presentActivityIndicator(inNavigationController: true)
     }
     
-    public func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white) {
+    @objc
+    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white, modal: Bool = true) {
         dismissActivityIndicator()
         var view: UIView! = self.view
         
@@ -35,17 +37,19 @@ extension UIViewController: ActivityIndicatorPresentable {
                 view = navController.view
             }
         }
-        let modalView = UIView()
-        modalView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-        view.addSubview(modalView)
-        modalView.pinToSuperview()
-        objc_setAssociatedObject(self,
-                                     &AssociatedKeys.ModalView,
-                                     modalView as UIView?,
-                                     .OBJC_ASSOCIATION_RETAIN_NONATOMIC )
-        view.bringSubviewToFront(modalView)
-        view = modalView
-
+        if modal {
+            let modalView = UIView()
+            modalView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            view.addSubview(modalView)
+            modalView.pinToSuperview()
+            objc_setAssociatedObject(self,
+                                         &AssociatedKeys.ModalView,
+                                         modalView as UIView?,
+                                         .OBJC_ASSOCIATION_RETAIN_NONATOMIC )
+            view.bringSubviewToFront(modalView)
+            view = modalView
+        }
+        
         let activityIndicator =  UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
@@ -61,7 +65,8 @@ extension UIViewController: ActivityIndicatorPresentable {
                                  .OBJC_ASSOCIATION_RETAIN_NONATOMIC )
     }
     
-    public func dismissActivityIndicator() {
+    @objc
+    open func dismissActivityIndicator() {
         if let activityIndicator = objc_getAssociatedObject(self, &AssociatedKeys.ActivityIndicator) as?  UIActivityIndicatorView {
             activityIndicator.stopAnimating()
         }

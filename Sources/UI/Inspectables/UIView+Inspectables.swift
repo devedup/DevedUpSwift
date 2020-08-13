@@ -7,7 +7,7 @@ public protocol DevedupInspectable {
 }
 
 extension DevedupInspectable where Self:UIView {
-    var cornerRadius: CGFloat {
+    public var cornerRadius: CGFloat {
         set (radius) {
             self.layer.cornerRadius = radius
         }
@@ -16,7 +16,7 @@ extension DevedupInspectable where Self:UIView {
         }
     }
     
-    var borderWidth: CGFloat {
+    public var borderWidth: CGFloat {
         set (width) {
             self.layer.borderWidth = width
         }
@@ -28,7 +28,7 @@ extension DevedupInspectable where Self:UIView {
 
 extension UIView {
     @IBInspectable
-    var cornerRadius: CGFloat {
+    public var cornerRadius: CGFloat {
         set (radius) {
             self.layer.cornerRadius = radius
         }

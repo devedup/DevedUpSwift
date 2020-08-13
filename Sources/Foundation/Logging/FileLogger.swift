@@ -7,10 +7,6 @@
 
 import Foundation
 
-public protocol Loggable {
-    func write(_ string: String)
-}
-
 public struct FileLogger: TextOutputStream, Loggable {
     
     private let fileNamePrefix: String

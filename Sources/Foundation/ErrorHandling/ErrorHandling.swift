@@ -11,6 +11,7 @@ public protocol ErrorType: Error {
 
 public enum GenericError: ErrorType {
     
+    case networkError(statusCode: Int, data: Data?)
     case network(Error?)
     case networkLoad(code: Int?)
     case networkDataError(details: String)
@@ -38,6 +39,8 @@ public enum GenericError: ErrorType {
             return "appUpgradeRequired"
         case .networkNoContent:
             return "networkNoContent"
+        case .networkError:
+            return "networkError"
         }
     }
     
@@ -60,6 +63,8 @@ public enum GenericError: ErrorType {
             return "Error.Network.Data".localized(with: details)
         case .networkNoContent:
             return "networkNoContent"
+        case .networkError:
+            return "networkError"
         }
     }
 

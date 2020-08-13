@@ -14,6 +14,7 @@ public extension Notification.Name {
 
 // This will be the entry point in future
 public protocol APIService {
+    var networkAuth: NetworkAuthentication { get }
     func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>)
 }
 
@@ -34,9 +35,9 @@ public class DefaultAPIService: APIService {
     
     private let logger: APILogger
     private let session = URLSession(configuration: .default)
-    private let networkAuth: NetworkAuthentication
+    public let networkAuth: NetworkAuthentication
     
-    public init(logger: Loggable = FileLogger(fileNamePrefix: "devedupnetwork"), networkAuth: NetworkAuthentication) {
+    public init(logger: Loggable = ConsoleLogger(), networkAuth: NetworkAuthentication) {
         self.logger = APILogger(logger: logger)
         self.networkAuth = networkAuth
     }
@@ -54,7 +55,23 @@ public class DefaultAPIService: APIService {
         
     public func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>) {
         // Check we have a valid URL, if not return an error
-        guard let url = URL(string: endpoint.path) else {
+        guard var urlComponents = URLComponents(string: endpoint.path) else {
+            let error = GenericError.network(nil)
+            DispatchQueue.main.async {
+                completion(AsyncResult.failure(error))
+            }
+            return
+        }
+        
+        // Add extra query params if there are any
+        var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
+        if let extraQueryItems = networkAuth.queryItemsToAppend() {
+            queryItems.append(contentsOf: extraQueryItems)
+        }
+        urlComponents.queryItems = queryItems
+        
+        // Build the url
+        guard let url = urlComponents.url else {
             let error = GenericError.network(nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
@@ -66,13 +83,14 @@ public class DefaultAPIService: APIService {
         var headers = networkAuth.prepareHeadersWithAccessToken(endpoint.isAuthenticatedRequest)
         headers["Content-Type"] = "application/json"
         headers["Accept"] = "application/json"
+        headers["User-Agent"] = userAgent
         
-        // Create the request
         var request = URLRequest(url: url)
         headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key)}
         endpoint.headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key)}
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.payloadBody
+        
 
         // Now schedule the request onto the session
         let task = session.dataTask(with: request) { data, response, error in
@@ -104,11 +122,7 @@ public class DefaultAPIService: APIService {
                     let result: AsyncResult<Endpoint.ResponseModel> = self.responseData(networkResponse: data)
                     completion(result)
                 case .failure(let statusCode):
-                    if let data = data, let responseString = String(data: data, encoding: String.Encoding.utf8) {
-                        completion(AsyncResult.failure(GenericError.networkDataError(details: responseString)))
-                    } else {
-                        completion(AsyncResult.failure(GenericError.networkLoad(code: statusCode)))
-                    }
+                    completion(.failure(GenericError.networkError(statusCode: statusCode, data: data)))
                 case .sessionExpired:
                     if let error = self.networkAuth.processSessionExpiry(isLoginRequest: endpoint.isAuthenticatedRequest) {
                         // Failed login return 401, we don't want to show session expired
@@ -122,6 +136,9 @@ public class DefaultAPIService: APIService {
         }
         task.resume()
     }
+    
+    
+    
     
     private func processResponse(_ response: HTTPURLResponse) -> HttpResponse {
         let statusCode = response.statusCode
@@ -141,7 +158,53 @@ public class DefaultAPIService: APIService {
             return .failure(statusCode: statusCode)
         }
     }
-                
+    
+    // User-Agent Header; see https://tools.ietf.org/html/rfc7231#section-5.5.3
+    // Example: `iOS Example/1.0 (org.alamofire.iOS-Example; build:1; iOS 10.0.0) Alamofire/4.0.0`
+    private let userAgent: String = {
+        if let info = Bundle.main.infoDictionary {
+            let executable = info[kCFBundleExecutableKey as String] as? String ?? "Unknown"
+            let bundle = info[kCFBundleIdentifierKey as String] as? String ?? "Unknown"
+            let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"
+            let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
+
+            let osNameVersion: String = {
+                let version = ProcessInfo.processInfo.operatingSystemVersion
+                let versionString = "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
+
+                let osName: String = {
+                    #if os(iOS)
+                        return "iOS"
+                    #elseif os(watchOS)
+                        return "watchOS"
+                    #elseif os(tvOS)
+                        return "tvOS"
+                    #elseif os(macOS)
+                        return "OS X"
+                    #elseif os(Linux)
+                        return "Linux"
+                    #else
+                        return "Unknown"
+                    #endif
+                }()
+
+                return "\(osName) \(versionString)"
+            }()
+
+            let devedupSwiftVersion: String = {
+                guard
+                    let duInfo = Bundle(for: DefaultAPIService.self).infoDictionary,
+                    let build = duInfo["CFBundleShortVersionString"]
+                else { return "Unknown" }
+
+                return "DevedUpSwift-Network/\(build)"
+            }()
+
+            return "\(executable)/\(appVersion) (\(bundle); build:\(appBuild); \(osNameVersion)) \(devedupSwiftVersion)"
+        }
+
+        return "DevedUpSwift-Network"
+    }()
 }
 
 private enum HttpResponse {

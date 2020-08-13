@@ -41,6 +41,7 @@ public protocol ErrorPresentable {
     func present(_ error: ErrorType)
     func presentErrorAsAlert(_ error: ErrorType, onDismiss: (() -> Void)?)
     func presentErrorAfterPop(_ error: ErrorType)
+    func presentAlertMessage(title: String, message: String, onDismiss: (() -> Void)?)
 }
 
 // MARK: - Lets make all ViewControllers be ErrorPresentable
@@ -52,7 +53,13 @@ extension UIViewController: ErrorPresentable {
     }
 
     public func presentErrorAsAlert(_ error: ErrorType, onDismiss: (() -> Void)? = nil) {
-        let alertController = UIAlertController(title: error.title, message: error.description, preferredStyle: .alert)
+        let title = error.title
+        let message = error.description
+        presentAlertMessage(title: title, message: message, onDismiss: onDismiss)
+    }
+    
+    public func presentAlertMessage(title: String, message: String, onDismiss: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
         let OKAction = UIAlertAction(title: "General.Button.Ok".localized, style: .default) { (action) in
             onDismiss?()
@@ -66,4 +73,7 @@ extension UIViewController: ErrorPresentable {
             self.present(error)
         })
     }
+    
+    
+    
 }

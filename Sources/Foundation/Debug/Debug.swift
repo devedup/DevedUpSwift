@@ -18,4 +18,13 @@ struct Debug {
         }
     }
     
+    static func isDebuggingNetwork() -> Bool {
+        let dic = ProcessInfo.processInfo.environment
+        if dic["networkdebugging"] == "true" {
+            return true
+        } else {
+            return false
+        }
+    }
+    
 }
