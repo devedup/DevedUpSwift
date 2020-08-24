@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoadingLabel" customModule="ManchesterFC">
+            <connections>
+                <outlet property="activity" destination="AC5-8Z-K9h" id="89e-WL-E79"/>
+                <outlet property="label" destination="zXn-mc-fmB" id="csh-wb-ILt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zXn-mc-fmB">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="AC5-8Z-K9h">
+                    <rect key="frame" x="197" y="438" width="20" height="20"/>
+                </activityIndicatorView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="AC5-8Z-K9h" secondAttribute="bottom" constant="10" id="BRM-90-r4c"/>
+                <constraint firstItem="AC5-8Z-K9h" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="NEQ-YX-b4E"/>
+                <constraint firstItem="zXn-mc-fmB" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="V9F-wH-1R1"/>
+                <constraint firstAttribute="bottom" secondItem="zXn-mc-fmB" secondAttribute="bottom" id="Y95-lX-ShV"/>
+                <constraint firstItem="zXn-mc-fmB" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="aiP-0d-31V"/>
+                <constraint firstItem="zXn-mc-fmB" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="nrd-AR-6ww"/>
+                <constraint firstItem="AC5-8Z-K9h" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="rWL-IN-7IW"/>
+                <constraint firstAttribute="trailing" secondItem="zXn-mc-fmB" secondAttribute="trailing" id="siF-Kg-m8o"/>
+                <constraint firstItem="AC5-8Z-K9h" firstAttribute="top" relation="greaterThanOrEqual" secondItem="vUN-kp-3ea" secondAttribute="top" constant="10" id="uxF-t9-aCj"/>
+                <constraint firstItem="zXn-mc-fmB" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="v7V-fE-uLl"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <point key="canvasLocation" x="139" y="153"/>
+        </view>
+    </objects>
+</document>

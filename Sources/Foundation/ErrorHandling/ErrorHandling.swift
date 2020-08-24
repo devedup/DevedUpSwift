@@ -11,36 +11,26 @@ public protocol ErrorType: Error {
 
 public enum GenericError: ErrorType {
     
-    case networkError(statusCode: Int, data: Data?)
-    case network(Error?)
-    case networkLoad(code: Int?)
-    case networkDataError(details: String)
+    case networkData(statusCode: Int, data: Data?)
+    case network(error: Error?)
     case generalError(Error?)
     case sessionExpired
     case invalidLogin
     case appUpgradeRequired
-    case networkNoContent
+
     
     public var title: String {
         switch self {
-        case .network:
-            return "network"
-        case .networkLoad:
-            return "networkLoad"
-        case .networkDataError:
-            return "networkDataError"
+        case .network, .networkData:
+            return "networkErrorTitle".localized
         case .generalError:
-            return "generalError"
+            return "generalError".localized
         case .sessionExpired:
-            return "sessionExpired"
+            return "sessionExpired".localized
         case .invalidLogin:
-            return "invalidLogin"
+            return "invalidLogin".localized
         case .appUpgradeRequired:
-            return "appUpgradeRequired"
-        case .networkNoContent:
-            return "networkNoContent"
-        case .networkError:
-            return "networkError"
+            return "appUpgradeRequired".localized
         }
     }
     
@@ -48,23 +38,18 @@ public enum GenericError: ErrorType {
         switch self {
         case .network(let error):
             let errorString = error?.localizedDescription
-            return "Error.Network".localized(with: errorString ?? "")
-        case .networkLoad(let statusCode):
-            return "Error.Network.Load".localized(with: statusCode ?? 0)
-        case .generalError:
-            return "Error.General".localized
+            return "Error.Network".localized + ": \(errorString ?? "")"
+        case .networkData(let statusCode, let data):
+            return "The request responded with a status of \(statusCode)"
+        case .generalError(let error):
+            let errorString = error?.localizedDescription
+            return "Error.General".localized + " \(errorString ?? "")"
         case .sessionExpired:
             return "Error.SessionExpired".localized
         case .invalidLogin:
             return "Login.Error.Message".localized
         case .appUpgradeRequired:
             return "Error.AppUpgradeRequired.Description".localized
-        case .networkDataError(let details):
-            return "Error.Network.Data".localized(with: details)
-        case .networkNoContent:
-            return "networkNoContent"
-        case .networkError:
-            return "networkError"
         }
     }
 

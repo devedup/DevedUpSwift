@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// I pass this in performSegue(withIdentifier: sender:) as the sender argument. I could just pass the object directly, but that smelt funny. I dunno. This gives a bit more flexibility.
-@available(*, deprecated, message: "Stop doing this, as we never use the sender param anyway")
+@available(iOS, deprecated: 13, message: "Stop doing this, as we never use the sender param anyway")
 public struct SegueData<T> {
     
     public let sender: Any
@@ -56,7 +56,7 @@ extension Segueable where Self: UIViewController, Segue.RawValue == String {
 		performSegue(withIdentifier: segue.rawValue, sender: self)
 	}
     
-    @available(*, deprecated, message: "Use perform withData... wrapping in SegueData is pointless")
+    @available(iOS, deprecated: 13, message: "Use perform withData... wrapping in SegueData is pointless")
     public func perform<T>(_ segue: Segue, data: SegueData<T>) {
         performSegue(withIdentifier: segue.rawValue, sender: data)
     }

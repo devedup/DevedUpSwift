@@ -14,6 +14,7 @@ extension String {
     }
     
     public func localized(with varargs:CVarArg...) -> String {
+        // The varargs need to be a string
         return String(format: self.localized, locale: Locale.current, arguments: varargs)
     }
     

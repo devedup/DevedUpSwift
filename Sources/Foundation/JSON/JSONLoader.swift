@@ -19,5 +19,18 @@ public class JSONLoader {
         return try JSONDecoder().decode(T.self, from: loadedData)
     }
     
+    public static func load<T:Decodable>(fromJSON string: String) -> T? {
+        guard let data = string.data(using: .utf8) else {
+            return nil
+        }
+        do {
+            let object = try JSONDecoder().decode(T.self, from: data)
+            return object
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
 }
  

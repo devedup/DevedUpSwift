@@ -49,14 +49,14 @@ public class DefaultAPIService: APIService {
         } catch {
             let errorString = "Error parsing response into \(ResponseModel.self) [\(error)]"
             logger.log(message: errorString)
-            return .failure(GenericError.networkLoad(code: nil))
+            return .failure(GenericError.network(error: nil))
         }
     }
         
     public func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>) {
         // Check we have a valid URL, if not return an error
         guard var urlComponents = URLComponents(string: endpoint.path) else {
-            let error = GenericError.network(nil)
+            let error = GenericError.network(error: nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
             }
@@ -72,7 +72,7 @@ public class DefaultAPIService: APIService {
         
         // Build the url
         guard let url = urlComponents.url else {
-            let error = GenericError.network(nil)
+            let error = GenericError.network(error: nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
             }
@@ -100,8 +100,8 @@ public class DefaultAPIService: APIService {
             // Now it's back, lets put it back on main thread
             DispatchQueue.main.async {
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    let generalError = GenericError.generalError(error ?? nil)
-                    completion(AsyncResult.failure(generalError))
+                    let networkError = GenericError.network(error: error)
+                    completion(AsyncResult.failure(networkError))
                     return
                 }
                 
@@ -112,17 +112,17 @@ public class DefaultAPIService: APIService {
                 switch self.processResponse(httpResponse) {
                 case .success(let status):
                     guard let data = data else {
-                        completion(AsyncResult.failure(GenericError.network(error ?? nil)))
+                        completion(AsyncResult.failure(GenericError.network(error: error)))
                         return
                     }
                     if status == 204 {
-                        completion(AsyncResult.failure(GenericError.networkNoContent))
+                        completion(AsyncResult.failure(GenericError.network(error: nil)))
                         return
                     }
                     let result: AsyncResult<Endpoint.ResponseModel> = self.responseData(networkResponse: data)
                     completion(result)
                 case .failure(let statusCode):
-                    completion(.failure(GenericError.networkError(statusCode: statusCode, data: data)))
+                    completion(.failure(GenericError.networkData(statusCode: statusCode, data: data)))
                 case .sessionExpired:
                     if let error = self.networkAuth.processSessionExpiry(isLoginRequest: endpoint.isAuthenticatedRequest) {
                         // Failed login return 401, we don't want to show session expired

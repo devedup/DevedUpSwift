@@ -66,6 +66,16 @@ extension KeyedDecodingContainer {
         }
     }
     
+    public func decode(_ type: Date.Type, formatter: ISO8601DateFormatter, forKey key: K) throws -> Date {
+        let stringValue = try decode(String.self, forKey: key)
+        if let date = formatter.date(from: stringValue) {
+            return date
+        } else {
+            let context = DecodingError.Context(codingPath: [key], debugDescription: "Date string for key \(key )does not match format expected by formatter \(String(describing: formatter)).")
+            throw DecodingError.typeMismatch(type, context)
+        }
+    }
+    
     // Images
     public func decode(_ type: UIImage.Type, forKey key: KeyedDecodingContainer.Key) throws -> UIImage {
         let imageData = try decode(Data.self, forKey: key)
