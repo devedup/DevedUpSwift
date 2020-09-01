@@ -8,6 +8,24 @@
 import Foundation
 import UIKit
 
+/*
+ 
+    How to use (cos i always forget)
+    ----------
+ 
+    1. Create your view in a nib. Your custom view is Files owner NOT the top level view, which can just be a UIView.
+    2. Make your custom view extend NibLoadableView
+    3. Give your custom view this method:
+ 
+        override var nibName: String {
+            return String(describing: Self.self) // defaults to the name of the class implementing this protocol.
+        }
+ 
+    4. You can now add your customer view into another nib. Add a UIView and set it's class to your new view class.
+ 
+ */
+
+
 /// Basically, you create a xib file with top level UIView and then add your elements to it. You can then use that type inside another xib or a storyboard
 /// Be careful when 
 public protocol NibLoadable {
@@ -27,6 +45,7 @@ public extension NibLoadable where Self: UIView {
     
     func setupFromNib() {
         guard let view = Self.nib(name: nibName).instantiate(withOwner: self, options: nil).first as? UIView else { fatalError("Error loading \(self) from nib") }
+        self.backgroundColor = .clear
         addSubview(view)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
