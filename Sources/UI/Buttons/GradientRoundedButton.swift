@@ -37,8 +37,7 @@ open class GradientRoundedButton: UIButton {
         sharedInit()
     }
     
-    private func sharedInit() {
-        cornerRadius = frame.size.height / 2
+    private func sharedInit() {        
     }
     
     public override func layoutSubviews() {
@@ -52,7 +51,7 @@ open class GradientRoundedButton: UIButton {
         l.colors = [leftColour.cgColor, rightColour.cgColor]
         l.startPoint = CGPoint(x: 0, y: 0.5)
         l.endPoint = CGPoint(x: 1, y: 0.5)
-        l.cornerRadius = 16
+        //l.cornerRadius = 16
         layer.insertSublayer(l, at: 0)
         return l
     }()

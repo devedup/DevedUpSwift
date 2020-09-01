@@ -34,14 +34,22 @@ public extension String {
 public class DefaultAPIService: APIService {
     
     private let logger: APILogger
-    private let session = URLSession(configuration: .default)
+    
+    private let session: URLSession = {
+        var configuration = URLSessionConfiguration.default
+        if Debug.isDebugging() {
+            configuration.timeoutIntervalForRequest = 15
+        }
+        return URLSession(configuration: configuration)
+    }()
+    
     public let networkAuth: NetworkAuthentication
     
     public init(logger: Loggable = ConsoleLogger(), networkAuth: NetworkAuthentication) {
         self.logger = APILogger(logger: logger)
         self.networkAuth = networkAuth
     }
-        
+    
     private func responseData<ResponseModel: Decodable>(networkResponse data: Data) -> AsyncResult<ResponseModel> {
         do {
             let response = try JSONDecoder().decode(ResponseModel.self, from: data)
@@ -49,10 +57,10 @@ public class DefaultAPIService: APIService {
         } catch {
             let errorString = "Error parsing response into \(ResponseModel.self) [\(error)]"
             logger.log(message: errorString)
-            return .failure(GenericError.network(error: nil))
+            return .failure(GenericError.network(error: error))
         }
     }
-        
+    
     public func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>) {
         // Check we have a valid URL, if not return an error
         guard var urlComponents = URLComponents(string: endpoint.path) else {
@@ -78,7 +86,7 @@ public class DefaultAPIService: APIService {
             }
             return
         }
-
+        
         // Prepare headers
         var headers = networkAuth.prepareHeadersWithAccessToken(endpoint.isAuthenticatedRequest)
         headers["Content-Type"] = "application/json"
@@ -91,7 +99,23 @@ public class DefaultAPIService: APIService {
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.payloadBody
         
-
+        /*
+         
+         var hasSetContentType = false
+            if let customHeaders = endpoint.headers {
+                customHeaders.forEach {
+                    if $0.key == "Content-Type" {
+                        hasSetContentType = true
+                    }
+                    request.setValue($0.value, forHTTPHeaderField: $0.key)
+                }
+            }
+            
+            if !hasSetContentType {
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
+         */
+        
         // Now schedule the request onto the session
         let task = session.dataTask(with: request) { data, response, error in
             
@@ -107,7 +131,7 @@ public class DefaultAPIService: APIService {
                 
                 // Handle response headers
                 self.networkAuth.processResponseHeaders(httpResponse.allHeaderFields)
-
+                
                 // Now process the response
                 switch self.processResponse(httpResponse) {
                 case .success(let status):
@@ -167,42 +191,42 @@ public class DefaultAPIService: APIService {
             let bundle = info[kCFBundleIdentifierKey as String] as? String ?? "Unknown"
             let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"
             let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
-
+            
             let osNameVersion: String = {
                 let version = ProcessInfo.processInfo.operatingSystemVersion
                 let versionString = "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
-
+                
                 let osName: String = {
                     #if os(iOS)
-                        return "iOS"
+                    return "iOS"
                     #elseif os(watchOS)
-                        return "watchOS"
+                    return "watchOS"
                     #elseif os(tvOS)
-                        return "tvOS"
+                    return "tvOS"
                     #elseif os(macOS)
-                        return "OS X"
+                    return "OS X"
                     #elseif os(Linux)
-                        return "Linux"
+                    return "Linux"
                     #else
-                        return "Unknown"
+                    return "Unknown"
                     #endif
                 }()
-
+                
                 return "\(osName) \(versionString)"
             }()
-
+            
             let devedupSwiftVersion: String = {
                 guard
                     let duInfo = Bundle(for: DefaultAPIService.self).infoDictionary,
                     let build = duInfo["CFBundleShortVersionString"]
-                else { return "Unknown" }
-
+                    else { return "Unknown" }
+                
                 return "DevedUpSwift-Network/\(build)"
             }()
-
+            
             return "\(executable)/\(appVersion) (\(bundle); build:\(appBuild); \(osNameVersion)) \(devedupSwiftVersion)"
         }
-
+        
         return "DevedUpSwift-Network"
     }()
 }

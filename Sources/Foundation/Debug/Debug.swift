@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Debug {
+public struct Debug {
     
-    static func isDebugging() -> Bool {
+    public static func isDebugging() -> Bool {
         let dic = ProcessInfo.processInfo.environment
         if dic["xcodetesting"] == "true" {
             return true
@@ -18,7 +18,7 @@ struct Debug {
         }
     }
     
-    static func isDebuggingNetwork() -> Bool {
+    public static func isDebuggingNetwork() -> Bool {
         let dic = ProcessInfo.processInfo.environment
         if dic["networkdebugging"] == "true" {
             return true
