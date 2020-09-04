@@ -8,6 +8,7 @@
 import Foundation
 import StoreKit
 import DevedUpSwiftFoundation
+import DevedUpSwiftNetwork
 
 public protocol IAPService {
     
@@ -15,7 +16,7 @@ public protocol IAPService {
     /// - Parameters:
     ///   - identifiers: the identifiers that you want to load, you might have more on the app store that you're not interested in
     ///   - completion: The array of SKProduct
-    func loadProducts(identifiers: [String], completion: @escaping ([SKProduct]) -> Void)
+    func loadProducts(identifiers: [String], completion: @escaping AsyncResultCompletion<[IAPProduct]>)
 }
 
 /**
@@ -27,13 +28,13 @@ public protocol IAPService {
  */
 public final class DefaultIAPService: NSObject, IAPService {
     
-    static let sharedInstance = DefaultIAPService()
+    public static let sharedInstance = DefaultIAPService()
 
 //    private let receiptValidator = ReceiptValidator()
     
     // Load Products
     private var loadProductsRequest = SKProductsRequest()
-    private var loadProductsCompletion: ( ([SKProduct]) -> Void )?
+    private var loadProductsCompletion: AsyncResultCompletion<[IAPProduct]>?
     
     // Receipt requests - if the receipt is not on the device
     private let receiptRequest = SKReceiptRefreshRequest()
@@ -58,7 +59,7 @@ public final class DefaultIAPService: NSObject, IAPService {
     
     // MARK: Products
     
-    public func loadProducts(identifiers: [String], completion: @escaping ([SKProduct]) -> Void) {
+    public func loadProducts(identifiers: [String], completion: @escaping AsyncResultCompletion<[IAPProduct]>) {
         loadProductsCompletion = completion
         loadProductsRequest.cancel()
         loadProductsRequest = SKProductsRequest(productIdentifiers: Set(identifiers))
@@ -110,7 +111,8 @@ extension DefaultIAPService: SKProductsRequestDelegate {
     
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         DispatchQueue.main.async {
-            self.loadProductsCompletion?(response.products)
+            let products = response.products.map { IAPProduct(skProduct: $0) }
+            self.loadProductsCompletion?(.success(products))
         }
     }
     
