@@ -12,6 +12,9 @@ let package = Package(
             name: "DevedUpSwiftFoundation",
             targets: ["DevedUpSwiftFoundation"]),
         .library(
+            name: "DevedUpSwiftIAP",
+            targets: ["DevedUpSwiftIAP"]),
+        .library(
             name: "DevedUpSwiftUI",
             targets: ["DevedUpSwiftUI"]),
         .library(
@@ -32,6 +35,10 @@ let package = Package(
             name: "DevedUpSwiftFoundation",
             dependencies: ["DevedUpSwiftLocalisation"],
             path: "Sources/Foundation"),
+        .target(
+            name: "DevedUpSwiftIAP",
+            dependencies: ["DevedUpSwiftFoundation"],
+            path: "Sources/InAppPurchase/Source"),
         .target(
             name: "DevedUpSwiftLocalisation",
             dependencies: [],

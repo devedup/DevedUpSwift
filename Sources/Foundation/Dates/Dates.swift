@@ -70,6 +70,12 @@ extension Date {
         return minutesBehind
     }
     
+    public func dateBySubtracting(years: Int) -> Date {
+        let calendar = Calendar.devedupCalendar
+        let yearsBehind = calendar.date(byAdding: .year, value: -years, to: self) ?? self
+        return yearsBehind
+    }
+    
     public func dateByAdding(minutes: Int) -> Date {
         let calendar = Calendar.devedupCalendar
         let minutesAhead = calendar.date(byAdding: .minute, value: minutes, to: self) ?? self

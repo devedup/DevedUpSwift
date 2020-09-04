@@ -28,10 +28,13 @@ extension NumberFormatter {
     convenience init(numberStyle: Style) {
         self.init()
         self.numberStyle = numberStyle
+        self.usesGroupingSeparator = true
+        self.maximumFractionDigits = 2
+        self.minimumFractionDigits = 2
     }
 }
 private extension Formatter {
-    static let currency: NumberFormatter = .init(numberStyle: .currency)
+    static let currency: NumberFormatter = .init(numberStyle: .decimal) // set to .currency
 }
 
 public class CurrencyTextField: UITextField {

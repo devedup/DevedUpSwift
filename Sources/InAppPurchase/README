@@ -1,0 +1,10 @@
+
+
+For the receipt validation to work:
+
+1. You need a copy of Apple's Root Certificate included in your application bundle for local receipt validation to succeed. I wrote "Receipt Validation – Verifying a Receipt Signature in Swift" to guide you through this process if you need help.
+2. You need OpenSSL to be statically-linked to your project. I wrote "OpenSSL for iOS & Swift the Easy Way" to guide you through this process if you need help.
+3. You need to include the following additional resources after OpenSSL is installed. Example implementations are provided in the demo project.
+4.  pkcs7_union_accessors.c
+    pkcs7_union_accessors.h
+    Bridging Header

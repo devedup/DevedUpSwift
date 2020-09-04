@@ -48,12 +48,12 @@ public class Currency {
         return fee
     }
     
-    public static func formatted(amount: Decimal, locale: Locale = Locale(identifier: "en_GB")) -> String {
+    public static func formatted(amount: Decimal, locale: Locale = Locale(identifier: "en_GB"), numberStyle: NumberFormatter.Style = .currency) -> String {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.usesGroupingSeparator = true
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumFractionDigits = 2
-        currencyFormatter.numberStyle = .currency
+        currencyFormatter.numberStyle = numberStyle
         currencyFormatter.locale = locale
         if let feeString = currencyFormatter.string(from: amount as NSDecimalNumber) {
             return feeString

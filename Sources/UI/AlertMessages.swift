@@ -37,14 +37,14 @@ public struct OptionMessage {
 public protocol MessagePresentable {
     func presentAppUpgrade(appID: String)
     func present(title: String, message: String, onDismiss: (() -> Void)?)
-    func presentOption(message: String, confirmTitle: String, cancelTitle: String, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    func presentOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
     func presentOption(optionMessage: OptionMessage)
 }
 
 extension MessagePresentable {
     
     public func presentOption(message: String, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
-        presentOption(message: message, confirmTitle: "General.Button.Ok".localized, cancelTitle: "General.Button.Cancel".localized, onOK: onOK, onCancel: onCancel)
+        presentOption(message: message, confirmTitle: "General.Button.Ok".localized, cancelTitle: "General.Button.Cancel".localized, tintColour: nil, onOK: onOK, onCancel: onCancel)
     }
     
 }
@@ -73,7 +73,6 @@ extension UIViewController: MessagePresentable {
     /// - Parameter message: the message you are presenting
     public func present(title: String, message: String, onDismiss: (() -> Void)? = nil) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
         let OKAction = UIAlertAction(title: "General.Button.Ok".localized, style: .default) { (action) in
             onDismiss?()
         }
@@ -84,6 +83,7 @@ extension UIViewController: MessagePresentable {
     public func presentOption(message: String,
                        confirmTitle: String,
                        cancelTitle: String,
+                       tintColour: UIColor?,
                        onOK: (() -> Void)? = nil,
                        onCancel: (() -> Void)? = nil) {
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -97,10 +97,11 @@ extension UIViewController: MessagePresentable {
         alertController.addAction(cancelAction)
         alertController.addAction(OKAction)
         self.present(alertController, animated: true, completion: nil)
+        alertController.view.tintColor = tintColour
     }
     
     public func presentOption(optionMessage: OptionMessage) {
-        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
+        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
     }
     
 }
