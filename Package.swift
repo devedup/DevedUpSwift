@@ -17,8 +17,7 @@ let package = Package(
         .library(
             name: "DevedUpSwiftUI",
             targets: ["DevedUpSwiftUI"]),
-        .library(
-            name: "DevedUpSwiftLocalisation",
+        .library(            name: "DevedUpSwiftLocalisation",
             targets: ["DevedUpSwiftLocalisation"]),
         .library(
             name: "DevedUpSwiftNetwork",
