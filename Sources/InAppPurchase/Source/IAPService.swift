@@ -8,7 +8,6 @@
 import Foundation
 import StoreKit
 import DevedUpSwiftFoundation
-import DevedUpSwiftNetwork
 
 public protocol IAPService {
     
