@@ -19,7 +19,8 @@ public enum GenericError: ErrorType {
     case sessionExpired
     case invalidLogin
     case appUpgradeRequired
-
+    case cannotMakePurchases
+    case inAppPurchaseError(Error?)
     
     public var title: String {
         switch self {
@@ -33,6 +34,8 @@ public enum GenericError: ErrorType {
             return "invalidLogin".localized
         case .appUpgradeRequired:
             return "appUpgradeRequired".localized
+        case .cannotMakePurchases, .inAppPurchaseError:
+            return "Purchase Error"
         }
     }
     
@@ -61,6 +64,11 @@ public enum GenericError: ErrorType {
             return "Login.Error.Message".localized
         case .appUpgradeRequired:
             return "Error.AppUpgradeRequired.Description".localized
+        case .cannotMakePurchases:
+            return "It looks like you don't have permissions to make purchases on this device"
+        case .inAppPurchaseError(let error):
+            let errorString = error?.localizedDescription
+            return "Error.General".localized + " \(errorString ?? "")"
         }
     }
     
@@ -90,6 +98,8 @@ public enum GenericError: ErrorType {
             return "Login.Error.Message".localized
         case .appUpgradeRequired:
             return "Error.AppUpgradeRequired.Description".localized
+        default:
+            return ""
         }
     }
 

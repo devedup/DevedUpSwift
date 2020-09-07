@@ -17,6 +17,18 @@ public protocol IAPService {
     ///   - identifiers: the identifiers that you want to load, you might have more on the app store that you're not interested in
     ///   - completion: The array of SKProduct
     func loadProducts(identifiers: [String], completion: @escaping AsyncResultCompletion<[IAPProduct]>)
+    
+    /// Initiate the purchase of a product
+    ///
+    /// - Parameters:
+    ///   - product: The product
+    ///   - completion: SKPaymentTransactionif it worked
+    func purchase(product: SKProduct, completion: @escaping AsyncResultCompletion<SKPaymentTransaction>)
+    
+    /// Restore your transactions
+    ///
+    /// - Parameter completion: SKPaymentTransactionif it worked
+    func restore(completion: @escaping AsyncResultCompletion<SKPaymentTransaction>)
 }
 
 /**
@@ -36,12 +48,16 @@ public final class DefaultIAPService: NSObject, IAPService {
     private var loadProductsRequest = SKProductsRequest()
     private var loadProductsCompletion: AsyncResultCompletion<[IAPProduct]>?
     
+    // Purchase
+    private var puchaseCompletion: AsyncResultCompletion<SKPaymentTransaction>?
+    
     // Receipt requests - if the receipt is not on the device
     private let receiptRequest = SKReceiptRefreshRequest()
     private var receiptRequestCompletion: (() -> Void)?
     
     private override init() {
         super.init()
+        SKPaymentQueue.default().add(self)
     }
     
     // MARK: Start and Stop Monitor
@@ -65,6 +81,25 @@ public final class DefaultIAPService: NSObject, IAPService {
         loadProductsRequest = SKProductsRequest(productIdentifiers: Set(identifiers))
         loadProductsRequest.delegate = self        
         loadProductsRequest.start()
+    }
+    
+    // MARK: Purchase
+    
+    public func purchase(product: SKProduct, completion: @escaping AsyncResultCompletion<SKPaymentTransaction>) {
+        self.puchaseCompletion = completion
+        guard SKPaymentQueue.canMakePayments() else {
+            completion(.failure(GenericError.cannotMakePurchases))
+            return
+        }
+        let payment = SKPayment(product: product)
+        SKPaymentQueue.default().add(payment)
+    }
+    
+    // MARK: Restore
+    
+    public func restore(completion: @escaping AsyncResultCompletion<SKPaymentTransaction>) {
+        self.puchaseCompletion = completion
+        SKPaymentQueue.default().restoreCompletedTransactions()
     }
     
     // MARK: Receipts
@@ -107,6 +142,75 @@ public final class DefaultIAPService: NSObject, IAPService {
     
 }
 
+extension DefaultIAPService: SKPaymentTransactionObserver {
+    
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        transactions.forEach {
+            switch $0.transactionState {
+            case .purchased, .restored:
+                SKPaymentQueue.default().finishTransaction($0)
+                self.puchaseCompletion?(.success($0))
+            case .failed:
+                SKPaymentQueue.default().finishTransaction($0)
+                self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError($0.error)))
+            case .deferred, .purchasing:
+                break
+            @unknown default:
+                self.puchaseCompletion?(.failure(GenericError.generalErrorString("Unknown case in in app purchase payment")))
+            }
+        }
+    }
+    
+    /*
+     
+     - (void)    completeSuccessfulTransaction:(SKPaymentTransaction *)transaction {
+         if ([transaction.payment.productIdentifier isEqualToString:FGIAPProductStandardProPackage]) {
+             // They have successfully purchase the pro package
+             // DELIVER THE FEATURE !!!
+             [self proUP];
+             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+             if (self.purchaseCompletion) {
+                 self.purchaseCompletion(nil);
+             }
+         }
+     }
+
+     - (void) completeFailedTransaction:(SKPaymentTransaction *)transaction {
+         [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+         if (self.purchaseCompletion) {
+             NSString *errorCode = [NSString stringWithFormat:@"%li", (long)(transaction.error).code];
+             [[Tracking sharedController] logEvent:@"InAppPurchase" withKey:@"TransactionError" value:errorCode];
+             self.purchaseCompletion(transaction.error);
+         }
+     }
+
+     #pragma mark - SKPaymentTransactionObserver
+
+     - (void) paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions {
+         for (SKPaymentTransaction *transaction in transactions) {
+             switch (transaction.transactionState) {
+                 case SKPaymentTransactionStatePurchased:
+                     [Analytics log:AnalyticsEventPurchasedProPackage params:nil];
+                     [[Tracking sharedController] logEvent:@"InAppPurchase" withKey:@"Transaction" value:@"Purchased"];
+                     [self completeSuccessfulTransaction:transaction];
+                     break;
+                 case SKPaymentTransactionStateFailed:
+                     [[Tracking sharedController] logEvent:@"InAppPurchase" withKey:@"Transaction" value:@"Failed"];
+                     [self completeFailedTransaction:transaction];
+                     break;
+                 case SKPaymentTransactionStateRestored:
+                     [[Tracking sharedController] logEvent:@"InAppPurchase" withKey:@"Transaction" value:@"Restored"];
+                     [self completeSuccessfulTransaction:transaction];
+                 case SKPaymentTransactionStateDeferred:
+                 case SKPaymentTransactionStatePurchasing:
+                     break;
+             }
+         }
+     }
+     
+     */
+}
+
 extension DefaultIAPService: SKProductsRequestDelegate {
     
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
@@ -128,17 +232,6 @@ extension DefaultIAPService: SKRequestDelegate {
     public func request(_ request: SKRequest, didFailWithError error: Error) {
         print("Something went wrong: \(error.localizedDescription)")
         self.receiptRequestCompletion?()
-    }
-    
-}
-
-
-extension DefaultIAPService: SKPaymentTransactionObserver {
-    
-    // Observe transaction updates.
-    public func paymentQueue(_ queue: SKPaymentQueue,updatedTransactions transactions: [SKPaymentTransaction]) {
-        //Handle transaction states here.
-        
     }
     
 }
