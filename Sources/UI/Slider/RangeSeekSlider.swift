@@ -416,11 +416,19 @@ import UIKit
         leftHandle.cornerRadius = handleDiameter / 2.0
         leftHandle.borderWidth = handleBorderWidth
         layer.addSublayer(leftHandle)
+        leftHandle.shadowRadius = 2
+        leftHandle.shadowOffset = CGSize(width: 0, height: 2)
+        leftHandle.shadowOpacity = 0.2
+        leftHandle.shadowColor = UIColor.black.cgColor
 
         // draw the maximum slider handle
         rightHandle.cornerRadius = handleDiameter / 2.0
         rightHandle.borderWidth = handleBorderWidth
         layer.addSublayer(rightHandle)
+        rightHandle.shadowRadius = 2
+        rightHandle.shadowOffset = CGSize(width: 0, height: 2)
+        rightHandle.shadowOpacity = 0.2
+        rightHandle.shadowColor = UIColor.black.cgColor
 
         let handleFrame: CGRect = CGRect(x: 0.0, y: 0.0, width: handleDiameter, height: handleDiameter)
         leftHandle.frame = handleFrame
