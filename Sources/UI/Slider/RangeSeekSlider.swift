@@ -228,6 +228,7 @@ import UIKit
     private var handleTracking: HandleTracking = .none
 
     private let sliderLine: CALayer = CALayer()
+    private let backgroundLine: CALayer = CALayer()
     private let sliderLineBetweenHandles: CALayer = CALayer()
 
     private let leftHandle: CALayer = CALayer()
@@ -326,18 +327,32 @@ import UIKit
         guard handleTracking != .none else { return false }
 
         let location: CGPoint = touch.location(in: self)
-
+        print("location \(location)")
         // find out the percentage along the line we are in x coordinate terms (subtracting half the frames width to account for moving the middle of the handle, not the left hand side)
-        let percentage: CGFloat = (location.x - sliderLine.frame.minX - handleDiameter / 2.0) / (sliderLine.frame.maxX - sliderLine.frame.minX)
-
+        let maxWidth = (self.frame.maxX - self.frame.minX)
+        let percentage: CGFloat = location.x / maxWidth
+        print("percent \(percentage)")
+        
         // multiply that percentage by self.maxValue to get the new selected minimum value
         let selectedValue: CGFloat = percentage * (maxValue - minValue) + minValue
 
+        print("selected value \(selectedValue)")
+        
         switch handleTracking {
         case .left:
+            if selectedValue >= selectedMaxValue {
+                // if you are pushing over the max, let them slide together
+                selectedMinValue = selectedValue
+                selectedMaxValue = selectedMinValue + 1
+            }
             selectedMinValue = min(selectedValue, selectedMaxValue)
         case .right:
             // don't let the dots cross over, (unless range is disabled, in which case just dont let the dot fall off the end of the screen)
+            if selectedValue <= selectedMinValue {
+                selectedMaxValue = selectedValue
+                selectedMinValue = selectedMaxValue - 1
+            }
+            
             if disableRange && selectedValue >= minValue {
                 selectedMaxValue = selectedValue
             } else {
@@ -391,6 +406,7 @@ import UIKit
         accessibleElements = [leftHandleAccessibilityElement, rightHandleAccessibilityElement]
 
         // draw the slider line
+        layer.addSublayer(backgroundLine)
         layer.addSublayer(sliderLine)
 
         // draw the track distline
@@ -459,7 +475,7 @@ import UIKit
     }
 
     private func updateLineHeight() {
-        let barSidePadding: CGFloat = 16.0
+        let barSidePadding: CGFloat = handleDiameter / 2
         let yMiddle: CGFloat = frame.height / 2.0
         let lineLeftSide: CGPoint = CGPoint(x: barSidePadding, y: yMiddle)
         let lineRightSide: CGPoint = CGPoint(x: frame.width - barSidePadding,
@@ -468,8 +484,14 @@ import UIKit
                                   y: lineLeftSide.y,
                                   width: lineRightSide.x - lineLeftSide.x,
                                   height: lineHeight)
-        sliderLine.cornerRadius = lineHeight / 2.0
-        sliderLineBetweenHandles.cornerRadius = sliderLine.cornerRadius
+        
+  
+        backgroundLine.frame = CGRect(x: 0,
+                                      y: yMiddle,
+                                      width: frame.width,
+                                      height: lineHeight)
+        //sliderLine.cornerRadius = lineHeight / 2.0
+        //sliderLineBetweenHandles.cornerRadius = sliderLine.cornerRadius
     }
 
     private func updateLabelValues() {
@@ -504,6 +526,7 @@ import UIKit
             maxLabel.foregroundColor = initialColor
             sliderLineBetweenHandles.backgroundColor = initialColor
             sliderLine.backgroundColor = initialColor
+            backgroundLine.backgroundColor = initialColor
 
             let color: CGColor = (handleImage == nil) ? initialColor : UIColor.clear.cgColor
             leftHandle.backgroundColor = color
@@ -516,7 +539,8 @@ import UIKit
             maxLabel.foregroundColor = maxLabelColor?.cgColor ?? tintCGColor
             sliderLineBetweenHandles.backgroundColor = colorBetweenHandles?.cgColor ?? tintCGColor
             sliderLine.backgroundColor = tintCGColor
-
+            backgroundLine.backgroundColor = tintCGColor
+            
             let color: CGColor
             if let _ = handleImage {
                 color = UIColor.clear.cgColor
@@ -535,9 +559,11 @@ import UIKit
     }
 
     private func updateHandlePositions() {
+        leftHandle.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         leftHandle.position = CGPoint(x: xPositionAlongLine(for: selectedMinValue),
                                       y: sliderLine.frame.midY)
 
+        rightHandle.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         rightHandle.position = CGPoint(x: xPositionAlongLine(for: selectedMaxValue),
                                        y: sliderLine.frame.midY)
 
@@ -682,22 +708,22 @@ import UIKit
     }
 
     private func animate(handle: CALayer, selected: Bool) {
-        let transform: CATransform3D
-        if selected {
-            transform = CATransform3DMakeScale(selectedHandleDiameterMultiplier, selectedHandleDiameterMultiplier, 1.0)
-        } else {
-            transform = CATransform3DIdentity
-        }
-
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0.3)
-        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut))
-        handle.transform = transform
-
-        // the label above the handle will need to move too if the handle changes size
-        updateLabelPositions()
-
-        CATransaction.commit()
+//        let transform: CATransform3D
+//        if selected {
+//            transform = CATransform3DMakeScale(selectedHandleDiameterMultiplier, selectedHandleDiameterMultiplier, 1.0)
+//        } else {
+//            transform = CATransform3DIdentity
+//        }
+//
+//        CATransaction.begin()
+//        CATransaction.setAnimationDuration(0.3)
+//        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut))
+//        handle.transform = transform
+//
+//        // the label above the handle will need to move too if the handle changes size
+//        updateLabelPositions()
+//
+//        CATransaction.commit()
     }
 }
 
