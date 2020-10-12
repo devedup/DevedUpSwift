@@ -6,12 +6,38 @@ import Foundation
 
 public class JSONLoader {
     
+    public static func dictionary(forPath path: String) -> [String:AnyObject]? {
+        let data = self.data(forPath: path)
+        do {
+            let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject]
+            return json
+        } catch {
+            print("Couldn't decode \(error)")
+        }
+        return nil
+    }
+    
+    public static func string(forPath path: String) -> String? {
+        let dictionary = self.dictionary(forPath: path)
+        do {
+            let data = try JSONSerialization.data(withJSONObject: dictionary as Any, options: .prettyPrinted)
+            return String(data: data, encoding: .utf8)
+        } catch {
+            print("Couldn't decode \(error)")
+        }
+        return nil
+    }
+    
     public static func data(forPath path: String) -> Data {
         let testBundle = Bundle.main
         let path = testBundle.path(forResource: path, ofType: "json")
         let filePath = URL(fileURLWithPath: path!)
-        let data = try! Data(contentsOf: filePath)
-        return data
+        do {
+            let data = try Data(contentsOf: filePath)
+            return data
+        } catch {
+            preconditionFailure("Error parsing data \(error)")
+        }
     }
     
     public static func load<T:Decodable>(forPath path: String) throws -> T {
@@ -31,6 +57,8 @@ public class JSONLoader {
             return nil
         }
     }
+    
+    
     
 }
  

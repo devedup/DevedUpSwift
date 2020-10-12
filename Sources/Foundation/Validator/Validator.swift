@@ -6,8 +6,19 @@
 
 import Foundation
 
-protocol Validatable {
-    func validate() -> ErrorType?
+public protocol Validatable {
+    func validate() -> ValidationError?
+}
+
+public struct ValidationError: ErrorType {
+    
+    public let title: String = ""
+    public let description: String
+    public let detail: String = ""
+    
+    public init(errorMessages: String) {
+        self.description = errorMessages
+    }
 }
 
 public class Validator {
@@ -121,6 +132,10 @@ public class Validator {
         return text.count > 0
     }
 
+    public static func validateMinimumLength(_ text: String, min: Int) -> Bool {
+        return text.count >= min
+    }
+    
     public static func validateSingleNumber(_ text: String) -> Bool {
         do {
             let regex = try NSRegularExpression(pattern: "^[0-9]$", options: [])

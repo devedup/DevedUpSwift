@@ -37,16 +37,12 @@ public struct OptionMessage {
 public protocol MessagePresentable {
     func presentAppUpgrade(appID: String)
     func present(title: String, message: String, onDismiss: (() -> Void)?)
-    func presentOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    
+    func presentAlertOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    func presentActionSheetOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    
     func presentOption(optionMessage: OptionMessage)
-}
-
-extension MessagePresentable {
-    
-    public func presentOption(message: String, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
-        presentOption(message: message, confirmTitle: "General.Button.Ok".localized, cancelTitle: "General.Button.Cancel".localized, tintColour: nil, onOK: onOK, onCancel: onCancel)
-    }
-    
+    func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void))
 }
 
 // MARK: - Lets make all ViewControllers be ErrorPresentable
@@ -80,28 +76,54 @@ extension UIViewController: MessagePresentable {
         self.present(alertController, animated: true, completion: nil)
     }
         
-    public func presentOption(message: String,
+    public func presentAlertOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
+        presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: .alert, onOK: onOK, onCancel: onCancel)
+    }
+    
+    public func presentActionSheetOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
+        presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: .actionSheet, onOK: onOK, onCancel: onCancel)
+    }
+    
+    private func presentOption(message: String,
                        confirmTitle: String,
                        cancelTitle: String,
                        tintColour: UIColor?,
+                       style: UIAlertController.Style = .alert,
                        onOK: (() -> Void)? = nil,
                        onCancel: (() -> Void)? = nil) {
-        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: style)
+        
+        // This is .cancel on purpose, because it's mor prominent
         let OKAction = UIAlertAction(title: confirmTitle, style: .default) { (action) in
             onOK?()
         }
+        
         let cancelAction = UIAlertAction(title: cancelTitle, style: .cancel) { (action) in
             onCancel?()
         }
-        alertController.addAction(cancelAction)
+        
         alertController.addAction(OKAction)
+        alertController.addAction(cancelAction)
+        
         self.present(alertController, animated: true, completion: nil)
         alertController.view.tintColor = tintColour
     }
     
     public func presentOption(optionMessage: OptionMessage) {
         presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
+    }
+    
+    public func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void)) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let OKAction = UIAlertAction(title: confirmTitle, style: .destructive) { (action) in
+            onOK()
+        }
+        let cancelAction = UIAlertAction(title: "General.Button.Cancel".localized, style: .cancel) { (action) in
+        }
+        alertController.addAction(OKAction)
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
     }
     
 }

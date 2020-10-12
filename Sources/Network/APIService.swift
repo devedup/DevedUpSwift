@@ -91,7 +91,8 @@ public class DefaultAPIService: APIService {
         var headers = networkAuth.prepareHeadersWithAccessToken(endpoint.isAuthenticatedRequest)
         headers["Content-Type"] = "application/json"
         headers["Accept"] = "application/json"
-        headers["User-Agent"] = userAgent
+        let userAgentAppends = " \(networkAuth.userAgentToAppend())"
+        headers["User-Agent"] = userAgent + userAgentAppends
         
         var request = URLRequest(url: url)
         headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key)}
@@ -146,11 +147,13 @@ public class DefaultAPIService: APIService {
                     let result: AsyncResult<Endpoint.ResponseModel> = self.responseData(networkResponse: data)
                     completion(result)
                 case .failure(let statusCode):
-                    completion(.failure(GenericError.networkData(statusCode: statusCode, data: data)))
-                case .sessionExpired:
+                    completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
+                case .sessionExpired(let statusCode):
                     if let error = self.networkAuth.processSessionExpiry(isLoginRequest: endpoint.isAuthenticatedRequest) {
                         // Failed login return 401, we don't want to show session expired
                         completion(AsyncResult.failure(error))
+                    } else {                     
+                        completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
                     }
                 case .upgradeRequired:
                     NotificationCenter.default.post(name: .appUpgradeRequired, object: nil, userInfo: nil) // Needs to be pulled out

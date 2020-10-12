@@ -102,6 +102,12 @@ extension Date {
         return oneMInuteAgo
     }
     
+    public func minutesAgo(minutes: Int) -> Date {
+        let calendar = Calendar.devedupCalendar
+        let minutesAgo = calendar.date(byAdding: .minute, value: -minutes, to: self) ?? self
+        return minutesAgo
+    }
+    
     public func secondsAgo(seconds: Int) -> Date {
         let calendar = Calendar.devedupCalendar
         let secondsAgo = calendar.date(byAdding: .second, value: -seconds, to: self) ?? self

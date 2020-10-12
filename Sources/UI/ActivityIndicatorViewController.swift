@@ -8,8 +8,10 @@ import UIKit
 
 /// Presenter views which want to display activity should implement this protocol
 public protocol ActivityIndicatorPresentable {
+    func presentActivityIndicatorClearModal()
     func presentActivityIndicator()
     func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool)
+    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool, modalAlpa: CGFloat)
     func dismissActivityIndicator()
 }
 
@@ -21,13 +23,21 @@ extension UIViewController: ActivityIndicatorPresentable {
         static var ModalView = "ModalView"
     }
     
+    public func presentActivityIndicatorClearModal() {
+        presentActivityIndicator(inNavigationController: true, style: .gray, modal: true, modalAlpa: 0.0)
+    }
+    
     @objc
     open func presentActivityIndicator() {
         presentActivityIndicator(inNavigationController: true)
     }
     
+    public func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool) {
+        presentActivityIndicator(inNavigationController: true, style: style, modal: modal, modalAlpa: 0.4)
+    }
+    
     @objc
-    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white, modal: Bool = true) {
+    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white, modal: Bool = true, modalAlpa: CGFloat = 0.4) {
         dismissActivityIndicator()
         var view: UIView! = self.view
         
@@ -39,7 +49,7 @@ extension UIViewController: ActivityIndicatorPresentable {
         }
         if modal {
             let modalView = UIView()
-            modalView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            modalView.backgroundColor = UIColor.black.withAlphaComponent(modalAlpa)
             view.addSubview(modalView)
             modalView.pinToSuperview()
             objc_setAssociatedObject(self,

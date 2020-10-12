@@ -24,6 +24,9 @@ public class PickerViewFactory {
         datePicker.datePickerMode = .date
         datePicker.maximumDate = maxDate
         datePicker.backgroundColor = UIColor.white
+        if #available(iOS 14, *)  {
+            datePicker.preferredDatePickerStyle = .wheels
+        }
         let helper = DatePickerHelper(picker: datePicker, textField: textField, dateFormat: dateFormat, onDonePressed: onDonePressed)
         let toolbar = makePickerToolbar(with: helper)
         textField.inputAccessoryView = toolbar

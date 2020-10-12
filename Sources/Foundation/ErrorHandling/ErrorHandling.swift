@@ -12,7 +12,7 @@ public protocol ErrorType: Error {
 
 public enum GenericError: ErrorType {
     
-    case networkData(statusCode: Int, data: Data?)
+    case networkData(statusCode: Int, context: String?, data: Data?)
     case network(error: Error?)
     case generalError(Error?)
     case generalErrorString(String)
@@ -51,8 +51,9 @@ public enum GenericError: ErrorType {
                 extraDetail = detail
             }
             return errorString + extraDetail
-        case .networkData(let statusCode, _):
-            return "The request responded with a status of \(statusCode)"
+        case .networkData(let statusCode, let context, _):
+            let details = context == nil ? "" : "[\(context ?? "")]"
+            return "The request responded with a status of [\(statusCode)] \(details)"
         case .generalError(let error):
             let errorString = error?.localizedDescription
             return "Error.General".localized + " \(errorString ?? "")"
@@ -85,8 +86,9 @@ public enum GenericError: ErrorType {
                 errorString.append("\n\n \(error.debugDescription)");
             }
             return errorString
-        case .networkData(let statusCode, _):
-            return "The request responded with a status of \(statusCode)"
+        case .networkData(let statusCode, let context, _):
+            let details = context == nil ? "" : "[\(context ?? "")]"
+            return "The request responded with a status of [\(statusCode)] \(details)"
         case .generalError(let error):
             let errorString = error?.localizedDescription
             return "Error.General".localized + " \(errorString ?? "")"

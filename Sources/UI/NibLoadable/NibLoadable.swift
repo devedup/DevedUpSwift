@@ -58,6 +58,8 @@ public extension NibLoadable where Self: UIView {
 /// You can either inherit from NibLoadableView or use NibLoadable protocol yourself
 open class NibLoadableView: UIView, NibLoadable {
     
+    public var hasBeenSetup = false
+    
     open var nibName: String {
         preconditionFailure(
             """
