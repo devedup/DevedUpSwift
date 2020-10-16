@@ -26,17 +26,16 @@ open class StackEmbededCollectionViewController: UIViewController {
         // This allows this view to expand the container it is inside in the stackview
         view.translatesAutoresizingMaskIntoConstraints = false
         collectionView.collectionViewLayout = collectionViewLayout
-        
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         guard containerHeightConstraint != nil else {
             preconditionFailure("You need to inject the containerHeightConstraint")
         }
         guard collectionView != nil else {
             preconditionFailure("You need to set the collectionView from storyboard")
         }
-    }
-    
-    open override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
         // Annoyinng that I have to do this. Autolayout and IntrinsicSizedCollectionView should do it.
         containerHeightConstraint?.constant = collectionView.contentSize.height
     }
