@@ -33,21 +33,31 @@ public struct OptionMessage {
     
 }
 
+public struct DefaultButtonTitles {
+    public static var confirm = "General.Button.Ok".localized
+    public static var cancel = "General.Button.Cancel".localized
+}
+
 /// Presenter views which want to display errors should implement this protocol
 public protocol MessagePresentable {
+
+    // Present Alert
+    func presentAlertOption(message: String, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    func presentAlertOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    
+    // Present Action Sheet
+    func presentActionSheetOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
+    
+    // Previous ones
     func presentAppUpgrade(appID: String)
     func present(title: String, message: String, onDismiss: (() -> Void)?)
-    
-    func presentAlertOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
-    func presentActionSheetOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
-    
     func presentOption(optionMessage: OptionMessage)
     func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void))
 }
 
 // MARK: - Lets make all ViewControllers be ErrorPresentable
 extension UIViewController: MessagePresentable {
-    
+        
     public func presentAppUpgrade(appID: String) {
         let title = "Error.AppUpgradeRequired.Title".localized
         let message = "Error.AppUpgradeRequired.Description".localized
@@ -75,18 +85,43 @@ extension UIViewController: MessagePresentable {
         alertController.addAction(OKAction)
         self.present(alertController, animated: true, completion: nil)
     }
-        
-    public func presentAlertOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
+               
+    public func presentOption(optionMessage: OptionMessage) {
+        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
+    }
+    
+    public func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void)) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        let OKAction = UIAlertAction(title: confirmTitle, style: .destructive) { (action) in
+            onOK()
+        }
+        let cancelAction = UIAlertAction(title: "General.Button.Cancel".localized, style: .cancel) { (action) in
+        }
+        alertController.addAction(OKAction)
+        alertController.addAction(cancelAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    
+    // MARK: Presenting Alerts
+    
+    public func presentAlertOption(message: String, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
+        presentOption(message: message, confirmTitle: DefaultButtonTitles.confirm, cancelTitle: DefaultButtonTitles.cancel, tintColour: nil, style: UIAlertController.Style.alert, onOK: onOK, onCancel: onCancel)
+    }
+    
+    public func presentAlertOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
         presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: .alert, onOK: onOK, onCancel: onCancel)
     }
     
-    public func presentActionSheetOption(message: String, confirmTitle: String, cancelTitle: String, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
+    // MARK: Presenting Action Sheets
+    
+    public func presentActionSheetOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
         presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: .actionSheet, onOK: onOK, onCancel: onCancel)
     }
-    
+
     private func presentOption(message: String,
-                       confirmTitle: String,
-                       cancelTitle: String,
+                       confirmTitle: String? = DefaultButtonTitles.confirm,
+                       cancelTitle: String? = DefaultButtonTitles.cancel,
                        tintColour: UIColor?,
                        style: UIAlertController.Style = .alert,
                        onOK: (() -> Void)? = nil,
@@ -109,21 +144,4 @@ extension UIViewController: MessagePresentable {
         self.present(alertController, animated: true, completion: nil)
         alertController.view.tintColor = tintColour
     }
-    
-    public func presentOption(optionMessage: OptionMessage) {
-        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
-    }
-    
-    public func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void)) {
-        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
-        let OKAction = UIAlertAction(title: confirmTitle, style: .destructive) { (action) in
-            onOK()
-        }
-        let cancelAction = UIAlertAction(title: "General.Button.Cancel".localized, style: .cancel) { (action) in
-        }
-        alertController.addAction(OKAction)
-        alertController.addAction(cancelAction)
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
 }

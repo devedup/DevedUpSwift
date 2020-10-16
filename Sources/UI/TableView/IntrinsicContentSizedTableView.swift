@@ -22,3 +22,22 @@ public class IntrinsicContentSizedTableView: UITableView {
     }
 
 }
+
+/*
+ 
+ public class IntrinsicSizedCollectionView: UICollectionView {
+     
+     public override func layoutSubviews() {
+         super.layoutSubviews()
+         if bounds.size != intrinsicContentSize {
+             invalidateIntrinsicContentSize()
+         }
+     }
+     
+     public override var intrinsicContentSize: CGSize {
+         return self.contentSize
+     }
+     
+ }
+ 
+ */

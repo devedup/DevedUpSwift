@@ -20,6 +20,8 @@ import UIKit
  */
 public class IntrinsicSizedCollectionView: UICollectionView {
     
+    public var containerHeightConstraint: NSLayoutConstraint?
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
         if bounds.size != intrinsicContentSize {
@@ -28,6 +30,7 @@ public class IntrinsicSizedCollectionView: UICollectionView {
     }
     
     public override var intrinsicContentSize: CGSize {
+        containerHeightConstraint?.constant = self.contentSize.height
         return self.contentSize
     }
     
