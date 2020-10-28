@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import DevedUpSwiftFoundation
+
 /**
  
     USAGE:
@@ -103,7 +105,11 @@ extension MultipartRequest {
 
 extension UIImage {
     public var toJPEGData: Data {
-        return self.jpegData(compressionQuality: 0.8) ?? Data()
+        let data = self.jpegData(compressionQuality: 0.8) ?? Data()
+        if Debug.isDebugging() {
+            print("Image compressed size is \(data.count)")
+        }
+        return data
     }
 }
 

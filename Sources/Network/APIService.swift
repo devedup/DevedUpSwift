@@ -38,7 +38,7 @@ public class DefaultAPIService: APIService {
     private let session: URLSession = {
         var configuration = URLSessionConfiguration.default
         if Debug.isDebugging() {
-            configuration.timeoutIntervalForRequest = 15
+            configuration.timeoutIntervalForRequest = 60
         }
         return URLSession(configuration: configuration)
     }()

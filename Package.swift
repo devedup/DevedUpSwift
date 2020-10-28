@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "DevedUpSwift",
-    platforms: [.iOS(.v12)],
+    platforms: [.iOS(.v13)],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
@@ -14,6 +14,9 @@ let package = Package(
         .library(
             name: "DevedUpSwiftIAP",
             targets: ["DevedUpSwiftIAP"]),
+        .library(
+            name: "DevedUpSwiftAppleSignIn",
+            targets: ["DevedUpSwiftAppleSignIn"]),
         .library(
             name: "DevedUpSwiftUI",
             targets: ["DevedUpSwiftUI"]),
@@ -38,6 +41,10 @@ let package = Package(
             name: "DevedUpSwiftIAP",
             dependencies: ["DevedUpSwiftFoundation"],
             path: "Sources/InAppPurchase/Source"),
+        .target(
+            name: "DevedUpSwiftAppleSignIn",
+            dependencies: ["DevedUpSwiftFoundation"],
+            path: "Sources/AppleSignIn"),
         .target(
             name: "DevedUpSwiftLocalisation",
             dependencies: [],
