@@ -46,7 +46,7 @@ public class PickerViewFactory {
         picker.backgroundColor = UIColor.white
         picker.dataSource = dataSource
         picker.delegate = dataSource
-        picker.showsSelectionIndicator = true
+        //picker.showsSelectionIndicator = true
         let helper = PickerHelper(picker: picker, textField: textField)
         let toolbar = makePickerToolbar(with: helper)
         textField.inputAccessoryView = toolbar

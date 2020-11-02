@@ -33,7 +33,16 @@ public class DefaultAppleSignIn: NSObject, AppleSignIn {
 extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        completion?(.failure(GenericError.appleSignInError(error)))
+        guard let asError = error as? ASAuthorizationError else {
+            completion?(.failure(GenericError.appleSignInError(error)))
+            return
+        }
+        switch asError.code {
+        case .canceled:
+            completion?(.failure(GenericError.userCancelled))
+        default:
+            completion?(.failure(GenericError.appleSignInError(asError)))
+        }
     }
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
@@ -63,7 +72,9 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
     }
     
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
-        if let savedUser = AppleUserData.restoreFromKeychain() {
+        if var savedUser = AppleUserData.restoreFromKeychain() {
+            // Need to update it with potentially new token
+            savedUser.update(with: credential)
             completion?(.success(savedUser))
         } else {
             let userData = AppleUserData(credential)

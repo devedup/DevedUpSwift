@@ -22,6 +22,7 @@ public enum GenericError: ErrorType {
     case cannotMakePurchases
     case inAppPurchaseError(Error?)
     case appleSignInError(Error?)
+    case userCancelled
     
     public var title: String {
         switch self {
@@ -39,6 +40,8 @@ public enum GenericError: ErrorType {
             return "Purchase Error"
         case .appleSignInError:
             return "Apple Sign In Error"
+        case .userCancelled:
+            return ""
         }
     }
     
@@ -76,6 +79,8 @@ public enum GenericError: ErrorType {
         case .appleSignInError(let error):
             let errorString = error?.localizedDescription
             return "Sign In Error: \(errorString ?? "")"
+        case .userCancelled:
+            return ""
         }
     }
     

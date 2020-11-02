@@ -18,14 +18,19 @@ public struct AppleUserData: KeychainRestorable, Codable {
     
     public let email: String
     public let appleUserIdentifier: String
-    public let identityToken: Data?
-    public let authCode: Data?
+    public private (set) var identityToken: Data?
+    public private (set) var authCode: Data?
 
     public var identityTokenString: String {
         guard let data = identityToken else {
             return ""
         }
         return String(data: data, encoding: .utf8) ?? ""
+    }
+    
+    public mutating func update(with credential: ASAuthorizationAppleIDCredential) {
+        identityToken = credential.identityToken
+        authCode = credential.authorizationCode
     }
 }
 

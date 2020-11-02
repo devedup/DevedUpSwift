@@ -24,7 +24,7 @@ extension UIViewController: ActivityIndicatorPresentable {
     }
     
     public func presentActivityIndicatorClearModal() {
-        presentActivityIndicator(inNavigationController: true, style: .gray, modal: true, modalAlpa: 0.0)
+        presentActivityIndicator(inNavigationController: true, style: .medium, modal: true, modalAlpa: 0.0)
     }
     
     @objc
@@ -37,7 +37,7 @@ extension UIViewController: ActivityIndicatorPresentable {
     }
     
     @objc
-    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .white, modal: Bool = true, modalAlpa: CGFloat = 0.4) {
+    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .medium, modal: Bool = true, modalAlpa: CGFloat = 0.4) {
         dismissActivityIndicator()
         var view: UIView! = self.view
         
