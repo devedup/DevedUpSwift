@@ -16,15 +16,15 @@ final public class CollectionViewLayouts {
         let itemHeight = NSCollectionLayoutDimension.estimated(estimatedItemHeight)
         
         // Item Size
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                               heightDimension: itemHeight)
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         // Group size
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                                heightDimension: itemHeight)
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
-        let spacing = CGFloat(10)
+        let spacing = CGFloat(30)
         group.interItemSpacing = .fixed(spacing)
 
         // Section
