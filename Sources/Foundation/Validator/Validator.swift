@@ -12,6 +12,10 @@ public protocol Validatable {
 
 public struct ValidationError: ErrorType {
     
+    public var underlyingError: Error {
+        return self
+    }
+    
     public let title: String = ""
     public let description: String
     public let detail: String = ""

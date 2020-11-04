@@ -7,6 +7,7 @@ public protocol ErrorType: Error {
     var title: String { get }
     var description: String { get }
     var detail: String { get }
+    var underlyingError: Error { get }
     
 }
 
@@ -24,6 +25,18 @@ public enum GenericError: ErrorType {
     case appleSignInError(Error?)
     case userCancelled
     
+    public var underlyingError: Error {
+        switch self {
+        case .network(let error), .generalError(let error), .inAppPurchaseError(let error), .appleSignInError(let error):
+            if let underlyingError = error {
+                return underlyingError
+            } else {
+                return self
+            }
+        default:
+            return self
+        }
+    }
     public var title: String {
         switch self {
         case .network, .networkData:
