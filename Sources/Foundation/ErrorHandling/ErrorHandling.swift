@@ -17,8 +17,8 @@ public enum GenericError: ErrorType {
     case network(error: Error?)
     case generalError(Error?)
     case generalErrorString(String)
-    case sessionExpired
-    case invalidLogin
+    case sessionExpired(context: String?)
+    case invalidLogin(context: String?)
     case appUpgradeRequired
     case cannotMakePurchases
     case inAppPurchaseError(Error?)
@@ -78,10 +78,10 @@ public enum GenericError: ErrorType {
             return "Error.General".localized + " \(errorString ?? "")"
         case .generalErrorString(let errorDetail):
             return "Error.General".localized + " \(errorDetail)"
-        case .sessionExpired:
-            return "Error.SessionExpired".localized
-        case .invalidLogin:
-            return "Login.Error.Message".localized
+        case .sessionExpired(let context):
+            return "Error.SessionExpired".localized + "\n\n \(context ?? "")"
+        case .invalidLogin(let context):
+            return "Login.Error.Message".localized + "\n\n \(context ?? "")"
         case .appUpgradeRequired:
             return "Error.AppUpgradeRequired.Description".localized
         case .cannotMakePurchases:
