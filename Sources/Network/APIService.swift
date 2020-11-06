@@ -149,9 +149,9 @@ public class DefaultAPIService: APIService {
                 case .failure(let statusCode):
                     completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
                 case .sessionExpired(let statusCode):
-                    if let error = self.networkAuth.processSessionExpiry(isLoginRequest: endpoint.isAuthenticatedRequest) {
+                    if let sessionExpiredError = self.networkAuth.processSessionExpiry(isLoginRequest: !endpoint.isAuthenticatedRequest) {
                         // Failed login return 401, we don't want to show session expired
-                        completion(AsyncResult.failure(error))
+                        completion(AsyncResult.failure(sessionExpiredError))
                     } else {                     
                         completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
                     }
