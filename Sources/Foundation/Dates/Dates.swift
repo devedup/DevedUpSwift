@@ -88,6 +88,12 @@ extension Date {
         return secondsAhead
     }
     
+    public func dateByAdding(days: Int) -> Date {
+        let calendar = Calendar.devedupCalendar
+        let daysAhead = calendar.date(byAdding: .day, value: days, to: self) ?? self
+        return daysAhead
+    }
+    
     public func hourMinuteAsDecimal() -> Double {
         let calendar = Calendar.devedupCalendar
         let hour = calendar.component(.hour, from: self)
