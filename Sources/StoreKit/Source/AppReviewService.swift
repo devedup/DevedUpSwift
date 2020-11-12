@@ -17,6 +17,10 @@ public final class DefaultAppReviewService: AppReviewService {
 
     private static let lastPromptKey = "lastVersionPromptedForReviewKey"
     
+    public static let sharedInstance = DefaultAppReviewService()
+    
+    private init () {}
+    
     public func presentReviewPromptIfNeccessary() {
         // Get the current bundle version for the app
         let infoDictionaryKey = kCFBundleVersionKey as String
@@ -27,7 +31,7 @@ public final class DefaultAppReviewService: AppReviewService {
 
         // Has the process been completed several times and the user has not already been prompted for this version?
         if currentVersion != lastVersionPromptedForReview {
-            let twoSecondsFromNow = DispatchTime.now() + 2.0
+            let twoSecondsFromNow = DispatchTime.now() + 0.5
             DispatchQueue.main.asyncAfter(deadline: twoSecondsFromNow) {
                 SKStoreReviewController.requestReview()
                 UserDefaults.standard.set(currentVersion, forKey: DefaultAppReviewService.lastPromptKey)
