@@ -12,8 +12,8 @@ let package = Package(
             name: "DevedUpSwiftFoundation",
             targets: ["DevedUpSwiftFoundation"]),
         .library(
-            name: "DevedUpSwiftIAP",
-            targets: ["DevedUpSwiftIAP"]),
+            name: "DevedUpSwiftStoreKit",
+            targets: ["DevedUpSwiftStoreKit"]),
         .library(
             name: "DevedUpSwiftAppleSignIn",
             targets: ["DevedUpSwiftAppleSignIn"]),
@@ -38,9 +38,9 @@ let package = Package(
             dependencies: ["DevedUpSwiftLocalisation"],
             path: "Sources/Foundation"),
         .target(
-            name: "DevedUpSwiftIAP",
+            name: "DevedUpSwiftStoreKit",
             dependencies: ["DevedUpSwiftFoundation"],
-            path: "Sources/InAppPurchase/Source"),
+            path: "Sources/StoreKit/Source"),
         .target(
             name: "DevedUpSwiftAppleSignIn",
             dependencies: ["DevedUpSwiftFoundation"],
