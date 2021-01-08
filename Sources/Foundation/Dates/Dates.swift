@@ -218,4 +218,16 @@ extension Date {
         }
     }
     
+    public func isAtLeast18years() -> Bool {
+        let today = Date()
+        var calendar = Calendar.autoupdatingCurrent
+        calendar.timeZone = TimeZone(abbreviation: "UTC")!
+        let age: DateComponents =  calendar.dateComponents([Calendar.Component.year], from: self, to: today)
+        if age.year! < 18 {
+            return false
+        } else {
+            return true
+        }
+    }
+    
 }
