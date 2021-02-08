@@ -45,20 +45,20 @@ public class BadgeLabel: UILabel {
                       height: size.height + verticalPadding)
     }
     
-    public override var text: String? {
+    public var count: Int = 0 {
         didSet {
-            guard let textFound = text else {
+            if count <= 0 {
+                text = ""
                 isHidden = true
-                return
-            }            
-            isHidden = textFound.isEmpty
-            if let number = Int(textFound) {
-                if number > 9 {
-                    text = "9+"
+            } else {
+                if count > 99 {
+                    text = "99+"
+                } else {
+                    text = "\(count)"
                 }
+                isHidden = false
             }
         }
     }
-
 
 }
