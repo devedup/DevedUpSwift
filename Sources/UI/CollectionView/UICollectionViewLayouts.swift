@@ -60,4 +60,29 @@ final public class CollectionViewLayouts {
         return layout
     }
     
+    public static func horizontalScrollFillScreen(didScrollToPoint: @escaping (CGPoint)->Void) -> UICollectionViewLayout {
+        // Item Size
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                             heightDimension: .fractionalHeight(1.0))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        // Group size
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                               heightDimension: .fractionalHeight(1.0))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 1)
+        let spacing = CGFloat(10)
+        group.interItemSpacing = .fixed(spacing)
+
+        // Section
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = spacing
+        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        section.orthogonalScrollingBehavior = .groupPagingCentered
+        section.visibleItemsInvalidationHandler = { (visibleItems, point, env) -> Void in
+            didScrollToPoint(point)
+        }
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+    
 }
