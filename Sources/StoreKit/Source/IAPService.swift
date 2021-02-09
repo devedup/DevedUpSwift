@@ -150,8 +150,18 @@ extension DefaultIAPService: SKPaymentTransactionObserver {
                 SKPaymentQueue.default().finishTransaction($0)
                 self.puchaseCompletion?(.success($0))
             case .failed:
+                var paymentWasCancelled = false
+                if let error = $0.error as NSError? {
+                    if error.code == SKError.paymentCancelled.rawValue {
+                        paymentWasCancelled = true
+                    }
+                }
                 SKPaymentQueue.default().finishTransaction($0)
-                self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError($0.error)))
+                if (paymentWasCancelled) {
+                    self.puchaseCompletion?(.failure(GenericError.inAppPurchaseWasCancelled))
+                } else {
+                    self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError($0.error)))
+                }
             case .deferred, .purchasing:
                 break
             @unknown default:

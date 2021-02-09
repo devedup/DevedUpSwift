@@ -22,6 +22,7 @@ public enum GenericError: ErrorType {
     case appUpgradeRequired
     case cannotMakePurchases
     case inAppPurchaseError(Error?)
+    case inAppPurchaseWasCancelled
     case appleSignInError(Error?)
     case userCancelled
     
@@ -51,6 +52,8 @@ public enum GenericError: ErrorType {
             return "appUpgradeRequired".localized
         case .cannotMakePurchases, .inAppPurchaseError:
             return "Purchase Error"
+        case .inAppPurchaseWasCancelled:
+            return "Purchase was cancelled"
         case .appleSignInError:
             return "Apple Sign In Error"
         case .userCancelled:
@@ -92,7 +95,7 @@ public enum GenericError: ErrorType {
         case .appleSignInError(let error):
             let errorString = error?.localizedDescription
             return "Sign In Error: \(errorString ?? "")"
-        case .userCancelled:
+        case .userCancelled, .inAppPurchaseWasCancelled:
             return ""
         }
     }
