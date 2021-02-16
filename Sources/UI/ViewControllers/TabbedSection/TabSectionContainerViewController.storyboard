@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18121" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="b4Q-KP-gLF">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18091"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Tab Section Container View Controller-->
+        <scene sceneID="412-0A-c9i">
+            <objects>
+                <viewController id="b4Q-KP-gLF" customClass="TabSectionContainerViewController" customModule="DevedUpSwiftUI" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XAI-cx-TdU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" bounces="NO" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" delaysContentTouches="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oKp-Sb-olJ">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <connections>
+                                    <outlet property="delegate" destination="b4Q-KP-gLF" id="TCm-ed-xr2"/>
+                                </connections>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="MHS-G4-uDf"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="MHS-G4-uDf" firstAttribute="trailing" secondItem="oKp-Sb-olJ" secondAttribute="trailing" id="3t5-do-VMM"/>
+                            <constraint firstAttribute="bottom" secondItem="oKp-Sb-olJ" secondAttribute="bottom" id="iG4-WH-6ur"/>
+                            <constraint firstItem="oKp-Sb-olJ" firstAttribute="top" secondItem="XAI-cx-TdU" secondAttribute="top" id="psz-dP-vOe"/>
+                            <constraint firstItem="oKp-Sb-olJ" firstAttribute="leading" secondItem="MHS-G4-uDf" secondAttribute="leading" id="wjO-dA-Rb5"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="scrollViewContainer" destination="oKp-Sb-olJ" id="bZa-xu-0ll"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mPp-Fc-QAZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="133.59999999999999" y="135.38230884557723"/>
+        </scene>
+    </scenes>
+</document>
