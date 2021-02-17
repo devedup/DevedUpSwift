@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class UnderlinedButton: UIButton {
+open class UnderlinedButton: UIButton {
     
     @IBInspectable public var underlineColour: UIColor = UIColor.black {
         didSet {
@@ -20,7 +20,7 @@ public class UnderlinedButton: UIButton {
     
 // MARK: Init
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         sharedInit()
     }
