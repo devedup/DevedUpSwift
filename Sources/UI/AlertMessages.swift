@@ -116,7 +116,11 @@ extension UIViewController: MessagePresentable {
     // MARK: Presenting Action Sheets
     
     public func presentActionSheetOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?) {
-        presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: .actionSheet, onOK: onOK, onCancel: onCancel)
+        var style = UIAlertController.Style.actionSheet
+        if (UIDevice.current.userInterfaceIdiom == .pad) {
+            style = .alert
+        }
+        presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: style, onOK: onOK, onCancel: onCancel)
     }
 
     private func presentOption(message: String,
