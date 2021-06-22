@@ -7,7 +7,9 @@ import Foundation
 public class JSONLoader {
     
     public static func dictionary(forPath path: String) -> [String:AnyObject]? {
-        let data = self.data(forPath: path)
+        guard let data = self.data(forPath: path) else {
+            return nil
+        }
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String:AnyObject]
             return json
@@ -28,10 +30,12 @@ public class JSONLoader {
         return nil
     }
     
-    public static func data(forPath path: String) -> Data {
+    public static func data(forPath path: String) -> Data? {
         let testBundle = Bundle.main
-        let path = testBundle.path(forResource: path, ofType: "json")
-        let filePath = URL(fileURLWithPath: path!)
+        guard let path = testBundle.path(forResource: path, ofType: "json") else {
+            return nil
+        }
+        let filePath = URL(fileURLWithPath: path)
         do {
             let data = try Data(contentsOf: filePath)
             return data
@@ -40,9 +44,17 @@ public class JSONLoader {
         }
     }
     
-    public static func load<T:Decodable>(forPath path: String) throws -> T {
-        let loadedData = data(forPath: path)
-        return try JSONDecoder().decode(T.self, from: loadedData)
+    public static func load<T:Decodable>(forPath path: String) throws -> T? {
+        guard let loadedData = data(forPath: path) else {
+            return nil
+        }
+        do {
+            let result = try JSONDecoder().decode(T.self, from: loadedData)
+            return result
+        } catch {
+            print(error)
+            return nil
+        }        
     }
     
     public static func load<T:Decodable>(fromJSON string: String) -> T? {

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class CustomScrollView: UIScrollView {
+public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
     
     private var slider = VerticalScrollViewIndicator()
     private var sliderYPosition: NSLayoutConstraint?
@@ -36,7 +36,7 @@ public class CustomScrollView: UIScrollView {
         slider.layer.zPosition = 10
         slider.widthAnchor.constraint(equalToConstant: 5).isActive = true
         slider.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        slider.trailingAnchor.constraint(equalTo: frameLayoutGuide.trailingAnchor, constant: -25).isActive = true
+        slider.trailingAnchor.constraint(equalTo: frameLayoutGuide.trailingAnchor, constant: -15).isActive = true
         sliderYPosition = slider.topAnchor.constraint(equalTo: frameLayoutGuide.topAnchor, constant: indicatorYPadding)
         sliderYPosition?.isActive = true
         observerScrolling()

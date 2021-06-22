@@ -94,7 +94,7 @@ import UIKit
     }()
 
     /// Hides the labels above the slider controls. true = labels will be hidden. false = labels will be shown. Default is false.
-    @IBInspectable open var hideLabels: Bool = false {
+    @IBInspectable open var hideLabels: Bool = true {
         didSet {
             minLabel.isHidden = hideLabels
             maxLabel.isHidden = hideLabels
@@ -203,7 +203,7 @@ import UIKit
     }
 
     /// Set padding between label and handle (default 8.0)
-    @IBInspectable open var labelPadding: CGFloat = 8.0 {
+    @IBInspectable open var labelPadding: CGFloat = 0.0 {
         didSet {
             updateLabelPositions()
         }
@@ -436,19 +436,19 @@ import UIKit
 
         // draw the text labels
         let labelFontSize: CGFloat = 12.0
-        let labelFrame: CGRect = CGRect(x: 0.0, y: 50.0, width: 75.0, height: 14.0)
+        let labelFrame: CGRect = CGRect(x: 0.0, y: 50.0, width: 75.0, height: 0.0) // height was 14
 
         minLabelFont = UIFont.systemFont(ofSize: labelFontSize)
         minLabel.alignmentMode = CATextLayerAlignmentMode.center
         minLabel.frame = labelFrame
         minLabel.contentsScale = UIScreen.main.scale
-        layer.addSublayer(minLabel)
+//        layer.addSublayer(minLabel)
 
         maxLabelFont = UIFont.systemFont(ofSize: labelFontSize)
         maxLabel.alignmentMode = CATextLayerAlignmentMode.center
         maxLabel.frame = labelFrame
         maxLabel.contentsScale = UIScreen.main.scale
-        layer.addSublayer(maxLabel)
+//        layer.addSublayer(maxLabel)
 
         setupStyle()
 
@@ -593,7 +593,7 @@ import UIKit
             return
         }
 
-        let minSpacingBetweenLabels: CGFloat = 8.0
+        let minSpacingBetweenLabels: CGFloat = 0.0
 
         let newMinLabelCenter: CGPoint = CGPoint(x: leftHandle.frame.midX,
                                                  y: leftHandle.frame.maxY + (minLabelTextSize.height/2) + labelPadding)

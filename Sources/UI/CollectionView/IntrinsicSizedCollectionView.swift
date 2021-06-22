@@ -24,12 +24,21 @@ public class IntrinsicSizedCollectionView: UICollectionView {
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        if bounds.size != intrinsicContentSize {
-            invalidateIntrinsicContentSize()
+//        print("Laying out IntrinsicSizedCollectionView")
+//        print("Bounds size \(bounds.size)")
+//        print("Intrinsic size \(intrinsicContentSize)")
+        if !__CGSizeEqualToSize(bounds.size, self.intrinsicContentSize) {
+            self.invalidateIntrinsicContentSize()
         }
+//
+//        if bounds.size != intrinsicContentSize {
+//            invalidateIntrinsicContentSize()
+//        }
     }
     
     public override var intrinsicContentSize: CGSize {
+//        print("Container Height Constraint \(containerHeightConstraint?.constant)")
+//        print("Content Size \(self.contentSize.height)")
         containerHeightConstraint?.constant = self.contentSize.height
         return self.contentSize
     }
