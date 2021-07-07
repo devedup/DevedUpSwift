@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "DevedUpSwift",
-    platforms: [.iOS(.v13)],
+    platforms: [.iOS(.v13), .tvOS(.v13)],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
@@ -56,7 +56,8 @@ let package = Package(
         .target(
             name: "DevedUpSwiftUI",
             dependencies: ["DevedUpSwiftLocalisation", "DevedUpSwiftFoundation"],
-            path: "Sources/UI"),
+            path: "Sources/UI",
+            exclude: ["NibLoadable/README.txt"]),
         .target(
             name: "DevedUpSwiftNetwork",
             dependencies: ["DevedUpSwiftFoundation"],

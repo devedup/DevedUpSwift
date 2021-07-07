@@ -17,7 +17,7 @@ public class LargeProfileImageView: UIImageView {
     public var onImageEndedZooming: ( () -> Void )?
     public var faceBoundingBox: CGRect = CGRect.zero
     
-    private var activityIndicator: UIActivityIndicatorView?
+//    private var activityIndicator: UIActivityIndicatorView?
     
     public init() {
         super.init(image: nil)
@@ -32,32 +32,36 @@ public class LargeProfileImageView: UIImageView {
     private func sharedInit() {
         let width = self.frame.width
         let height = width // We start off with square images
+        
         contentMode = .scaleAspectFill
         translatesAutoresizingMaskIntoConstraints = false
+        
         heightConstraint = heightAnchor.constraint(equalToConstant: height)
         heightConstraint.isActive = true
+        
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
         faceBoundingBox = CGRect.zero
         
-        let activityIndicator = UIActivityIndicatorView(style: .medium)
-        addSubview(activityIndicator)
-        activityIndicator.centreInSuperview()
-        activityIndicator.hidesWhenStopped = true        
-        self.activityIndicator = activityIndicator
+//        let activityIndicator = UIActivityIndicatorView(style: .medium)
+//        addSubview(activityIndicator)
+//        activityIndicator.centreInSuperview()
+//        activityIndicator.hidesWhenStopped = true
+//        activityIndicator.tintColor = .darkGray
+//        self.activityIndicator = activityIndicator
     }
     
-    public override func startAnimating() {
-        activityIndicator?.startAnimating()
-    }
-    
-    public override func stopAnimating() {
-        activityIndicator?.stopAnimating()
-    }
+//    public override func startAnimating() {
+//        activityIndicator?.startAnimating()
+//    }
+//
+//    public override func stopAnimating() {
+//        activityIndicator?.stopAnimating()
+//    }
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-        print(self.bounds)
+        //print(self.bounds)
         if(!faceBoundingBox.isEmpty) {
             centerFace()
         }
@@ -67,6 +71,8 @@ public class LargeProfileImageView: UIImageView {
         guard let image = image else {
             return
         }
+            
+        print("Centering face")
 
         let faceFrame = self.faceBoundingBox
         // Find which is the biggest aspect ratio

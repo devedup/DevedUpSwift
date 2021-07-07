@@ -24,3 +24,13 @@ extension UIApplication {
     }
     
 }
+
+extension UIViewController {
+    public func topViewControllerInNavOrSelf<T: UIViewController>() -> T? {
+        if let navigationController = self as? UINavigationController {
+            return navigationController.topViewController as? T
+        } else {
+            return self as? T
+        }
+    }
+}

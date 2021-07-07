@@ -9,6 +9,11 @@
 import Foundation
 import UIKit
 
+extension Notification.Name {
+    public static let imageZoomerStartedZooming = Notification.Name("imageZoomerStartedZooming")
+    public static let imageZoomerEndedZooming = Notification.Name("imageZoomerEndedZooming")
+}
+
 public protocol ZoomableImage {
     func imageStartedZooming()
     func imageStoppedZooming()
@@ -97,7 +102,7 @@ public final class ImageZoomer: UIView {
 extension ImageZoomer: UIGestureRecognizerDelegate {
     
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        print(gestureRecognizer)
+        //print(gestureRecognizer)
         return isZoomingEnabled
     }
     
@@ -129,6 +134,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
             self.adjustAnchorPointForGestureRecognizer(gesture)
             imageView.imageStartedZooming()
             onDidStartZooming?()
+            NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
             resizeZoomerImageViewWith(imageView: imageView)
             alpha = 1
         case .changed:
@@ -141,6 +147,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         default:
             imageView.imageStoppedZooming()
             onDidEndZooming?()
+            NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.transform = .identity
             }, completion: { _ in
@@ -160,6 +167,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         case .began:
             imageView.imageStartedZooming()
             onDidStartZooming?()
+            NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
             self.originalCentrePosition = self.zoomingImageView.center
         case .changed:
             // Get the touch position
@@ -170,6 +178,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         default:
             imageView.imageStoppedZooming()
             onDidEndZooming?()
+            NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.center = self.originalCentrePosition
                 gesture.setTranslation(.zero, in: imageView)

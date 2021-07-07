@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+// No need to do this in iOS 13 onwards as the UISearchBar exposes it's searchTextField
 extension UISearchBar {
     public func getTextField() -> UITextField? { return value(forKey: "searchField") as? UITextField }
     public func setTextField(color: UIColor) {

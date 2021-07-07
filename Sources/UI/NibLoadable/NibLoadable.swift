@@ -21,7 +21,7 @@ import UIKit
             return String(describing: Self.self) // defaults to the name of the class implementing this protocol.
         }
  
-    4. You can now add your customer view into another nib. Add a UIView and set it's class to your new view class.
+    4. You can now add your custom view into another nib. Add a UIView and set it's class to your new view class.
  
  */
 
@@ -56,6 +56,7 @@ public extension NibLoadable where Self: UIView {
 }
 
 /// You can either inherit from NibLoadableView or use NibLoadable protocol yourself
+// Extending NibLoadableView means that you don't have to add these methods with setupFromNib()
 open class NibLoadableView: UIView, NibLoadable {
     
     public var hasBeenSetup = false

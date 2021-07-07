@@ -170,6 +170,23 @@ extension DefaultIAPService: SKPaymentTransactionObserver {
         }
     }
     
+    //restoreCompletedTransactionsFailedWithError
+    
+    public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error) {
+        var restoreWasCancelled = false
+        if let error = error as NSError? {
+            if error.code == SKError.paymentCancelled.rawValue {
+                restoreWasCancelled = true
+            }
+        }
+        if (restoreWasCancelled) {
+            self.puchaseCompletion?(.failure(GenericError.inAppPurchaseWasCancelled))
+        } else {
+            self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError(error)))
+        }
+    }
+    
+    
     /*
      
      - (void)    completeSuccessfulTransaction:(SKPaymentTransaction *)transaction {

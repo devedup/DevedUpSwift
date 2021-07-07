@@ -62,7 +62,7 @@ public class BadgeLabel: UILabel {
                 isHidden = true
             } else {
                 if count > 99 {
-                    text = "99+"
+                    text = "99"
                 } else {
                     text = "\(count)"
                 }

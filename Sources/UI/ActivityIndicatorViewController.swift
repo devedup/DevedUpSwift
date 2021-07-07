@@ -23,7 +23,8 @@ extension UIViewController: ActivityIndicatorPresentable {
         static var ModalView = "ModalView"
     }
     
-    public func presentActivityIndicatorClearModal() {
+    @objc
+    open func presentActivityIndicatorClearModal() {
         presentActivityIndicator(inNavigationController: true, style: .medium, modal: true, modalAlpa: 0.0)
     }
     
@@ -32,7 +33,8 @@ extension UIViewController: ActivityIndicatorPresentable {
         presentActivityIndicator(inNavigationController: true)
     }
     
-    public func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool) {
+    @objc
+    open func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool) {
         presentActivityIndicator(inNavigationController: true, style: style, modal: modal, modalAlpa: 0.4)
     }
     
@@ -64,6 +66,7 @@ extension UIViewController: ActivityIndicatorPresentable {
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
         activityIndicator.style = style
+        activityIndicator.color = .white
         view.addSubview(activityIndicator)
 
         activityIndicator.centreInSuperview()

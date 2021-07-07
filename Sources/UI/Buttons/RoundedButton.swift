@@ -10,7 +10,7 @@ import UIKit
 
 //@IBDesignable
 open class RoundedButton: UIButton {
-    
+        
     public override init(frame: CGRect) {
         super.init(frame: frame)
         sharedInit()
@@ -26,6 +26,13 @@ open class RoundedButton: UIButton {
     }
     
     private func sharedInit() {
+        if cornerRadius <= 0 {
+            cornerRadius = frame.size.height / 2
+        }        
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
         cornerRadius = frame.size.height / 2
     }
     
