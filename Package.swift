@@ -28,7 +28,10 @@ let package = Package(
             targets: ["DevedUpSwiftNetwork"]),
         .library(
             name: "DevedUpSwiftEmail",
-            targets: ["DevedUpSwiftEmail"])
+            targets: ["DevedUpSwiftEmail"]),
+        .library(
+            name: "DevedUpSwiftStravaKit",
+            targets: ["DevedUpSwiftStravaKit"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -66,6 +69,10 @@ let package = Package(
             name: "DevedUpSwiftEmail",
             dependencies: ["DevedUpSwiftFoundation"],
             path: "Sources/Email"),
+        .target(
+            name: "DevedUpSwiftStravaKit",
+            dependencies: ["DevedUpSwiftFoundation", "DevedUpSwiftNetwork"],
+            path: "Sources/StravaKit"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
             dependencies: ["DevedUpSwiftFoundation"]),

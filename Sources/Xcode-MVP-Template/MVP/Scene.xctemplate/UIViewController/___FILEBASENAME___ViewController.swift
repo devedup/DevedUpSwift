@@ -10,6 +10,7 @@ import UIKit
 
 final class ___VARIABLE_sceneName___ViewController: UIViewController {
     
+    // swiftlint:disable:next implicitly_unwrapped_optional 
     private var presenter: ___VARIABLE_sceneName___Presenter!
     
     // MARK: View lifecycle

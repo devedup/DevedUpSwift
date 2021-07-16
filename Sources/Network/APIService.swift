@@ -18,19 +18,6 @@ public protocol APIService {
     func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>)
 }
 
-public extension String {
-    var urlQueryEncoded: String {
-        var characterSet = CharacterSet.urlQueryAllowed
-        characterSet.remove("+")
-        return addingPercentEncoding(withAllowedCharacters: characterSet)!
-    }
-    var urlPathEncoded: String {
-        var characterSet = CharacterSet.urlPathAllowed
-        characterSet.remove("@")
-        return addingPercentEncoding(withAllowedCharacters: characterSet)!
-    }
-}
-
 public class DefaultAPIService: APIService {
     
     private let logger: APILogger

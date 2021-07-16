@@ -75,7 +75,7 @@ public enum GenericError: ErrorType {
             return errorString + extraDetail
         case .networkData(let statusCode, let context, _):
             let details = context == nil ? "" : "[\(context ?? "")]"
-            return "The request responded with a status of [\(statusCode)] \(details)"
+            return "Error.Network.Details".localized(with: "\(statusCode)", "\(details)")
         case .generalError(let error):
             let errorString = error?.localizedDescription
             return "Error.General".localized + " \(errorString ?? "")"
