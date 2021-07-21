@@ -13,7 +13,7 @@ public struct AuthRequest {
     let redirect_uri: URL
     let response_type: String = "code"
     let approval_prompt: String = "auto"
-    let scope: String = "activity:read"
+    let scope: String = "read,activity:read" // There are other options...
     let state: String = "editprofile"
     
     var redirectURI: String {
