@@ -21,7 +21,17 @@ extension UIView {
     }
     
     public func isVisibleOnScreen() -> Bool {
-        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController,
+        // swiftlint:disable:next first_where
+        let keyWindow = UIApplication.shared.connectedScenes
+                .filter({$0.activationState == .foregroundActive})
+                .map({$0 as? UIWindowScene})
+                .compactMap({$0})
+                .first?
+                .windows
+                .filter({$0.isKeyWindow})
+                .first
+        
+        guard let rootViewController = keyWindow?.rootViewController,
             let rootView = rootViewController.view else {
                 return false
         }

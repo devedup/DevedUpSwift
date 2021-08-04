@@ -10,14 +10,16 @@ import UIKit
 
 final class ___VARIABLE_sceneName___ViewController: UIViewController {
     
-    // swiftlint:disable:next implicitly_unwrapped_optional 
-    private var presenter: ___VARIABLE_sceneName___Presenter!
+    private lazy var presenter = ___VARIABLE_sceneName___Presenter(view: self)
     
     // MARK: View lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter = ___VARIABLE_sceneName___Presenter(view: self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
 }

@@ -72,7 +72,7 @@ public class LargeProfileImageView: UIImageView {
             return
         }
             
-        print("Centering face")
+//        print("Centering face")
 
         let faceFrame = self.faceBoundingBox
         // Find which is the biggest aspect ratio

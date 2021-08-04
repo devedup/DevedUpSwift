@@ -112,7 +112,11 @@ public class DefaultAPIService: APIService {
             // Now it's back, lets put it back on main thread
             DispatchQueue.main.async {
                 guard let httpResponse = response as? HTTPURLResponse else {
-                    let networkError = GenericError.network(error: error)
+                    var isInternetOffline = false
+                    if let nsError = error as NSError? {
+                        isInternetOffline = (nsError.code == -1009)
+                    }
+                    let networkError = isInternetOffline ? GenericError.noInternetConnection : GenericError.network(error: error)
                     completion(AsyncResult.failure(networkError))
                     return
                 }

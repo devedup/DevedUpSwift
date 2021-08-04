@@ -14,6 +14,7 @@ public protocol ErrorType: Error {
 public enum GenericError: ErrorType {
     
     case networkData(statusCode: Int, context: String?, data: Data?)
+    case noInternetConnection
     case network(error: Error?)
     case generalError(Error?)
     case generalErrorString(String)
@@ -58,11 +59,15 @@ public enum GenericError: ErrorType {
             return "Apple Sign In Error"
         case .userCancelled:
             return ""
+        case .noInternetConnection:
+            return "No Internet"
         }
     }
     
     public var description: String {
         switch self {
+        case .noInternetConnection:
+            return "Please check your network settings. You don't appear to have an active internet connection"
         case .network(let errorFound):
             var errorString = "Error.Network".localized
             if let error = errorFound as NSError? {

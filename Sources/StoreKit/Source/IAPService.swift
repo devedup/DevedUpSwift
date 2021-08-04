@@ -27,7 +27,7 @@ public protocol IAPService {
     /// Restore your transactions
     ///
     /// - Parameter completion: SKPaymentTransactionif it worked
-    func restore(completion: @escaping AsyncResultCompletion<SKPaymentTransaction>)
+    func restore(completion: @escaping AsyncResultCompletion<[SKPaymentTransaction]>)
 }
 
 /**
@@ -49,6 +49,7 @@ public final class DefaultIAPService: NSObject, IAPService {
     
     // Purchase
     private var puchaseCompletion: AsyncResultCompletion<SKPaymentTransaction>?
+    private var restoreCompletion: AsyncResultCompletion<[SKPaymentTransaction]>?
     
     // Receipt requests - if the receipt is not on the device
     private let receiptRequest = SKReceiptRefreshRequest()
@@ -96,8 +97,8 @@ public final class DefaultIAPService: NSObject, IAPService {
     
     // MARK: Restore
     
-    public func restore(completion: @escaping AsyncResultCompletion<SKPaymentTransaction>) {
-        self.puchaseCompletion = completion
+    public func restore(completion: @escaping AsyncResultCompletion<[SKPaymentTransaction]>) {
+        self.restoreCompletion = completion
         SKPaymentQueue.default().restoreCompletedTransactions()
     }
     
@@ -144,11 +145,18 @@ public final class DefaultIAPService: NSObject, IAPService {
 extension DefaultIAPService: SKPaymentTransactionObserver {
     
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        var restoredTransactions: [SKPaymentTransaction]?
         transactions.forEach {
             switch $0.transactionState {
-            case .purchased, .restored:
+            case .purchased:
                 SKPaymentQueue.default().finishTransaction($0)
                 self.puchaseCompletion?(.success($0))
+            case .restored:
+                SKPaymentQueue.default().finishTransaction($0)
+                if restoredTransactions == nil {
+                    restoredTransactions = [SKPaymentTransaction]()
+                }
+                restoredTransactions?.append($0)
             case .failed:
                 var paymentWasCancelled = false
                 if let error = $0.error as NSError? {
@@ -167,6 +175,12 @@ extension DefaultIAPService: SKPaymentTransactionObserver {
             @unknown default:
                 self.puchaseCompletion?(.failure(GenericError.generalErrorString("Unknown case in in app purchase payment")))
             }
+        }
+        // If we did a restore... then we'd call this instead
+        // When i restore, I get every transaction returned !!
+        if let restored = restoredTransactions {
+            self.restoreCompletion?(.success(restored))
+            self.restoreCompletion = nil
         }
     }
     

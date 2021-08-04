@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// I pass this in performSegue(withIdentifier: sender:) as the sender argument. I could just pass the object directly, but that smelt funny. I dunno. This gives a bit more flexibility.
-@available(iOS, deprecated: 13, message: "Stop doing this, as we never use the sender param anyway")
+@available(iOS, deprecated: 13, message: "Stop doing this, as we never use the sender param anyway use @IBSegueAction")
 public struct SegueData<T> {
     
     public let sender: Any
@@ -24,7 +24,6 @@ public struct SegueData<T> {
 
 
 /// Uses the Swift type system for handling segues, instead of strings which can be mistyped
-@available(iOS, deprecated: 14, message: "This was code for pre iOS 13. In iOS 13 Xcode 11 onwards, we can refactor to use @IBSegueAction")
 public protocol Segueable {
     
     associatedtype Segue: RawRepresentable
@@ -32,7 +31,7 @@ public protocol Segueable {
     
 }
 
-@available(iOS, deprecated: 14, message: "This was code for pre iOS 13. In iOS 13 Xcode 11 onwards, we can refactor to use @IBSegueAction")
+@available(iOS, deprecated: 13, message: "This was code for pre iOS 13. In iOS 13 Xcode 11 onwards, we can refactor to use @IBSegueAction")
 public protocol SegueableDestination {
     
     associatedtype SegueParams: Any
@@ -43,7 +42,6 @@ public protocol SegueableDestination {
 // https://useyourloaf.com/blog/better-storyboards-with-xcode-11/
 extension Segueable where Self: UIViewController, Segue.RawValue == String {
     
-    @available(iOS, deprecated: 14, message: "This was code for pre iOS 13. In iOS 13 Xcode 11 onwards, we can refactor to use @IBSegueAction")
     public func segueIdentifierCase(for segue: UIStoryboardSegue) -> Segue {
         guard let identifier = segue.identifier,
             let identifierCase = Segue(rawValue: identifier) else {
@@ -56,18 +54,18 @@ extension Segueable where Self: UIViewController, Segue.RawValue == String {
 		performSegue(withIdentifier: segue.rawValue, sender: self)
 	}
     
-    @available(iOS, deprecated: 13, message: "Use perform withData... wrapping in SegueData is pointless")
+    @available(iOS, deprecated: 13, message: "Don't use this anymore - refactor to use @IBSegueAction")
     public func perform<T>(_ segue: Segue, data: SegueData<T>) {
         performSegue(withIdentifier: segue.rawValue, sender: data)
     }
     
+    @available(iOS, deprecated: 13, message: "Don't use this anymore - refactor to use @IBSegueAction")
     public func perform<T>(_ segue: Segue, withData data: T) {
         performSegue(withIdentifier: segue.rawValue, sender: data)
     }
     
 }
 
-@available(iOS, deprecated: 14, message: "This was code for pre iOS 13. In iOS 13 Xcode 11 onwards, we can refactor to use @IBSegueAction")
 extension UIStoryboardSegue {
     
     /// Returns the destinatino ViewController or the topViewController if it's embedded in a UINavigationController
