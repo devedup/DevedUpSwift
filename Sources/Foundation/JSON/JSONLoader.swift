@@ -30,9 +30,8 @@ public class JSONLoader {
         return nil
     }
     
-    public static func data(forPath path: String) -> Data? {
-        let testBundle = Bundle.main
-        guard let path = testBundle.path(forResource: path, ofType: "json") else {
+    public static func data(forPath path: String, bundle: Bundle = .main) -> Data? {
+        guard let path = bundle.path(forResource: path, ofType: "json") else {
             return nil
         }
         let filePath = URL(fileURLWithPath: path)
@@ -44,8 +43,8 @@ public class JSONLoader {
         }
     }
     
-    public static func load<T:Decodable>(forPath path: String) throws -> T? {
-        guard let loadedData = data(forPath: path) else {
+    public static func load<T:Decodable>(forPath path: String, bundle: Bundle = .main) throws -> T? {
+        guard let loadedData = data(forPath: path, bundle: bundle) else {
             return nil
         }
         do {
