@@ -21,6 +21,23 @@ public protocol ZoomableImage {
 
 public final class ImageZoomer: UIView {
     
+    public static let shared: ImageZoomer = ImageZoomer()
+    
+    public static func createImageZoomerOnKeyWindow() {
+        // swiftlint:disable:next first_where
+        let keyWindow = UIApplication.shared.connectedScenes
+                .filter({$0.activationState == .foregroundActive})
+                .map({$0 as? UIWindowScene})
+                .compactMap({$0})
+                .first?
+                .windows
+                .filter({$0.isKeyWindow})
+                .first
+        keyWindow?.addSubview(shared)
+        shared.pinToSuperview()
+        shared.layer.zPosition = 100
+    }
+        
     private let darkBackground = UIView()
     private let zoomingImageView = LargeProfileImageView()
     
@@ -30,7 +47,17 @@ public final class ImageZoomer: UIView {
     private var imageViewFrame: CGRect = CGRect.zero
     private var originalCentrePosition: CGPoint = CGPoint.zero
     
-    public var isZoomingEnabled = true
+    private var isZoomingEnabled = true
+    
+    // When swiping, if you bring in another finger.. the zoomer appears and it looks nasty
+    public func disableZooming() {
+        isZoomingEnabled = false
+    }
+    
+    // When swiping, if you bring in another finger.. the zoomer appears and it looks nasty
+    public func enableZooming() {
+        isZoomingEnabled = true
+    }
     
     // Yes i need a new one each time for each image view that is added
     private var pinchGesture: UIPinchGestureRecognizer {
