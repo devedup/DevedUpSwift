@@ -23,17 +23,19 @@ public final class ImageZoomer: UIView {
     
     public static let shared: ImageZoomer = ImageZoomer()
     
-    public static func createImageZoomerOnKeyWindow() {
-        // swiftlint:disable:next first_where
-        let keyWindow = UIApplication.shared.connectedScenes
-                .filter({$0.activationState == .foregroundActive})
-                .map({$0 as? UIWindowScene})
-                .compactMap({$0})
-                .first?
-                .windows
-                .filter({$0.isKeyWindow})
-                .first
-        keyWindow?.addSubview(shared)
+    public static func createImageZoomer(onWindow window: UIWindow) {
+//        // swiftlint:disable:next first_where
+//        let keyWindow = UIApplication.shared.connectedScenes
+//                .filter({$0.activationState == .foregroundActive})
+//                .map({$0 as? UIWindowScene})
+//                .compactMap({$0})
+//                .first?
+//                .windows
+//                .filter({$0.isKeyWindow})
+//                .first
+//        keyWindow?.addSubview(shared)
+//
+        window.addSubview(shared)
         shared.pinToSuperview()
         shared.layer.zPosition = 100
     }
