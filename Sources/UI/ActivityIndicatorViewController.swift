@@ -11,7 +11,8 @@ public protocol ActivityIndicatorPresentable {
     func presentActivityIndicatorClearModal()
     func presentActivityIndicator()
     func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool)
-    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool, modalAlpa: CGFloat)
+    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, colour: UIColor, modal: Bool)
+    func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, colour: UIColor, modal: Bool, modalAlpa: CGFloat)
     func dismissActivityIndicator()
 }
 
@@ -39,7 +40,12 @@ extension UIViewController: ActivityIndicatorPresentable {
     }
     
     @objc
-    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .medium, modal: Bool = true, modalAlpa: CGFloat = 0.4) {
+    open func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, colour: UIColor, modal: Bool) {
+        presentActivityIndicator(inNavigationController: true, style: style, colour: colour, modal: modal, modalAlpa: 0.4)
+    }
+    
+    @objc
+    open func presentActivityIndicator(inNavigationController inNav: Bool = true, style: UIActivityIndicatorView.Style = .medium, colour: UIColor = .white, modal: Bool = true, modalAlpa: CGFloat = 0.4) {
         dismissActivityIndicator()
         var view: UIView! = self.view
         
@@ -66,7 +72,7 @@ extension UIViewController: ActivityIndicatorPresentable {
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
         activityIndicator.style = style
-        activityIndicator.color = .white
+        activityIndicator.color = colour
         view.addSubview(activityIndicator)
 
         activityIndicator.centreInSuperview()
