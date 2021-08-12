@@ -9,6 +9,7 @@ import UIKit
 /// Presenter views which want to display activity should implement this protocol
 public protocol ActivityIndicatorPresentable {
     func presentActivityIndicatorClearModal()
+    func presentActivityIndicatorClearModal(colour: UIColor)
     func presentActivityIndicator()
     func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, modal: Bool)
     func presentActivityIndicator(inNavigationController inNav: Bool, style: UIActivityIndicatorView.Style, colour: UIColor, modal: Bool)
@@ -27,6 +28,11 @@ extension UIViewController: ActivityIndicatorPresentable {
     @objc
     open func presentActivityIndicatorClearModal() {
         presentActivityIndicator(inNavigationController: true, style: .medium, modal: true, modalAlpa: 0.0)
+    }
+    
+    @objc
+    open func presentActivityIndicatorClearModal(colour: UIColor) {
+        presentActivityIndicator(inNavigationController: true, style: .medium, colour: colour, modal: true, modalAlpa: 0.0)
     }
     
     @objc
