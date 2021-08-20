@@ -26,10 +26,11 @@ public enum GenericError: ErrorType {
     case inAppPurchaseWasCancelled
     case appleSignInError(Error?)
     case userCancelled
+    case jsonParsingError(parseError: String, error: Error?)
     
     public var underlyingError: Error {
         switch self {
-        case .network(let error), .generalError(let error), .inAppPurchaseError(let error), .appleSignInError(let error):
+        case .network(let error), .generalError(let error), .inAppPurchaseError(let error), .appleSignInError(let error), .jsonParsingError( _, let error):
             if let underlyingError = error {
                 return underlyingError
             } else {
@@ -61,6 +62,8 @@ public enum GenericError: ErrorType {
             return ""
         case .noInternetConnection:
             return "No Internet"
+        case .jsonParsingError:
+            return "networkErrorTitle".localized
         }
     }
     
@@ -73,6 +76,13 @@ public enum GenericError: ErrorType {
             if let error = errorFound as NSError? {
                 errorString = error.localizedDescription
             }
+            var extraDetail = ""
+            if Debug.isDebugging() {
+                extraDetail = detail
+            }
+            return errorString + extraDetail
+        case .jsonParsingError(let parseError, let error):
+            var errorString = parseError
             var extraDetail = ""
             if Debug.isDebugging() {
                 extraDetail = detail

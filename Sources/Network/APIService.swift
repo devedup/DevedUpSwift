@@ -24,6 +24,8 @@ public class DefaultAPIService: APIService {
     
     private let session: URLSession = {
         var configuration = URLSessionConfiguration.default
+//        configuration.waitsForConnectivity = true
+//        configuration.timeoutIntervalForResource = 30
         if Debug.isDebugging() {
             configuration.timeoutIntervalForRequest = 60
         }
@@ -41,10 +43,26 @@ public class DefaultAPIService: APIService {
         do {
             let response = try JSONDecoder().decode(ResponseModel.self, from: data)
             return .success(response)
-        } catch {
-            let errorString = "Error parsing response into \(ResponseModel.self) [\(error)]"
-            logger.log(message: errorString)
-            return .failure(GenericError.network(error: error))
+        } catch DecodingError.keyNotFound(let key, let context) {
+            let parseError = "Could not find key \(key) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger.log(message: parseError)
+            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+        } catch DecodingError.valueNotFound(let type, let context) {
+            let parseError = "Could not find type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger.log(message: parseError)
+            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+        } catch DecodingError.typeMismatch(let type, let context) {
+            let parseError = "Type mismatch for type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger.log(message: parseError)
+            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+        } catch DecodingError.dataCorrupted(let context) {
+            let parseError = "Data found to be corrupted in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger.log(message: parseError)
+            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+        } catch let error as NSError {
+            let parseError = "Error in read(from:ofType:) domain= \(error.domain), description= \(error.localizedDescription)"
+            logger.log(message: parseError)
+            return .failure(GenericError.jsonParsingError(parseError: parseError, error: error))
         }
     }
     
