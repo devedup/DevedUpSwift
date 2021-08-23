@@ -38,10 +38,12 @@ final public class MessageWithSubject: NSObject, UIActivityItemSource {
     private let url: URL
     private let subject: String
     private let message: String
+    private let messageShort: String
     
-    public init(subject: String, message: String, url: URL) {
+    public init(subject: String, message: String, messageShort: String? = nil, url: URL) {
         self.subject = subject
         self.message = message
+        self.messageShort = messageShort ?? message
         self.url = url
         super.init()
     }
@@ -51,7 +53,16 @@ final public class MessageWithSubject: NSObject, UIActivityItemSource {
     }
     
     public func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
-        return "\(message)\n\n \(url.absoluteString)"
+        if let activityType = activityType {
+            switch activityType {
+            case .postToTwitter:
+                return "\(messageShort)\n\n \(url.absoluteString)"
+            default:
+                return "\(message)\n\n \(url.absoluteString)"
+            }
+        } else {
+            return "\(message)\n\n \(url.absoluteString)"
+        }        
     }
     
     public func activityViewController(_ activityViewController: UIActivityViewController,
