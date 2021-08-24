@@ -54,7 +54,7 @@ extension DefaultEmailController: MFMailComposeViewControllerDelegate {
         if result == .cancelled {
             self.completionBlock?(.success(EmailResult.cancelled))
         } else if error != nil || result == .failed {
-            self.completionBlock?(.failure(GenericError.generalError(error)))
+            self.completionBlock?(.failure(FoundationError.GeneralError(error)))
         } else {
             self.completionBlock?(.success(EmailResult.success))
         }

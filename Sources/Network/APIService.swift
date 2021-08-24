@@ -46,30 +46,30 @@ public class DefaultAPIService: APIService {
         } catch DecodingError.keyNotFound(let key, let context) {
             let parseError = "Could not find key \(key) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
             logger.log(message: parseError)
-            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+            return .failure(FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError))
         } catch DecodingError.valueNotFound(let type, let context) {
             let parseError = "Could not find type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
             logger.log(message: parseError)
-            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+            return .failure(FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError))
         } catch DecodingError.typeMismatch(let type, let context) {
             let parseError = "Type mismatch for type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
             logger.log(message: parseError)
-            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+            return .failure(FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError))
         } catch DecodingError.dataCorrupted(let context) {
             let parseError = "Data found to be corrupted in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
             logger.log(message: parseError)
-            return .failure(GenericError.jsonParsingError(parseError: parseError, error: context.underlyingError))
+            return .failure(FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError))
         } catch let error as NSError {
             let parseError = "Error in read(from:ofType:) domain= \(error.domain), description= \(error.localizedDescription)"
             logger.log(message: parseError)
-            return .failure(GenericError.jsonParsingError(parseError: parseError, error: error))
+            return .failure(FoundationError.JSONParsingError(parseError: parseError, error: error))
         }
     }
     
     public func call<Endpoint: APIEndpoint>(_ endpoint: Endpoint, completion: @escaping AsyncResultCompletion<Endpoint.ResponseModel>) {
         // Check we have a valid URL, if not return an error
         guard var urlComponents = URLComponents(string: endpoint.path) else {
-            let error = GenericError.network(error: nil)
+            let error = FoundationError.Network(error: nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
             }
@@ -85,7 +85,7 @@ public class DefaultAPIService: APIService {
         
         // Build the url
         guard let url = urlComponents.url else {
-            let error = GenericError.network(error: nil)
+            let error = FoundationError.Network(error: nil)
             DispatchQueue.main.async {
                 completion(AsyncResult.failure(error))
             }
@@ -134,8 +134,11 @@ public class DefaultAPIService: APIService {
                     if let nsError = error as NSError? {
                         isInternetOffline = (nsError.code == -1009)
                     }
-                    let networkError = isInternetOffline ? GenericError.noInternetConnection : GenericError.network(error: error)
-                    completion(AsyncResult.failure(networkError))
+                    if isInternetOffline {
+                        completion(AsyncResult.failure(FoundationError.NoInternetConnection()))
+                    } else {
+                        completion(AsyncResult.failure(FoundationError.Network(error: error)))
+                    }
                     return
                 }
                 
@@ -146,27 +149,31 @@ public class DefaultAPIService: APIService {
                 switch self.processResponse(httpResponse) {
                 case .success(let status):
                     guard let data = data else {
-                        completion(AsyncResult.failure(GenericError.network(error: error)))
+                        completion(AsyncResult.failure(FoundationError.Network(error: error)))
                         return
                     }
                     if status == 204 {
-                        completion(AsyncResult.failure(GenericError.network(error: nil)))
+                        completion(AsyncResult.failure(FoundationError.Network(error: nil)))
                         return
                     }
                     let result: AsyncResult<Endpoint.ResponseModel> = self.responseData(networkResponse: data)
                     completion(result)
-                case .failure(let statusCode):
-                    completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
+                case .failure(let status):
+                    if status == 422 {
+                        completion(.failure(FoundationError.NetworkValidation(statusCode: status, data: data)))
+                    } else {
+                        completion(.failure(FoundationError.NetworkData(statusCode: status, data: data)))
+                    }
                 case .sessionExpired(let statusCode):
                     if let sessionExpiredError = self.networkAuth.processSessionExpiry(isLoginRequest: !endpoint.isAuthenticatedRequest, data: data) {
                         // Failed login return 401, we don't want to show session expired
                         completion(AsyncResult.failure(sessionExpiredError))
                     } else {                     
-                        completion(.failure(GenericError.networkData(statusCode: statusCode, context:nil, data: data)))
+                        completion(.failure(FoundationError.NetworkData(statusCode: statusCode, data: data)))
                     }
                 case .upgradeRequired:
                     NotificationCenter.default.post(name: .appUpgradeRequired, object: nil, userInfo: nil) // Needs to be pulled out
-                    completion(.failure(GenericError.appUpgradeRequired))
+                    completion(.failure(FoundationError.AppUpgradeRequired()))
                 }
             }
         }

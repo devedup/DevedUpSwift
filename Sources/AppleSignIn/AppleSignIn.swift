@@ -34,14 +34,14 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         guard let asError = error as? ASAuthorizationError else {
-            completion?(.failure(GenericError.appleSignInError(error)))
+            completion?(.failure(FoundationError.AppleSignInError(error)))
             return
         }
         switch asError.code {
         case .canceled:
-            completion?(.failure(GenericError.userCancelled))
+            completion?(.failure(FoundationError.UserCancelled()))
         default:
-            completion?(.failure(GenericError.appleSignInError(asError)))
+            completion?(.failure(FoundationError.AppleSignInError(asError)))
         }
     }
     
@@ -66,7 +66,7 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
         if success {
             completion?(.success(userData))
         } else {
-            completion?(.failure(GenericError.appleSignInError(nil)))
+            completion?(.failure(FoundationError.AppleSignInError(nil)))
         }
         
     }
@@ -91,7 +91,7 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
         } else {
            // let userData = AppleUserData(credential)
            // completion?(.success(userData))
-            completion?(.failure(GenericError.appleSignInError(nil)))
+            completion?(.failure(FoundationError.AppleSignInError(nil)))
         }
         
         // You *should* have a fully registered account here.  If you get back an error from your server

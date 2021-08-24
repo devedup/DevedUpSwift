@@ -88,7 +88,7 @@ public final class DefaultIAPService: NSObject, IAPService {
     public func purchase(product: SKProduct, completion: @escaping AsyncResultCompletion<SKPaymentTransaction>) {
         self.puchaseCompletion = completion
         guard SKPaymentQueue.canMakePayments() else {
-            completion(.failure(GenericError.cannotMakePurchases))
+            completion(.failure(FoundationError.CannotMakePurchases()))
             return
         }
         let payment = SKPayment(product: product)
@@ -166,14 +166,14 @@ extension DefaultIAPService: SKPaymentTransactionObserver {
                 }
                 SKPaymentQueue.default().finishTransaction($0)
                 if (paymentWasCancelled) {
-                    self.puchaseCompletion?(.failure(GenericError.inAppPurchaseWasCancelled))
+                    self.puchaseCompletion?(.failure(FoundationError.InAppPurchaseWasCancelled()))
                 } else {
-                    self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError($0.error)))
+                    self.puchaseCompletion?(.failure(FoundationError.InAppPurchaseError($0.error)))
                 }
             case .deferred, .purchasing:
                 break
             @unknown default:
-                self.puchaseCompletion?(.failure(GenericError.generalErrorString("Unknown case in in app purchase payment")))
+                self.puchaseCompletion?(.failure(FoundationError.GeneralErrorString("Unknown case in in app purchase payment")))
             }
         }
         // If we did a restore... then we'd call this instead
@@ -194,9 +194,9 @@ extension DefaultIAPService: SKPaymentTransactionObserver {
             }
         }
         if (restoreWasCancelled) {
-            self.puchaseCompletion?(.failure(GenericError.inAppPurchaseWasCancelled))
+            self.puchaseCompletion?(.failure(FoundationError.InAppPurchaseWasCancelled()))
         } else {
-            self.puchaseCompletion?(.failure(GenericError.inAppPurchaseError(error)))
+            self.puchaseCompletion?(.failure(FoundationError.InAppPurchaseError(error)))
         }
     }
     

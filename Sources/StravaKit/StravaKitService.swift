@@ -43,7 +43,7 @@ public class DefaultStravaKitService: StravaKitService {
                 if let url = callbackURL {
                     completion(.success(url))
                 } else {
-                    completion(.failure(GenericError.generalError(error)))
+                    completion(.failure(FoundationError.GeneralError(error)))
                 }
             }
             session.presentationContextProvider = viewController
