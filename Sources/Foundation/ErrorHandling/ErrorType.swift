@@ -13,6 +13,7 @@ public protocol ErrorType: Error {
     var title: String { get }
     var description: String { get }
     var underlyingError: Error? { get }
+    var shouldDisplayToUser: Bool { get }
     
 }
 
@@ -20,4 +21,5 @@ public protocol ErrorType: Error {
 public extension ErrorType {
     var title: String { "" }
     var underlyingError: Error? { self }
+    var shouldDisplayToUser: Bool { true }
 }

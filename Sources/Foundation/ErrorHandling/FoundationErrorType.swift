@@ -89,6 +89,8 @@ public struct FoundationError  {
         public var description: String {
             return "Error.SessionExpired".localized + "\n\n \(context ?? "")"
         }
+        
+        public var shouldDisplayToUser: Bool { false }
     }
     
     public struct InvalidLogin: FoundationErrorType {

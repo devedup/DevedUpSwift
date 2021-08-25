@@ -20,7 +20,7 @@ public class DefaultAppleSignIn: NSObject, AppleSignIn {
     public func loginWithApple(completion: @escaping AsyncResultCompletion<AppleUserData>) {
         self.completion = completion
         let request = ASAuthorizationAppleIDProvider().createRequest()
-        request.requestedScopes = [.email]
+        request.requestedScopes = [.email, .fullName]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -45,6 +45,12 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
         }
     }
     
+    /*
+     
+        To get these credential a second time go to:
+     go to your device -> Settings -> Apple ID -> Password & Security -> Apps Using your Apple ID -> you get list of apps used sign in with apple {find your app} -> swift left of your apps row {show Delete option} -> click on Delete
+     
+     */
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIdCredential as ASAuthorizationAppleIDCredential:
