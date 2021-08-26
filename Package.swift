@@ -35,7 +35,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(name:"JWTDecode", url:"https://github.com/auth0/JWTDecode.swift.git", from: "2.4.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -50,7 +50,10 @@ let package = Package(
             path: "Sources/StoreKit/Source"),
         .target(
             name: "DevedUpSwiftAppleSignIn",
-            dependencies: ["DevedUpSwiftFoundation"],
+            dependencies: [
+                "DevedUpSwiftFoundation",
+                .product(name: "JWTDecode", package: "JWTDecode"),
+            ],
             path: "Sources/AppleSignIn"),
         .target(
             name: "DevedUpSwiftLocalisation",

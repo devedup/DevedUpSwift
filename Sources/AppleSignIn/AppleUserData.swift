@@ -8,16 +8,16 @@
 import Foundation
 import AuthenticationServices
 import DevedUpSwiftFoundation
+import JWTDecode
 
-public struct AppleUserData: KeychainRestorable, Codable {
+public struct AppleUserData: Codable {
     
     public typealias CodableType = AppleUserData
-    public static var restoreKey: String { "AppleUserData2" }
     
   /// The email address to use for user communications.  Remember it might be a relay!
     
-    public private (set) var  email: String
-    public private (set) var  firstName: String?
+    public private (set) var email: String
+    public private (set) var firstName: String?
     public let appleUserIdentifier: String
     public private (set) var identityToken: Data?
     public private (set) var authCode: Data?
@@ -65,10 +65,27 @@ extension AppleUserData {
      
      */
     public init(_ credential: ASAuthorizationAppleIDCredential) {
-        email = credential.email ?? ""
-        firstName = credential.fullName?.givenName
+//        firstName = credential.fullName?.givenName
         appleUserIdentifier = credential.user
         identityToken = credential.identityToken
         authCode = credential.authorizationCode
+        if let email = credential.email {
+            self.email = email
+        } else {
+            guard let identityTokenData = credential.identityToken,
+               let identityTokenString = String(data: identityTokenData, encoding: .utf8) else {
+                self.email = ""
+                return
+            }
+            do {
+                let jwt = try decode(jwt: identityTokenString)
+                let decodedBody = jwt.body as Dictionary<String, Any>
+                print(decodedBody)
+                self.email = decodedBody["email"] as? String ?? ""
+            } catch {
+                print("decoding failed")
+                self.email = ""
+            }
+        }
     }
 }

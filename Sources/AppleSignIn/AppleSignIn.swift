@@ -20,7 +20,7 @@ public class DefaultAppleSignIn: NSObject, AppleSignIn {
     public func loginWithApple(completion: @escaping AsyncResultCompletion<AppleUserData>) {
         self.completion = completion
         let request = ASAuthorizationAppleIDProvider().createRequest()
-        request.requestedScopes = [.email, .fullName]
+        request.requestedScopes = [.email] // fullName
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -68,39 +68,15 @@ extension DefaultAppleSignIn: ASAuthorizationControllerDelegate {
     
     private func registerNewAccount(credential: ASAuthorizationAppleIDCredential) {
         let userData = AppleUserData(credential)
-        let success = userData.saveToKeyChain()
-        if success {
-            completion?(.success(userData))
-        } else {
-            completion?(.failure(FoundationError.AppleSignInError(nil)))
-        }
-        
+        completion?(.success(userData))
     }
     
     private func signInWithExistingAccount(credential: ASAuthorizationAppleIDCredential) {
-        if var savedUser = AppleUserData.restoreFromKeychain() {
-            // Need to update it with potentially new token
-            savedUser.update(with: credential)
-            completion?(.success(savedUser))
-        } else {
-            let userData = AppleUserData(credential)
-            completion?(.success(userData))
-        }
-        
-        // You *should* have a fully registered account here.  If you get back an error from your server
-        // that the account doesn't exist, you can look in the keychain for the credentials and rerun setup
+        let userData = AppleUserData(credential)
+        completion?(.success(userData))
     }
     
     private func signInWithUserAndPassword(credential: ASPasswordCredential) {
-        if let savedUser = AppleUserData.restoreFromKeychain() {
-            completion?(.success(savedUser))
-        } else {
-           // let userData = AppleUserData(credential)
-           // completion?(.success(userData))
-            completion?(.failure(FoundationError.AppleSignInError(nil)))
-        }
-        
-        // You *should* have a fully registered account here.  If you get back an error from your server
-        // that the account doesn't exist, you can look in the keychain for the credentials and rerun setup
+        completion?(.failure(FoundationError.AppleSignInError(nil)))
     }
 }

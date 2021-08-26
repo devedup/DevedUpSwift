@@ -23,6 +23,14 @@ final public class DefaultShareActionService: ShareActionService {
         let activityViewController =
             UIActivityViewController(activityItems: [message],
                                      applicationActivities: nil)
+        
+        // iPad support
+        if let view = viewController.view {
+            activityViewController.popoverPresentationController?.sourceView = view
+            activityViewController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection()
+            activityViewController.popoverPresentationController?.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+        }
+                
         viewController.present(activityViewController, animated: true) {
             
         }
