@@ -65,7 +65,16 @@ extension AppleUserData {
      
      */
     public init(_ credential: ASAuthorizationAppleIDCredential) {
-//        firstName = credential.fullName?.givenName
+        let key = "Fitafy.AppleSignIn.LastKnownFirstName"
+        if let firstName = credential.fullName?.givenName {
+            self.firstName = firstName
+            UserDefaults.standard.setValue(firstName, forKey: key)
+            UserDefaults.standard.synchronize()
+        } else {
+            // try get a saved value
+            firstName = UserDefaults.standard.string(forKey: key)
+        }
+        
         appleUserIdentifier = credential.user
         identityToken = credential.identityToken
         authCode = credential.authorizationCode

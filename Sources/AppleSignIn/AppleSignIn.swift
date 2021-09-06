@@ -20,7 +20,7 @@ public class DefaultAppleSignIn: NSObject, AppleSignIn {
     public func loginWithApple(completion: @escaping AsyncResultCompletion<AppleUserData>) {
         self.completion = completion
         let request = ASAuthorizationAppleIDProvider().createRequest()
-        request.requestedScopes = [.email] // fullName
+        request.requestedScopes = [.email, .fullName]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
