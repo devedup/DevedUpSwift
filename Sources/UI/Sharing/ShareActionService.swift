@@ -9,7 +9,15 @@
 import Foundation
 import UIKit
 
+public protocol Shareable {
+    var subject: String { get }
+    var message: String { get }
+    var messageShort: String? { get }
+    var url: URL { get }
+}
+
 public protocol ShareActionService {
+    func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping () -> Void)
     func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping () -> Void)
 }
 
@@ -18,6 +26,10 @@ final public class DefaultShareActionService: ShareActionService {
     public static let sharedInstance = DefaultShareActionService()
     
     private init() {}
+    
+    public func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping () -> Void) {
+        share(message: MessageWithSubject(shareable: shareable), from: viewController, completion: completion)
+    }
     
     public func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping () -> Void) {
         let activityViewController =
@@ -54,6 +66,10 @@ final public class MessageWithSubject: NSObject, UIActivityItemSource {
         self.messageShort = messageShort ?? message
         self.url = url
         super.init()
+    }
+    
+    public convenience init(shareable: Shareable) {
+        self.init(subject: shareable.subject, message: shareable.message, messageShort: shareable.messageShort, url: shareable.url)
     }
     
     public func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
