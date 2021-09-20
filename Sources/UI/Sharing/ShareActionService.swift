@@ -17,8 +17,8 @@ public protocol Shareable {
 }
 
 public protocol ShareActionService {
-    func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping () -> Void)
-    func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping () -> Void)
+    func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping (_ destination: String) -> Void)
+    func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping (_ destination: String) -> Void)
 }
 
 final public class DefaultShareActionService: ShareActionService {
@@ -27,11 +27,11 @@ final public class DefaultShareActionService: ShareActionService {
     
     private init() {}
     
-    public func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping () -> Void) {
+    public func share(shareable: Shareable, from viewController: UIViewController, completion: @escaping (_ destination: String) -> Void) {
         share(message: MessageWithSubject(shareable: shareable), from: viewController, completion: completion)
     }
     
-    public func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping () -> Void) {
+    public func share(message: MessageWithSubject, from viewController: UIViewController, completion: @escaping (_ destination: String) -> Void) {
         let activityViewController =
             UIActivityViewController(activityItems: [message],
                                      applicationActivities: nil)
@@ -46,8 +46,14 @@ final public class DefaultShareActionService: ShareActionService {
         viewController.present(activityViewController, animated: true) {
             
         }
-        activityViewController.completionWithItemsHandler = { (activityType, completed:Bool, returnedItems:[Any]?, error: Error?) in
-            completion()
+        activityViewController.completionWithItemsHandler = { (activityType, completed:Bool, returnedItems:[Any]?, error: Error?) in 
+            if let activityType = activityType {
+                let string = String(activityType as NSString)
+                completion(string)
+            } else {
+                completion("Unknown")
+            }
+            
         }
     }
     
