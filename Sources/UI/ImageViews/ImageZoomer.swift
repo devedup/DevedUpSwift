@@ -14,11 +14,6 @@ extension Notification.Name {
     public static let imageZoomerEndedZooming = Notification.Name("imageZoomerEndedZooming")
 }
 
-public protocol ZoomableImage {
-    func imageStartedZooming()
-    func imageStoppedZooming()
-}
-
 public final class ImageZoomer: UIView {
     
     public static let shared: ImageZoomer = ImageZoomer()
@@ -43,9 +38,6 @@ public final class ImageZoomer: UIView {
     private let darkBackground = UIView()
     private let zoomingImageView = LargeProfileImageView()
     
-    public var onDidStartZooming: (() -> Void)?
-    public var onDidEndZooming: (() -> Void)?
-    
     private var imageViewFrame: CGRect = CGRect.zero
     private var originalCentrePosition: CGPoint = CGPoint.zero
     
@@ -59,6 +51,17 @@ public final class ImageZoomer: UIView {
     // When swiping, if you bring in another finger.. the zoomer appears and it looks nasty
     public func enableZooming() {
         isZoomingEnabled = true
+    }
+    
+    // Is currently zooming?
+    public var isZooming: Bool = false {
+        didSet {
+            if isZooming {
+                NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
+            } else {
+                NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
+            }
+        }
     }
     
     // Yes i need a new one each time for each image view that is added
@@ -105,7 +108,7 @@ public final class ImageZoomer: UIView {
         zoomingImageView.frame = imageViewFrame
     }
     
-    public func addZoomGestures(imageView: UIImageView & ZoomableImage) {
+    public func addZoomGestures(imageView: UIImageView) {
         imageView.isUserInteractionEnabled = true
         if(imageView.gestureRecognizers?.isEmpty ?? true) {
             imageView.addGestureRecognizer(pinchGesture)
@@ -152,7 +155,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handleZoom(_ gesture: UIPinchGestureRecognizer) {
-        guard let imageView = gesture.view as? (LargeProfileImageView & ZoomableImage) else {
+        guard let imageView = gesture.view as? (LargeProfileImageView) else {
             return
         }
         switch gesture.state {
@@ -161,8 +164,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
                 self.darkBackground.alpha = 1.0
             }
             self.adjustAnchorPointForGestureRecognizer(gesture)
-            imageView.imageStartedZooming()
-            onDidStartZooming?()
+            isZooming = true
             NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
             resizeZoomerImageViewWith(imageView: imageView)
             alpha = 1
@@ -174,8 +176,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
                 self.zoomingImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
             }
         default:
-            imageView.imageStoppedZooming()
-            onDidEndZooming?()
+            isZooming = false
             NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.transform = .identity
@@ -189,13 +190,12 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-        guard let imageView = gesture.view as? (LargeProfileImageView & ZoomableImage) else {
+        guard let imageView = gesture.view as? (LargeProfileImageView) else {
             return
         }
         switch gesture.state {
         case .began:
-            imageView.imageStartedZooming()
-            onDidStartZooming?()
+            isZooming = true
             NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
             self.originalCentrePosition = self.zoomingImageView.center
         case .changed:
@@ -205,8 +205,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
             zoomView.center = CGPoint(x: zoomView.center.x + translation.x, y: zoomView.center.y + translation.y)
             gesture.setTranslation(.zero, in: imageView)
         default:
-            imageView.imageStoppedZooming()
-            onDidEndZooming?()
+            isZooming = false 
             NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.center = self.originalCentrePosition

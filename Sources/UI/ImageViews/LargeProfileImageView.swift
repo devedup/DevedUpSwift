@@ -13,8 +13,6 @@ public class LargeProfileImageView: UIImageView {
     
     public private (set) var heightConstraint: NSLayoutConstraint!
     
-    public var onImageStartedZooming: ( () -> Void )?
-    public var onImageEndedZooming: ( () -> Void )?
     public var faceBoundingBox: CGRect = CGRect.zero
     
 //    private var activityIndicator: UIActivityIndicatorView?
@@ -122,16 +120,5 @@ public class LargeProfileImageView: UIImageView {
         self.transform = CGAffineTransform(translationX: translateHorizontallyBy,
                                            y: trasnlateVerticallyBy)
         self.clipsToBounds = false
-    }
-}
-
-extension LargeProfileImageView: ZoomableImage {
-    
-    public func imageStartedZooming() {
-        onImageStartedZooming?()
-    }
-    
-    public func imageStoppedZooming() {
-        onImageEndedZooming?()
     }
 }
