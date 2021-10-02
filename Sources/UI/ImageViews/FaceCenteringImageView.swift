@@ -1,5 +1,5 @@
 //
-//  LargeProfileImageView.swift
+//  FaceCenteringImageView.swift
 //  Fitafy
 //
 //  Created by David Casserly on 10/09/2020.

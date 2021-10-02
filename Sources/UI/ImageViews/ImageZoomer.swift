@@ -36,7 +36,7 @@ public final class ImageZoomer: UIView {
     }
         
     private let darkBackground = UIView()
-    private let zoomingImageView = LargeProfileImageView()
+    private let zoomingImageView = FaceCenteringImageView()
     
     private var imageViewFrame: CGRect = CGRect.zero
     private var originalCentrePosition: CGPoint = CGPoint.zero
@@ -116,7 +116,7 @@ public final class ImageZoomer: UIView {
         }
     }
     
-    private func resizeZoomerImageViewWith(imageView: LargeProfileImageView)  {
+    private func resizeZoomerImageViewWith(imageView: FaceCenteringImageView)  {
         let sourceFrame = imageView.frame
         let sourceParent = imageView.superview
         let targetView = self
@@ -155,7 +155,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handleZoom(_ gesture: UIPinchGestureRecognizer) {
-        guard let imageView = gesture.view as? (LargeProfileImageView) else {
+        guard let imageView = gesture.view as? (FaceCenteringImageView) else {
             return
         }
         switch gesture.state {
@@ -190,7 +190,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-        guard let imageView = gesture.view as? (LargeProfileImageView) else {
+        guard let imageView = gesture.view as? (FaceCenteringImageView) else {
             return
         }
         switch gesture.state {
