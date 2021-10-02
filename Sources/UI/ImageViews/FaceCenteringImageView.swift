@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public class LargeProfileImageView: UIImageView {
+public class FaceCenteringImageView: UIImageView {
     
     public private (set) var heightConstraint: NSLayoutConstraint!
     
