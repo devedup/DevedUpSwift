@@ -12,7 +12,7 @@ import UIKit
 public class FaceCenteringImageView: UIView {
     
     public private (set) var heightConstraint: NSLayoutConstraint!
-    
+        
     public var debugFace = false // This doesn't work
     private var debugFaceOverlay: UIView?
     
@@ -49,6 +49,8 @@ public class FaceCenteringImageView: UIView {
         setContentCompressionResistancePriority(.required, for: .vertical)
         
         translatesAutoresizingMaskIntoConstraints = false
+        
+        clipsToBounds = true
     }
 
     public override func layoutSubviews() {
@@ -138,6 +140,5 @@ public class FaceCenteringImageView: UIView {
             debugFaceOverlay?.frame = boundingBoxAbsolute
         }
                 
-        self.clipsToBounds = false
     }
 }
