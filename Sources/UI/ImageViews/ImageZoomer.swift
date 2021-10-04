@@ -116,7 +116,7 @@ public final class ImageZoomer: UIView {
         }
     }
     
-    private func resizeZoomerImageViewWith(imageView: FaceCenteringImageView)  {
+    private func resizeZoomerImageViewWith(imageView: UIImageView)  {
         let sourceFrame = imageView.frame
         let sourceParent = imageView.superview
         let targetView = self
@@ -124,7 +124,7 @@ public final class ImageZoomer: UIView {
             imageViewFrame = convertedFrame
             self.setNeedsLayout()
             zoomingImageView.image = imageView.image
-            zoomingImageView.heightConstraint.constant = imageView.heightConstraint.constant
+            //zoomingImageView.heightConstraint.constant = imageView.heightConstraint.constant
             self.bringSubviewToFront(zoomingImageView)
         }
     }
@@ -155,7 +155,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handleZoom(_ gesture: UIPinchGestureRecognizer) {
-        guard let imageView = gesture.view as? (FaceCenteringImageView) else {
+        guard let imageView = gesture.view as? (UIImageView) else {
             return
         }
         switch gesture.state {
@@ -170,11 +170,11 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
             alpha = 1
         case .changed:
             // Only zoom out to the scale of the frame
-            let frameScale = imageView.bounds.size.width / imageView.bounds.size.height
-            if gesture.scale >= frameScale {
-                let scale = gesture.scale
-                self.zoomingImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
-            }
+            //let frameScale = imageView.bounds.size.width / imageView.bounds.size.height
+            //if gesture.scale >= frameScale {
+            let scale = gesture.scale
+            self.zoomingImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+            //}
         default:
             isZooming = false
             NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
@@ -190,7 +190,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
     }
     
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-        guard let imageView = gesture.view as? (FaceCenteringImageView) else {
+        guard let imageView = gesture.view as? (UIImageView) else {
             return
         }
         switch gesture.state {
