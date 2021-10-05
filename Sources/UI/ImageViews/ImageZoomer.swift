@@ -171,11 +171,11 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
             alpha = 1
         case .changed:
             // Only zoom out to the scale of the frame
-            //let frameScale = imageView.bounds.size.width / imageView.bounds.size.height
-            //if gesture.scale >= frameScale {
-            let scale = gesture.scale
-            self.zoomingImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
-            //}
+            let frameScale = imageView.bounds.size.width / imageView.bounds.size.height
+            if gesture.scale >= frameScale {
+                let scale = gesture.scale
+                self.zoomingImageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+            }
         default:
             isZooming = false
             NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)

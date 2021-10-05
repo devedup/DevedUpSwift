@@ -45,6 +45,7 @@ public class FaceCenteringImageView: UIView {
         imageView.frame = CGRect(x: 0, y: 0, width: width, height: height)
         heightConstraint = heightAnchor.constraint(equalToConstant: height)
                 heightConstraint.isActive = true
+        heightConstraint.priority = .defaultLow
         //imageView.pinToSuperview()
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
