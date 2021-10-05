@@ -36,6 +36,7 @@ public class FaceCenteringImageView: UIView {
     }
     
     private func sharedInit() {
+        backgroundColor = .yellow
         imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
@@ -45,9 +46,9 @@ public class FaceCenteringImageView: UIView {
         imageView.frame = CGRect(x: 0, y: 0, width: width, height: height)
         heightConstraint = heightAnchor.constraint(equalToConstant: height)
                 heightConstraint.isActive = true
+        //imageView.pinToSuperview()
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
-        
         translatesAutoresizingMaskIntoConstraints = false
         
         clipsToBounds = true
@@ -60,19 +61,22 @@ public class FaceCenteringImageView: UIView {
             centerFace()
         } else {
             // just do this if not centering
-            scaleImageToFill()
+            scaleImageToFill(shouldFill: false)
         }
     }
 
     @discardableResult
-    private func scaleImageToFill() -> CGSize {
+    private func scaleImageToFill(shouldFill: Bool) -> CGSize {
         guard let image = image else {
             return CGSize.zero
         }
         // Find which is the biggest aspect ratio
         let widthAspect = bounds.size.width / image.size.width
         let heightAspect = bounds.size.height / image.size.height
-        let aspectRatio: CGFloat = max(widthAspect, heightAspect)
+        
+        let aspectRatio: CGFloat =
+            shouldFill ?
+        max(widthAspect, heightAspect) : min(widthAspect, heightAspect)
         
         // Calculate what the relative width of the photo is going to be once
         // scaled into the imageView
@@ -84,14 +88,14 @@ public class FaceCenteringImageView: UIView {
         imageView.frame = CGRect(x: 0, y: 0, width: scaledPhotoWidth, height: scaledPhotoHeight)
         
         heightConstraint.constant = scaledPhotoHeight
-        
+        setNeedsUpdateConstraints()
         return CGSize(width: scaledPhotoWidth, height: scaledPhotoHeight)
     }
     
     private func centerFace() {
         let faceFrame = self.faceBoundingBox
         
-        let scaledSize = scaleImageToFill()
+        let scaledSize = scaleImageToFill(shouldFill: true)
         let scaledPhotoWidth = scaledSize.width
         let scaledPhotoHeight = scaledSize.height
             
