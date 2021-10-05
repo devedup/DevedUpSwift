@@ -36,7 +36,7 @@ public final class ImageZoomer: UIView {
     }
         
     private let darkBackground = UIView()
-    private let zoomingImageView = FaceCenteringImageView()
+    private let zoomingImageView = UIImageView() // Not sure why it's not working with a normal image view
     
     private var imageViewFrame: CGRect = CGRect.zero
     private var originalCentrePosition: CGPoint = CGPoint.zero
@@ -96,10 +96,10 @@ public final class ImageZoomer: UIView {
         isUserInteractionEnabled = false
         self.addSubview(darkBackground)
         darkBackground.pinToSuperview()
-        darkBackground.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        darkBackground.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         darkBackground.alpha = 0.0
-//        zoomingImageView.contentMode = .scaleAspectFit
-//        zoomingImageView.translatesAutoresizingMaskIntoConstraints = false
+        zoomingImageView.contentMode = .scaleAspectFit
+        zoomingImageView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(zoomingImageView)
         zoomingImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         zoomingImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
@@ -165,7 +165,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         switch gesture.state {
         case .began:
 //            print("began zoom")
-            UIView.animate(withDuration: 0.25) {
+            UIView.animate(withDuration: 0.3) {
                 self.darkBackground.alpha = 1.0
             }
             self.adjustAnchorPointForGestureRecognizer(gesture)
@@ -185,7 +185,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         default:
             isZooming = false
             NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
-            UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.transform = .identity
             }, completion: { _ in
                 UIView.animate(withDuration: 0.25) {
