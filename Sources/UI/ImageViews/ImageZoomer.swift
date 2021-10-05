@@ -98,6 +98,8 @@ public final class ImageZoomer: UIView {
         darkBackground.pinToSuperview()
         darkBackground.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         darkBackground.alpha = 0.0
+//        zoomingImageView.contentMode = .scaleAspectFit
+//        zoomingImageView.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(zoomingImageView)
         zoomingImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         zoomingImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
@@ -106,6 +108,8 @@ public final class ImageZoomer: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         zoomingImageView.frame = imageViewFrame
+//        print("Center in layoutSubviews \(zoomingImageView.center)")
+        self.originalCentrePosition = zoomingImageView.center
     }
     
     public func addZoomGestures(imageView: UIImageView) {
@@ -160,14 +164,16 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         }
         switch gesture.state {
         case .began:
-            print("zoom")
+//            print("began zoom")
             UIView.animate(withDuration: 0.25) {
                 self.darkBackground.alpha = 1.0
             }
             self.adjustAnchorPointForGestureRecognizer(gesture)
             isZooming = true
             NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
+//            print(zoomingImageView.frame)
             resizeZoomerImageViewWith(imageView: imageView)
+//            print(zoomingImageView.frame)
             alpha = 1
         case .changed:
             // Only zoom out to the scale of the frame
@@ -197,24 +203,24 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         }
         switch gesture.state {
         case .began:
-            print("pan")
-            self.originalCentrePosition = self.zoomingImageView.center
-//            isZooming = true
-//            NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
-//            self.originalCentrePosition = self.zoomingImageView.center
+            // We capture the centre in layoutSubviews
+            break
+//            print("Began pan")
+//            print("original center is \(self.zoomingImageView.center)")
         case .changed:
             // Get the touch position
             let translation = gesture.translation(in: imageView)
             let zoomView = self.zoomingImageView
             zoomView.center = CGPoint(x: zoomView.center.x + translation.x, y: zoomView.center.y + translation.y)
             gesture.setTranslation(.zero, in: imageView)
+//            print("moving center to \(zoomView.center)")
         default:
-//            isZooming = false
-//            NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.center = self.originalCentrePosition
+//                print("resetting back to \(self.originalCentrePosition)")
                 gesture.setTranslation(.zero, in: imageView)
             }, completion: nil)
+            
         }
     }
 }
