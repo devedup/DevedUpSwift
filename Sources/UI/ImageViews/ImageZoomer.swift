@@ -160,6 +160,7 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         }
         switch gesture.state {
         case .began:
+            print("zoom")
             UIView.animate(withDuration: 0.25) {
                 self.darkBackground.alpha = 1.0
             }
@@ -189,15 +190,18 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
         }
     }
     
+    // We only allow panning if they are also currently zooming, else we return early
     @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
         guard let imageView = gesture.view as? (UIImageView) else {
             return
         }
         switch gesture.state {
         case .began:
-            isZooming = true
-            NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
+            print("pan")
             self.originalCentrePosition = self.zoomingImageView.center
+//            isZooming = true
+//            NotificationCenter.default.post(name: .imageZoomerStartedZooming, object: self)
+//            self.originalCentrePosition = self.zoomingImageView.center
         case .changed:
             // Get the touch position
             let translation = gesture.translation(in: imageView)
@@ -205,8 +209,8 @@ extension ImageZoomer: UIGestureRecognizerDelegate {
             zoomView.center = CGPoint(x: zoomView.center.x + translation.x, y: zoomView.center.y + translation.y)
             gesture.setTranslation(.zero, in: imageView)
         default:
-            isZooming = false 
-            NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
+//            isZooming = false
+//            NotificationCenter.default.post(name: .imageZoomerEndedZooming, object: self)
             UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut, animations: {
                 self.zoomingImageView.center = self.originalCentrePosition
                 gesture.setTranslation(.zero, in: imageView)

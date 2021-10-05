@@ -36,7 +36,6 @@ public class FaceCenteringImageView: UIView {
     }
     
     private func sharedInit() {
-        backgroundColor = .yellow
         imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
