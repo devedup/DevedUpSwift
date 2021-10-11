@@ -93,11 +93,25 @@ public class DefaultAPIService: APIService {
         }
         
         // Prepare headers
-        var headers = networkAuth.prepareHeadersWithAccessToken(endpoint.isAuthenticatedRequest)
+        var headers: [String: String] = [:]
         headers["Content-Type"] = "application/json"
         headers["Accept"] = "application/json"
         let userAgentAppends = " \(networkAuth.userAgentToAppend())"
         headers["User-Agent"] = userAgent + userAgentAppends
+        
+        // We don't want to be calling endpoint if no token, so throw the error here
+        if endpoint.isAuthenticatedRequest {
+//            do {
+                try? networkAuth.prepareHeadersWithAccessToken(headers: &headers, endpoint.isAuthenticatedRequest)
+//            } catch is FoundationError.NoTokenAvailable {
+//                let error = networkAuth.processSessionExpiry(isLoginRequest: false, data: nil)
+//                completion(AsyncResult.failure(error))
+//                return
+//            } catch {
+//                completion(AsyncResult.failure(FoundationError.GeneralError(error)))
+//                return
+//            }
+        }
         
         var request = URLRequest(url: url)
         headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key)}
@@ -164,13 +178,10 @@ public class DefaultAPIService: APIService {
                     } else {
                         completion(.failure(FoundationError.NetworkData(statusCode: status, data: data)))
                     }
-                case .sessionExpired(let statusCode):
-                    if let sessionExpiredError = self.networkAuth.processSessionExpiry(isLoginRequest: !endpoint.isAuthenticatedRequest, data: data) {
-                        // Failed login return 401, we don't want to show session expired
-                        completion(AsyncResult.failure(sessionExpiredError))
-                    } else {                     
-                        completion(.failure(FoundationError.NetworkData(statusCode: statusCode, data: data)))
-                    }
+                case .sessionExpired:
+                    let sessionExpiredError = self.networkAuth.processSessionExpiry(isLoginRequest: !endpoint.isAuthenticatedRequest, data: data)
+                    // Failed login return 401, we don't want to show session expired
+                    completion(AsyncResult.failure(sessionExpiredError))
                 case .upgradeRequired:
                     NotificationCenter.default.post(name: .appUpgradeRequired, object: nil, userInfo: nil) // Needs to be pulled out
                     completion(.failure(FoundationError.AppUpgradeRequired()))

@@ -12,8 +12,8 @@ import DevedUpSwiftFoundation
 public protocol NetworkAuthentication {
     var accessToken: String? { get set }
     func processResponseHeaders(_ allHeaderFields: [AnyHashable : Any])
-    func processSessionExpiry(isLoginRequest: Bool, data: Data?) -> ErrorType?
-    func prepareHeadersWithAccessToken(_ accessTokenNeeded: Bool) -> [String: String]
+    func processSessionExpiry(isLoginRequest: Bool, data: Data?) -> ErrorType
+    func prepareHeadersWithAccessToken(headers: inout [String: String], _ accessTokenNeeded: Bool) throws
     func queryItemsToAppend() -> [URLQueryItem]?
     func userAgentToAppend() -> String
     func removeAccessToken()

@@ -19,6 +19,13 @@ public protocol NetworkDataProcessable {
 
 public struct FoundationError  {
     
+    public struct NoTokenAvailable: FoundationErrorType {
+        public init() {}
+        public var description: String {
+            return ""
+        }
+    }
+    
     public struct NetworkData: FoundationErrorType, NetworkDataProcessable {
         public init(statusCode: Int, data: Data?, context: String? = nil) {
             self.statusCode = statusCode
