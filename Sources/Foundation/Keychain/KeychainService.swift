@@ -19,9 +19,26 @@ let kSecMatchLimitValue = NSString(format: kSecMatchLimit)
 let kSecReturnDataValue = NSString(format: kSecReturnData)
 let kSecMatchLimitOneValue = NSString(format: kSecMatchLimitOne)
 
+public enum KeychainItemStatus {
+    case success
+    case itemNotFound
+    case failure
+}
+
 public class KeychainService: NSObject {
     
-    public class func update(service: String, account:String, data: String) {
+    @discardableResult
+    public class func addOrUpdate(service: String, account: String, data: String) -> KeychainItemStatus {
+        let updateResult = update(service: service, account: account, data: data)
+        if updateResult != .success {
+            let addResult = save(service: service, account: account, data: data)
+            return addResult
+        }
+        return updateResult
+    }
+    
+    @discardableResult
+    public class func update(service: String, account: String, data: String) -> KeychainItemStatus{
         if let dataFromString: Data = data.data(using: String.Encoding.utf8, allowLossyConversion: false) {
             
             // Instantiate a new default keychain query
@@ -29,17 +46,24 @@ public class KeychainService: NSObject {
             
             let status = SecItemUpdate(keychainQuery as CFDictionary, [kSecValueDataValue:dataFromString] as CFDictionary)
             
+            if status == errSecItemNotFound {
+                return .itemNotFound
+            }
+            
             if (status != errSecSuccess) {
                 if let err = SecCopyErrorMessageString(status, nil) {
                     print("Read failed: \(err)")
                 }
+                return .failure
             }
+            
+            return .success
         }
+        return .failure
     }
     
     
-    public class func remove(service: String, account:String) {
-        
+    public class func remove(service: String, account: String) {
         // Instantiate a new default keychain query
         let keychainQuery: NSMutableDictionary = NSMutableDictionary(objects: [kSecClassGenericPasswordValue, service, account, kCFBooleanTrue as Any], forKeys: [kSecClassValue, kSecAttrServiceValue, kSecAttrAccountValue, kSecReturnDataValue])
         
@@ -50,11 +74,11 @@ public class KeychainService: NSObject {
                 print("Remove failed: \(err)")
             }
         }
-        
     }
     
     
-   public  class func save(service: String, account:String, data: String) {
+    @discardableResult
+    public  class func save(service: String, account: String, data: String) -> KeychainItemStatus {
         if let dataFromString = data.data(using: String.Encoding.utf8, allowLossyConversion: false) {
             
             // Instantiate a new default keychain query
@@ -67,8 +91,11 @@ public class KeychainService: NSObject {
                 if let err = SecCopyErrorMessageString(status, nil) {
                     print("Write failed: \(err)")
                 }
+                return .failure
             }
+            return .success
         }
+        return .failure
     }
     
     public class func load(service: String, account:String) -> String? {
