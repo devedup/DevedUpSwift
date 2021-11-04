@@ -10,6 +10,7 @@ import Foundation
 import DevedUpSwiftFoundation
 
 public protocol NetworkAuthentication {
+    var log: Loggable { get set }
     var accessToken: String? { get set }
     func processResponseHeaders(_ allHeaderFields: [AnyHashable : Any])
     func processSessionExpiry(isLoginRequest: Bool, data: Data?) -> ErrorType

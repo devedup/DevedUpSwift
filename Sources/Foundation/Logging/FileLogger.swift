@@ -52,6 +52,7 @@ public struct FileLogger: TextOutputStream, Loggable {
         if let handle = try? FileHandle(forWritingTo: logFile) {
             handle.seekToEndOfFile()
             handle.write(string.data(using: .utf8)!)
+            handle.write("\n".data(using: .utf8)!)
             handle.closeFile()
         } else {
             ((try? string.data(using: .utf8)?.write(to: logFile)) as ()??)
