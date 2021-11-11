@@ -56,6 +56,7 @@ public class JSONLoader {
         }        
     }
     
+    @available(*, deprecated, message: "Use loadJSON which throws errors. This doesn't and hides them. ")
     public static func load<T:Decodable>(fromJSON string: String) -> T? {
         guard let data = string.data(using: .utf8) else {
             return nil
@@ -68,8 +69,18 @@ public class JSONLoader {
             return nil
         }
     }
-    
-    
+        
+    public static func loadJSON<T:Decodable>(fromJSON string: String) throws -> T {
+        guard let data = string.data(using: .utf8) else {
+            throw FoundationError.JSONParsingError(parseError: "Could turn string into data using .utf8", error: nil)
+        }
+        do {
+            let object = try JSONDecoder().decode(T.self, from: data)
+            return object
+        } catch {
+            throw FoundationError.JSONParsingError(parseError: "Could not parse JSON", error: error)
+        }
+    }
     
 }
  
