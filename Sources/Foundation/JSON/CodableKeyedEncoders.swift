@@ -102,4 +102,11 @@ extension KeyedEncodingContainer {
         try encode(imageData, forKey: key)
     }
     
+    public mutating func encode(_ value: Date,
+                         forKey key: KeyedEncodingContainer.Key,
+                                formatter: DateFormatter) throws {
+        let dateString = formatter.string(from: value)
+        try encode(dateString, forKey: key)
+    }
+    
 }
