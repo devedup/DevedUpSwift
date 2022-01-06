@@ -3,9 +3,9 @@
 
 import Foundation
 
-fileprivate extension Calendar {
+extension Calendar {
     
-    static let devedupCalendar: Calendar = {
+    public static let devedupCalendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone.autoupdatingCurrent
         calendar.firstWeekday = 2

@@ -19,6 +19,20 @@ public protocol NetworkDataProcessable {
 
 public struct FoundationError  {
     
+    public struct HealthKitError: FoundationErrorType {
+        public init(_ error: Error?) {
+            self.error = error
+        }
+        
+        let error: Error?
+        public var description: String {
+            let errorString = underlyingError?.localizedDescription
+            return "Error.General".localized + " \(errorString ?? "")"
+        }
+        
+        public var underlyingError: Error? { error ?? self }
+    }
+    
     public struct NoTokenAvailable: FoundationErrorType {
         public init() {}
         public var description: String {
