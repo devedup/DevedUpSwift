@@ -19,6 +19,13 @@ public protocol NetworkDataProcessable {
 
 public struct FoundationError  {
     
+    public struct HealthKitAuthDenied: FoundationErrorType {
+        public init() {}
+        public var description: String {
+            return "You have denied permission for the data request"
+        }
+    }
+    
     public struct HealthKitError: FoundationErrorType {
         public init(_ error: Error?) {
             self.error = error

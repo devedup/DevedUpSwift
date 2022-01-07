@@ -7,37 +7,48 @@
 import Foundation
 import HealthKit
 import DevedUpSwiftFoundation
+import StoreKit
 
 private let hasViewedHealthKitPermission = "hasViewedHealthKitPermission"
 
+public enum HealthData {
+    case activeCalories
+    case stepCount
+    
+    var type: HKQuantityType {
+        switch self {
+        case .activeCalories:
+            return HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
+        case .stepCount:
+            return HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
+        }
+    }
+}
+
+public struct HealthDataResult {
+    let averageActiveCalories: Int
+    let averageStepCount: Int
+}
+
+
 public protocol HealthKitService {
+    func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>)
 }
 
 public class DefaultHealthKitService: HealthKitService {
     
-    let healthStore = HKHealthStore()
+    public static let sharedInstance = DefaultHealthKitService()
     
-    static let fitnessMetrics = [HKQuantityTypeIdentifier.stepCount]
+    private init () {}
     
-    var hasRequestedHealthKitAccess: Bool {
-        return UserDefaults.standard.bool(forKey: hasViewedHealthKitPermission)
-    }
-    
-    func requestAccess(metrics: [HKQuantityTypeIdentifier] = DefaultHealthKitService.fitnessMetrics,
-                       completion: @escaping AsyncResultCompletion<Bool>) {
-        guard UserDefaults.standard.bool(forKey: hasViewedHealthKitPermission) == false else {
-            completion(.failure(FoundationError.HealthKitError(nil)))
-            return
-        }
+    private let healthStore = HKHealthStore()
         
+    private func requestAccess(healthData: [HealthData], completion: @escaping AsyncResultCompletion<Bool>) {
         if HKHealthStore.isHealthDataAvailable() {
-            //swiftlint:disable:next force_unwrapping
-            let quantityMetrics = Set( metrics.map { HKQuantityType.quantityType(forIdentifier: $0)! } )
+            let quantityMetrics = Set( healthData.map { $0.type } )
             
             //  A Boolean value that indicates whether the request was processed successfully. This value does not indicate whether permission was actually granted. This parameter is NO if an error occurred while processing the request; otherwise, it is YES.
-            healthStore.requestAuthorization(toShare: quantityMetrics, read: quantityMetrics) { (success, error) in
-                UserDefaults.standard.set(true, forKey: hasViewedHealthKitPermission)
-                UserDefaults.standard.synchronize()
+            healthStore.requestAuthorization(toShare: nil, read: quantityMetrics) { (success, error) in
                 DispatchQueue.main.async {
                     guard success == true else {
                         completion(.failure(FoundationError.HealthKitError(error)))
@@ -46,10 +57,87 @@ public class DefaultHealthKitService: HealthKitService {
                     completion(.success(true))
                 }
             }
-            
         }
     }
 
+    /*
+     // This would only work for write permissions, not for read... if you're reading and they say no, the app doesn't tell you that they said no
+    private func checkAuthStatus(healthData: HealthData, onAuthorized: @escaping () -> Void, onDenied: @escaping () -> Void, onAuthCompletion: @escaping () -> Void) {
+        let status = healthStore.authorizationStatus(for: healthData.type)
+        switch status {
+        case .notDetermined:
+            requestAccess(healthData: [healthData]) { result in
+                onAuthCompletion()
+            }
+        case .sharingDenied:
+            onDenied()
+        case .sharingAuthorized:
+            onAuthorized()
+        @unknown default:
+            onDenied()
+        }
+    }
+    */
+    
+    public func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>) {
+        let activeCalories = HealthData.activeCalories
+        let stepCount = HealthData.stepCount
+        let days = 30
+        requestAccess(healthData: [activeCalories, stepCount]) { result in
+            
+            var averageActiveCalories = 0
+            var averageStepCount = 0
+            
+            let dispatchGroup = DispatchGroup()
+            
+            // Find active calories
+            dispatchGroup.enter()
+            self.queryQuantity(healthData: activeCalories, periodDays: days) { result in
+                if let sum = result {
+                    let count = Int(sum.doubleValue(for: HKUnit.kilocalorie()))
+                    averageActiveCalories = count / periodDays
+                }
+                dispatchGroup.leave()
+            }
+            
+            // Find step count
+            dispatchGroup.enter()
+            self.queryQuantity(healthData: stepCount, periodDays: days) { result in
+                if let sum = result {
+                    let count = Int(sum.doubleValue(for: HKUnit.count()))
+                    averageStepCount = count / periodDays
+                }
+                dispatchGroup.leave()
+            }
+            
+            dispatchGroup.notify(queue: .main) {
+                completion(.success(HealthDataResult(averageActiveCalories: averageActiveCalories, averageStepCount: averageStepCount)))
+            }
+        }
+    }
+    
+    private func queryQuantity(healthData: HealthData, periodDays: Int, completion: @escaping (HKQuantity?) -> Void) {
+        // Get the start and end date from now
+        let period = DataPeriod.previousDays(days: periodDays, from: Date()).periodBoundary
+        let lastSoManyDays = HKQuery.predicateForSamples(withStart: period.start, end: period.end, options: [])
+        
+        // Build the query
+        let query = HKStatisticsQuery(quantityType: healthData.type, quantitySamplePredicate: lastSoManyDays, options: .cumulativeSum) { (query, statisticsOrNil, errorOrNil) in
+            guard let statistics = statisticsOrNil else {
+                completion(nil)
+                return
+            }
+            
+            // Get data and find average
+            let sum = statistics.sumQuantity()
+
+            // Update the UI here.
+            completion(sum)
+        }
+        self.healthStore.execute(query)
+    }
+    
+    
 //    func queryData(metrics: [HKQuantityTypeIdentifier] = DefaultHealthKitService.fitnessMetrics,
 //                       completion: @escaping AsyncResultCompletion<(count: Int, date: Date)>) {
 //        // first, we define the object type we want
@@ -79,7 +167,7 @@ public class DefaultHealthKitService: HealthKitService {
 //        }
 //    }
     
-    func requestData(metric: HKQuantityTypeIdentifier,
+    func requestDataCollectoin(metric: HKQuantityTypeIdentifier,
                           completion: @escaping AsyncResultCompletion<[HKSample]>) {
         // first, we define the object type we want
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: metric) else {

@@ -15,7 +15,7 @@ enum DataPeriod {
     
 //    case day (Date)
 //    case week (Date)
-//    case month (Date)
+    case previousDays (days: Int, from: Date)
 //    case previous7Days (Date)
 //    
 //    var date: Date {
@@ -24,7 +24,26 @@ enum DataPeriod {
 //            return date
 //        }
 //    }
-//
+
+    
+    var periodBoundary: PeriodBoundary {
+        let calendar = NSCalendar.current
+        switch self {
+        case .previousDays(let days, let fromDate):
+            let now = fromDate
+            let components = calendar.dateComponents([.year, .month, .day], from: now)
+            let dayCount = days
+            guard let endDate = calendar.date(from: components) else {
+                fatalError("*** Unable to create the start date ***")
+            }
+            guard let startDate = calendar.date(byAdding: .day, value: -dayCount, to: endDate) else {
+                fatalError("*** Unable to create the end date ***")
+            }
+            return PeriodBoundary(start: startDate, end: endDate)
+        }
+    }
+    
+    
 //    var periodBoundaries: (start: Date?, end: Date?) {
 //        switch self {
 //        case .day:
