@@ -86,6 +86,12 @@ public class DefaultHealthKitService: HealthKitService {
     */
     
     public func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>) {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            // Some devices don't support HealthKit, such as the iPad
+            completion(.failure(FoundationError.HealthKitError(nil)))
+            return
+        }
+        
         let activeCalories = HealthData.activeCalories
         let stepCount = HealthData.stepCount
         let days = 30
