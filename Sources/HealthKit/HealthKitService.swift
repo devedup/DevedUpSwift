@@ -26,12 +26,18 @@ public enum HealthData {
 }
 
 public struct HealthDataResult {
-    let averageActiveCalories: Int
-    let averageStepCount: Int
+    public let averageActiveCalories: Int
+    public let averageStepCount: Int
 }
 
 
 public protocol HealthKitService {
+    
+    /// This will generate the popup to ask for permissoins
+    func requestAccess(healthData: [HealthData], completion: @escaping AsyncResultCompletion<Bool>)
+    
+    
+    /// This
     func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>)
 }
 
@@ -43,7 +49,7 @@ public class DefaultHealthKitService: HealthKitService {
     
     private let healthStore = HKHealthStore()
         
-    private func requestAccess(healthData: [HealthData], completion: @escaping AsyncResultCompletion<Bool>) {
+    public func requestAccess(healthData: [HealthData], completion: @escaping AsyncResultCompletion<Bool>) {
         if HKHealthStore.isHealthDataAvailable() {
             let quantityMetrics = Set( healthData.map { $0.type } )
             
@@ -83,7 +89,8 @@ public class DefaultHealthKitService: HealthKitService {
         let activeCalories = HealthData.activeCalories
         let stepCount = HealthData.stepCount
         let days = 30
-        requestAccess(healthData: [activeCalories, stepCount]) { result in
+        
+        //requestAccess(healthData: [activeCalories, stepCount]) { result in
             
             var averageActiveCalories = 0
             var averageStepCount = 0
@@ -113,9 +120,9 @@ public class DefaultHealthKitService: HealthKitService {
             dispatchGroup.notify(queue: .main) {
                 completion(.success(HealthDataResult(averageActiveCalories: averageActiveCalories, averageStepCount: averageStepCount)))
             }
-        }
+        //}
     }
-    
+        
     private func queryQuantity(healthData: HealthData, periodDays: Int, completion: @escaping (HKQuantity?) -> Void) {
         // Get the start and end date from now
         let period = DataPeriod.previousDays(days: periodDays, from: Date()).periodBoundary
@@ -167,7 +174,7 @@ public class DefaultHealthKitService: HealthKitService {
 //        }
 //    }
     
-    func requestDataCollectoin(metric: HKQuantityTypeIdentifier,
+    func requestDataCollection(metric: HKQuantityTypeIdentifier,
                           completion: @escaping AsyncResultCompletion<[HKSample]>) {
         // first, we define the object type we want
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: metric) else {
