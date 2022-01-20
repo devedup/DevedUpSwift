@@ -14,20 +14,25 @@ private let hasViewedHealthKitPermission = "hasViewedHealthKitPermission"
 public enum HealthData {
     case activeCalories
     case stepCount
+    case activitySummary
     
-    var type: HKQuantityType {
+    var type: HKObjectType {
         switch self {
         case .activeCalories:
             return HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!
         case .stepCount:
             return HKQuantityType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!
+        case .activitySummary:
+            return HKObjectType.activitySummaryType()
         }
     }
 }
 
 public struct HealthDataResult {
-    public let averageActiveCalories: Int
-    public let averageStepCount: Int
+    
+    public let data: HealthData
+    public let value: Int
+    
 }
 
 
@@ -38,7 +43,7 @@ public protocol HealthKitService {
     
     
     /// This
-    func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>)
+    func queryHealthData(data: [HealthData], periodDays: Int, completion: @escaping AsyncResultCompletion<[HealthDataResult]>)
 }
 
 public class DefaultHealthKitService: HealthKitService {
@@ -85,57 +90,116 @@ public class DefaultHealthKitService: HealthKitService {
     }
     */
     
-    public func averageActiveCaloriesAndSteps(periodDays: Int, completion: @escaping AsyncResultCompletion<HealthDataResult>) {
+    
+    
+    
+    public func queryHealthData(data: [HealthData], periodDays: Int, completion: @escaping AsyncResultCompletion<[HealthDataResult]>) {
         guard HKHealthStore.isHealthDataAvailable() else {
             // Some devices don't support HealthKit, such as the iPad
             completion(.failure(FoundationError.HealthKitError(nil)))
             return
         }
         
-        let activeCalories = HealthData.activeCalories
-        let stepCount = HealthData.stepCount
-        let days = 30
+        var results = [HealthDataResult]()
         
-        //requestAccess(healthData: [activeCalories, stepCount]) { result in
-            
-            var averageActiveCalories = 0
-            var averageStepCount = 0
-            
-            let dispatchGroup = DispatchGroup()
-            
-            // Find active calories
+        let dispatchGroup = DispatchGroup()
+        
+        let days = periodDays
+        for healthData in data {
             dispatchGroup.enter()
-            self.queryQuantity(healthData: activeCalories, periodDays: days) { result in
-                if let sum = result {
-                    let count = Int(sum.doubleValue(for: HKUnit.kilocalorie()))
-                    averageActiveCalories = count / periodDays
+            switch healthData {
+            case .activeCalories:
+                self.queryQuantity(healthData: HealthData.activeCalories, periodDays: days) { result in
+                    var averageActiveCalories = 0
+                    if let sum = result {
+                        let count = Int(sum.doubleValue(for: HKUnit.kilocalorie()))
+                        averageActiveCalories = count / periodDays
+                    }
+                    results.append(HealthDataResult(data: .activeCalories, value: averageActiveCalories))
+                    dispatchGroup.leave()
                 }
-                dispatchGroup.leave()
-            }
-            
-            // Find step count
-            dispatchGroup.enter()
-            self.queryQuantity(healthData: stepCount, periodDays: days) { result in
-                if let sum = result {
-                    let count = Int(sum.doubleValue(for: HKUnit.count()))
-                    averageStepCount = count / periodDays
+            case .stepCount:
+                self.queryQuantity(healthData: HealthData.stepCount, periodDays: days) { result in
+                    var averageStepCount = 0
+                    if let sum = result {
+                        let count = Int(sum.doubleValue(for: HKUnit.count()))
+                        averageStepCount = count / periodDays
+                    }
+                    results.append(HealthDataResult(data: .stepCount, value: averageStepCount))
+                    dispatchGroup.leave()
                 }
-                dispatchGroup.leave()
+            case .activitySummary:
+                self.queryActivityCountSummary(periodDays: days) { result in
+                    var activityCount = 0
+                    if let count = result {
+                        activityCount = count
+                    }
+                    results.append(HealthDataResult(data: .activitySummary, value: activityCount))
+                    dispatchGroup.leave()
+                }
             }
-            
-            dispatchGroup.notify(queue: .main) {
-                completion(.success(HealthDataResult(averageActiveCalories: averageActiveCalories, averageStepCount: averageStepCount)))
-            }
-        //}
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(.success(results))
+        }
+       
     }
         
+    
+    private func queryActivityCountSummary(periodDays: Int, completion: @escaping (Int?) -> Void) {
+        let calendar = NSCalendar.current
+        let endDate = Date()
+
+        guard let startDate = calendar.date(byAdding: .day, value: -periodDays, to: endDate) else {
+            fatalError("*** Unable to create the start date ***")
+        }
+
+        let units: Set<Calendar.Component> = [.day, .month, .year, .era]
+
+        var startDateComponents = calendar.dateComponents(units, from: startDate)
+        startDateComponents.calendar = calendar
+
+        var endDateComponents = calendar.dateComponents(units, from: endDate)
+        endDateComponents.calendar = calendar
+
+        // Create the predicate for the query
+        let summariesWithinRange = HKQuery.predicate(forActivitySummariesBetweenStart: startDateComponents,
+                                                     end: endDateComponents)
+        
+        let query = HKActivitySummaryQuery(predicate: summariesWithinRange) { (query, statisticsOrNil, errorOrNil) in
+            guard let statistics = statisticsOrNil else {
+                completion(nil)
+                return
+            }
+            
+            let numberOfActivities = statistics.count
+            
+//            for activity in statistics {
+//                print(activity)
+//            }
+            
+            // Update the UI here.
+            completion(numberOfActivities)
+        }
+        self.healthStore.execute(query)
+        
+//        let query = HKActivitySummaryQuery.init(predicate: nil) { (query, summaries, error) in
+//                    print(summaries ?? "Nothing Returned")
+//                }
+//                healthStore.execute(query)
+//            } else {
+//                // Fallback on earlier versions
+//            }
+    }
+    
     private func queryQuantity(healthData: HealthData, periodDays: Int, completion: @escaping (HKQuantity?) -> Void) {
         // Get the start and end date from now
         let period = DataPeriod.previousDays(days: periodDays, from: Date()).periodBoundary
         let lastSoManyDays = HKQuery.predicateForSamples(withStart: period.start, end: period.end, options: [])
         
         // Build the query
-        let query = HKStatisticsQuery(quantityType: healthData.type, quantitySamplePredicate: lastSoManyDays, options: .cumulativeSum) { (query, statisticsOrNil, errorOrNil) in
+        let query = HKStatisticsQuery(quantityType: healthData.type as! HKQuantityType, quantitySamplePredicate: lastSoManyDays, options: .cumulativeSum) { (query, statisticsOrNil, errorOrNil) in
             guard let statistics = statisticsOrNil else {
                 completion(nil)
                 return
