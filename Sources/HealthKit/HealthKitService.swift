@@ -1,7 +1,6 @@
 //  HealthKitService.swift
-//  SimbaSleep
 //
-//  Copyright © 2018 SimbaSleep. All rights reserved.
+//  Copyright © 2018 DevedUp Ltd. All rights reserved.
 //
 
 import Foundation
@@ -366,13 +365,13 @@ extension HKSample {
 //extension HKCategorySample {
 //
 //    var cleanedStartDate: Date {
-//        let calendar = Calendar.simbaCalendar
+//        let calendar = Calendar.
 //        let cleanedDate = calendar.date(from: calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self.startDate)) ?? self.startDate
 //        return cleanedDate
 //    }
 //
 //    var cleanedEndDate: Date {
-//        let calendar = Calendar.simbaCalendar
+//        let calendar = Calendar.
 //        let cleanedDate = calendar.date(from: calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self.endDate)) ?? self.endDate
 //        return cleanedDate
 //    }

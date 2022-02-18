@@ -1,7 +1,6 @@
 //  PaddedLabel.swift
-//  SimbaSleep
 //
-//  Copyright © 2018 SimbaSleep. All rights reserved.
+//  Copyright © 2018 DevedUp Ltd. All rights reserved.
 //
 
 import Foundation

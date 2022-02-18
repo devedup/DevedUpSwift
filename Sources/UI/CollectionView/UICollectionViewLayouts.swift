@@ -1,6 +1,5 @@
 //
 //  UICollectionViewLayouts.swift
-//  ManchesterFC
 //
 //  Created by David Casserly on 25/11/2019.
 //  Copyright © 2019 DevedUp Ltd. All rights reserved.

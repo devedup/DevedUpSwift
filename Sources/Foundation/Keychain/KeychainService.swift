@@ -1,8 +1,7 @@
 //  KeychainService.swift
-//  JDP
 //
 //  Created by App Sauce Ltd.
-//  Copyright © 2019 JDP. All rights reserved.
+//  Copyright © 2019 DevedUp Ltd. All rights reserved.
 //
 
 import Foundation

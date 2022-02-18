@@ -1,6 +1,5 @@
 //
 //  NetworkAuthentication.swift
-//  ManchesterFC
 //
 //  Created by David Casserly on 13/02/2020.
 //  Copyright © 2020 DevedUp Ltd. All rights reserved.

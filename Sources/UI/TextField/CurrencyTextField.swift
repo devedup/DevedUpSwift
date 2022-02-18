@@ -1,6 +1,5 @@
 //
 //  CurrencyTextField.swift
-//  ManchesterFC
 //
 //  Created by David Casserly on 23/08/2020.
 //  Copyright © 2020 DevedUp Ltd. All rights reserved.
