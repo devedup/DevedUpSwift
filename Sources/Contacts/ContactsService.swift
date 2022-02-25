@@ -10,17 +10,27 @@ import DevedUpSwiftFoundation
 import Contacts
 
 public struct Contact: Hashable, Comparable {
-            
-    public let name: String
+                    
+    public let firstName: String
+    public let surname: String
     public let number: String
     
-    internal init(name: String, number: String) {
-        self.name = name
+    public var fullName: String {
+        var full = firstName
+        if !surname.isEmpty {
+            full.append(" \(surname)")
+        }
+        return full.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    internal init(firstName: String, surname: String, number: String) {
+        self.firstName = firstName
+        self.surname = surname
         self.number = number
     }
     
     public static func < (lhs: Contact, rhs: Contact) -> Bool {
-        return lhs.name < rhs.name
+        return lhs.fullName < rhs.fullName
     }
     
 }
@@ -59,8 +69,10 @@ public class DefaultContactsService: ContactsService {
                         fetchRequest.unifyResults = true
                         fetchRequest.sortOrder = CNContactSortOrder.givenName
                         _ = try self.store.enumerateContacts(with: fetchRequest, usingBlock: { contact, stopPointer in
-                                                        
-                            let fullName = "\(contact.givenName) \(contact.familyName)".trimmingCharacters(in: .whitespacesAndNewlines)
+                               
+                            let firstName = contact.givenName
+                            let surname = contact.familyName
+                            let fullName = "\(firstName) \(surname)".trimmingCharacters(in: .whitespacesAndNewlines)
                             
                             // Grab the first phone number
                             let phoneNumbers = contact.phoneNumbers
@@ -73,7 +85,7 @@ public class DefaultContactsService: ContactsService {
                                 }
                             }
                             if !phoneNumber.isEmpty && !fullName.isEmpty {
-                                contactsFound.insert(Contact(name: fullName, number: phoneNumber))
+                                contactsFound.insert(Contact(firstName: firstName, surname: surname, number: phoneNumber))
                             } else {
                                 print("Not adding \(fullName) as didn't find appropriate phone number or the name is empty")
                             }
