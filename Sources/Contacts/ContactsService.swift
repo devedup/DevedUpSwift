@@ -36,7 +36,7 @@ public struct Contact: Hashable, Comparable {
 }
 
 public protocol ContactsService {
-    func loadContacts(completion: @escaping AsyncResultCompletion<[Contact]>)
+    func loadContacts(completion: @escaping AsyncResultCompletion<[Contact]>, accessDenied: @escaping () -> Void)
 }
 
 public class DefaultContactsService: ContactsService {
@@ -57,7 +57,7 @@ public class DefaultContactsService: ContactsService {
         }
     }
     
-    public func loadContacts(completion: @escaping AsyncResultCompletion<[Contact]>) {
+    public func loadContacts(completion: @escaping AsyncResultCompletion<[Contact]>, accessDenied: @escaping () -> Void) {
         requestAccess { result in
             switch result {
             case .success(let granted):
@@ -98,10 +98,15 @@ public class DefaultContactsService: ContactsService {
                         completion(.failure(FoundationError.ContactsError(error)))
                     }
                 } else {
-                    completion(.failure(FoundationError.ContactsAuthDenied()))
+                    accessDenied()
                 }
             case .failure(let error):
-                completion(.failure(error))
+                let nsError = error.underlyingError as NSError?
+                if nsError?.code == 100 {
+                    accessDenied()
+                } else {
+                    completion(.failure(FoundationError.ContactsError(error)))
+                }
             }
         }
         
