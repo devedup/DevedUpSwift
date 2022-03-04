@@ -17,7 +17,10 @@ public class FaceCenteringImageView: UIView {
     private var debugFaceOverlay: UIView?
     
     public private (set) var imageView: UIImageView!
-        
+    
+    @IBInspectable
+    public var rounded: Bool = false
+    
     public var faceBoundingBox: CGRect = CGRect.zero
     public var image: UIImage? {
         didSet {
@@ -44,7 +47,7 @@ public class FaceCenteringImageView: UIView {
         let height = width // We start off with square images
         imageView.frame = CGRect(x: 0, y: 0, width: width, height: height)
         heightConstraint = heightAnchor.constraint(equalToConstant: height)
-                heightConstraint.isActive = true
+        heightConstraint.isActive = true
         heightConstraint.priority = .defaultLow
         //imageView.pinToSuperview()
         setContentHuggingPriority(.required, for: .vertical)
@@ -64,6 +67,11 @@ public class FaceCenteringImageView: UIView {
             scaleImageToFill(isFaceCentering: false)
             //imageView.contentMode = .scaleAspectFill
             //imageView.frame = self.bounds
+        }
+        
+        if rounded {
+            self.layer.cornerRadius = self.bounds.width / 2
+            self.clipsToBounds = true
         }
     }
 
