@@ -31,7 +31,6 @@ public final class APILogger {
     }
     
     public func log(request: URLRequest?, response: HTTPURLResponse?, responseData: Data?, isLogin: Bool = false) {
-        print(response)
         APILogger.backgroundQueue.async {
             if let request = request, let response = response {
                 if request.url != nil {

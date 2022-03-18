@@ -243,6 +243,7 @@ public class DefaultHealthKitService: HealthKitService {
 //        }
 //    }
     
+    /*
     func requestDataCollection(metric: HKQuantityTypeIdentifier,
                           completion: @escaping AsyncResultCompletion<[HKSample]>) {
         // first, we define the object type we want
@@ -334,7 +335,7 @@ public class DefaultHealthKitService: HealthKitService {
             // finally, we execute our query
             healthStore.execute(query)
     }
-    
+    */
 }
 
 extension HKSample {
