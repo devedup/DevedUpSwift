@@ -12,7 +12,16 @@ public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
     
     private var slider = VerticalScrollViewIndicator()
     private var sliderYPosition: NSLayoutConstraint?
-    private var indicatorYPadding: CGFloat = 15
+    private var indicatorYPadding: CGFloat = 5
+    private var indicatorXPadding: CGFloat = -10
+    
+    @IBInspectable
+    public var sliderColour: UIColor = UIColor.white {
+        didSet {
+            slider.sliderColour = sliderColour
+            slider.setNeedsDisplay()
+        }
+    }
     
     // MARK: - initializers
     
@@ -32,11 +41,12 @@ public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
     
     private func setup() {
         addSubview(slider)
+        slider.sliderColour = sliderColour
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.layer.zPosition = 10
         slider.widthAnchor.constraint(equalToConstant: 5).isActive = true
         slider.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        slider.trailingAnchor.constraint(equalTo: frameLayoutGuide.trailingAnchor, constant: -15).isActive = true
+        slider.trailingAnchor.constraint(equalTo: frameLayoutGuide.trailingAnchor, constant: indicatorXPadding).isActive = true
         sliderYPosition = slider.topAnchor.constraint(equalTo: frameLayoutGuide.topAnchor, constant: indicatorYPadding)
         sliderYPosition?.isActive = true
         observerScrolling()
@@ -75,6 +85,8 @@ private class VerticalScrollViewIndicator: UIView {
         sliderPercentage = percentYScrolled
     }
     
+    var sliderColour: UIColor = UIColor.white
+    
     // MARK: - initializers
 
     public required init?(coder aDecoder: NSCoder) {
@@ -107,7 +119,7 @@ private class VerticalScrollViewIndicator: UIView {
         let maxYOffset = bounds.size.height - sliderHeight
         let scrollOffset = maxYOffset * max(min(sliderPercentage, 1), 0) // i.e between 0 and 1
         let rectanglePath = UIBezierPath(roundedRect: CGRect(x: 0, y: scrollOffset, width: width, height: sliderHeight), cornerRadius: width/2)
-        UIColor.white.setFill()
+        sliderColour.setFill()
         rectanglePath.fill()
     }
     
@@ -115,7 +127,7 @@ private class VerticalScrollViewIndicator: UIView {
         let height = bounds.size.height
         let width = bounds.size.width
         let rectanglePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: height), cornerRadius: width/2)
-        UIColor.white.withAlphaComponent(0.3).setFill()
+        sliderColour.withAlphaComponent(0.5).setFill()
         rectanglePath.fill()
     }
     

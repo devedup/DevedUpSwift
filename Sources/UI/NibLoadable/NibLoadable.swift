@@ -8,7 +8,17 @@
 import Foundation
 import UIKit
 
+/* THERE ARE THREE WAYS YOU CAN DO THIS */
+/* ------------------------------------ */
+
 /*
+    
+    OPTION 1
+    --------
+ 
+    If you want to place a view placeholder in a storyboard and have it automatically replaced by a view
+    from a xib file. Then follow these steps.
+ 
  
     How to use (cos i always forget)
     ----------
@@ -27,7 +37,6 @@ import UIKit
 
 
 /// Basically, you create a xib file with top level UIView and then add your elements to it. You can then use that type inside another xib or a storyboard
-/// Be careful when 
 public protocol NibLoadable {
     var nibName: String { get }
 }
@@ -43,8 +52,11 @@ public extension NibLoadable where Self: UIView {
         return UINib(nibName: name, bundle: bundle)
     }
     
-    func setupFromNib() {
-        guard let view = Self.nib(name: nibName).instantiate(withOwner: self, options: nil).first as? UIView else { fatalError("Error loading \(self) from nib") }
+    func setupFromNib(){
+        guard let view = Self.nib(name: nibName).instantiate(withOwner: self, options: nil).first as? UIView else {
+            fatalError("Error loading \(self) from nib")
+        }
+                
         self.backgroundColor = .clear
         addSubview(view)
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -56,11 +68,11 @@ public extension NibLoadable where Self: UIView {
 }
 
 /// You can either inherit from NibLoadableView or use NibLoadable protocol yourself
-// Extending NibLoadableView means that you don't have to add these methods with setupFromNib()
-open class NibLoadableView: UIView, NibLoadable {
+// Extending NibReplacableView means that you don't have to add these methods with setupFromNib()
+open class NibReplacableView: UIView, NibLoadable {
     
     public var hasBeenSetup = false
-    
+        
     open var nibName: String {
         preconditionFailure(
             """
@@ -86,3 +98,78 @@ open class NibLoadableView: UIView, NibLoadable {
     }
     
 }
+
+/*
+    
+    OPTION 2
+    --------
+ 
+    If you want to load a view once in code. Your nib owner can be empty and your top level view is your custom
+    view class.
+ 
+    Then you can load it with simply this:
+ 
+    let healthView: HealthView = HealthView.loadFromNib()
+ 
+ */
+
+extension UIView
+{
+    public class func loadFromNib<T: UIView>() -> T
+    {
+        guard let view = Bundle.main.loadNibNamed(String(describing: T.self), owner: nil, options: nil)?[0] as? T else {
+            preconditionFailure("Unable to load nib named \(String(describing: T.self))")
+        }
+        
+        return view
+    }
+    
+}
+
+/*
+    
+    OPTION 3
+    --------
+ 
+    Now i think option 2 and 3 could be refactored into one type.. but i'm tired
+ 
+    There is ANOTHER STEP to remember here.
+    Your nib owner is NibOwner and  you have to connect the View to the owner
+    Your top level view is your custom view class as in Option 2.
+    
+ 
+    If you are loading lots of views, you might want to cache the UINib file first
+    
+  
+    let nib = ProfileViewQuestion.nibFile()
+    if let promptView: ProfileViewQuestion = nib.mainView() {
+ 
+    }
+ 
+ */
+
+extension UIView
+{
+    public class func nibFile() -> UINib {
+        let nibName = String(describing: Self.self)
+        let nib = UINib(nibName: nibName, bundle: nil)
+        return nib
+    }
+    
+}
+
+extension UINib {
+
+    public func mainView<T: UIView>() -> T? {
+        let nibOwner = NibOwner()
+        instantiate(withOwner: nibOwner, options: nil)
+        return nibOwner.view as? T
+    }
+
+}
+
+/// This is your files owner for your custom nib
+public class NibOwner: NSObject {
+    @IBOutlet var view: UIView!
+}
+

@@ -60,39 +60,5 @@ import UIKit
  
  */
 
-extension UIView
-{
-    public class func loadFromNib<T: UIView>() -> T
-    {
-        guard let view = Bundle.main.loadNibNamed(String(describing: T.self), owner: nil, options: nil)?[0] as? T else {
-            preconditionFailure("Unable to load nib named \(String(describing: T.self))")
-        }
-        
-        return view
-    }
-    
-    public class func nibFile() -> UINib {
-        let nibName = String(describing: Self.self)
-        let nib = UINib(nibName: nibName, bundle: nil)
-        return nib
-    }
-    
-}
-
-extension UINib {
-    
-    public func mainView<T: UIView>() -> T? {
-        let nibOwner = NibOwner()
-        instantiate(withOwner: nibOwner, options: nil)
-        return nibOwner.view as? T
-    }
-    
-}
-
-/// This is your files owner for your custom nib
-public class NibOwner: NSObject {
-    @IBOutlet var view: UIView!
-}
-
 
 

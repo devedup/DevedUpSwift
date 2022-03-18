@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 //@IBDesignable
-class LoadingLabel: NibLoadableView {
+class LoadingLabel: NibReplacableView {
     
     override var nibName: String {
         return String(describing: Self.self) // defaults to the name of the class implementing this protocol.

@@ -14,6 +14,12 @@ public class BadgeLabel: UILabel {
     
     private let insets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
     
+    public var borderColour: UIColor = .white {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    
     init() {
         super.init(frame: CGRect.zero)
         setup()
@@ -28,18 +34,12 @@ public class BadgeLabel: UILabel {
         self.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1.0/1.0).isActive = true
         clipsToBounds = true
         textAlignment = .center
-        self.layer.borderWidth = 2
-        self.layer.borderColor = UIColor.white.cgColor
     }
     
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
-//        let height = bounds.size.height + 4
-//        let width = bounds.size.width + 4
-//        let ovalPath = UIBezierPath(ovalIn: CGRect(x: -2, y: -2, width: width, height: height))
-//        UIColor.red.setFill()
-//        ovalPath.fill()
-        
+        layer.borderWidth = 2
+        layer.borderColor = borderColour.cgColor
         layer.cornerRadius = bounds.size.height / 2
     }
     

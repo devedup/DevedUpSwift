@@ -31,6 +31,7 @@ public final class APILogger {
     }
     
     public func log(request: URLRequest?, response: HTTPURLResponse?, responseData: Data?, isLogin: Bool = false) {
+        print(response)
         APILogger.backgroundQueue.async {
             if let request = request, let response = response {
                 if request.url != nil {
@@ -54,6 +55,7 @@ public final class APILogger {
                     }
                     
                     logString.append("\n[RESPONSE \(response.statusCode)]")
+                   // logString.append(contentsOf: "\n\(response.)")
                     let responseHeaders = response.allHeaderFields
                     for header in responseHeaders {
                         logString.append("\n\(header.key) = \(header.value)")
