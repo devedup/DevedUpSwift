@@ -28,14 +28,29 @@ extension UIView {
 //        return CGAffineTransform(translationX: 0, y: -screen.height)
 //    }
     
-    public func transformBelowCurrentScreen(completion: @escaping () -> Void) {
+    public func transformBelowCurrentScreen(animated: Bool = true, completion: @escaping () -> Void) {
         guard let superview = self.superview else {
             return
         }
         let parentHeight = superview.frame.height
         
+        let newTransform = CGAffineTransform(translationX: 0, y: parentHeight)
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.transform = newTransform
+            } completion: { success in
+                completion()
+            }
+        } else {
+            self.transform = newTransform
+            completion()
+        }        
+    }
+    
+    public func transformToPoint(animated: Bool = true, with: @escaping () -> Void, completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0.3) {
-            self.transform = CGAffineTransform(translationX: 0, y: parentHeight)
+            with()
+            self.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001);
         } completion: { success in
             completion()
         }

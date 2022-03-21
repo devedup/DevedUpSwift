@@ -23,6 +23,14 @@ public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
         }
     }
     
+    @IBInspectable
+    public var sliderBackgroundColour: UIColor = UIColor.white.withAlphaComponent(0.5) {
+        didSet {
+            slider.sliderBackgroundColour = sliderBackgroundColour
+            slider.setNeedsDisplay()
+        }
+    }
+    
     // MARK: - initializers
     
     deinit {
@@ -42,6 +50,7 @@ public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
     private func setup() {
         addSubview(slider)
         slider.sliderColour = sliderColour
+        slider.sliderBackgroundColour = sliderBackgroundColour
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.layer.zPosition = 10
         slider.widthAnchor.constraint(equalToConstant: 5).isActive = true
@@ -86,6 +95,7 @@ private class VerticalScrollViewIndicator: UIView {
     }
     
     var sliderColour: UIColor = UIColor.white
+    var sliderBackgroundColour: UIColor = UIColor.white
     
     // MARK: - initializers
 
@@ -127,7 +137,7 @@ private class VerticalScrollViewIndicator: UIView {
         let height = bounds.size.height
         let width = bounds.size.width
         let rectanglePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: height), cornerRadius: width/2)
-        sliderColour.withAlphaComponent(0.5).setFill()
+        sliderBackgroundColour.setFill()
         rectanglePath.fill()
     }
     
