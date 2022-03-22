@@ -65,7 +65,7 @@ public class DefaultHealthKitService: HealthKitService {
                         return
                     }
                     completion(.success(true))
-                }
+                } 
             }
         }
     }

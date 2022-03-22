@@ -36,6 +36,9 @@ public struct Contact: Hashable, Comparable {
 }
 
 public protocol ContactsService {
+    
+    
+    /// May return on a queue that isn't the main queue
     func loadContacts(completion: @escaping AsyncResultCompletion<[Contact]>, accessDenied: @escaping () -> Void)
 }
 
