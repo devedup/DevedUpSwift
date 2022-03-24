@@ -11,6 +11,30 @@ import UIKit
 @available(iOS 13, *)
 final public class CollectionViewLayouts {
     
+    public static func verticalScrollGridFillWidth(estimatedItemHeight: CGFloat, spacing: CGFloat = 30) -> UICollectionViewLayout {
+        let itemHeight = NSCollectionLayoutDimension.estimated(estimatedItemHeight)
+        
+        // Item Size
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                              heightDimension: itemHeight)
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        // Group size
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                               heightDimension: itemHeight)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
+        group.interItemSpacing = .fixed(spacing)
+
+        // Section
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = spacing
+        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        //section.orthogonalScrollingBehavior = .groupPaging
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
+    
     public static func verticalScrollGrid2Wide(estimatedItemHeight: CGFloat, spacing: CGFloat = 30) -> UICollectionViewLayout {
         let itemHeight = NSCollectionLayoutDimension.estimated(estimatedItemHeight)
         
