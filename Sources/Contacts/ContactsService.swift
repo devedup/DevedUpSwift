@@ -23,7 +23,7 @@ public struct Contact: Hashable, Comparable {
         return full.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    internal init(firstName: String, surname: String, number: String) {
+    public init(firstName: String, surname: String, number: String) {
         self.firstName = firstName
         self.surname = surname
         self.number = number
