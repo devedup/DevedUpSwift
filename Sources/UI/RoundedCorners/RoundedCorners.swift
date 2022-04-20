@@ -60,7 +60,9 @@ extension UIBezierPath {
     }
 }
 
-extension UIView{
+extension UIView {
+    
+    @available(*, deprecated, message: "Use roundedCorners")
     public func roundCorners(topLeft: CGFloat = 0, topRight: CGFloat = 0, bottomLeft: CGFloat = 0, bottomRight: CGFloat = 0) {//(topLeft: CGFloat, topRight: CGFloat, bottomLeft: CGFloat, bottomRight: CGFloat) {
         let topLeftRadius = CGSize(width: topLeft, height: topLeft)
         let topRightRadius = CGSize(width: topRight, height: topRight)
@@ -72,6 +74,7 @@ extension UIView{
         layer.mask = shape
     }
     
+    @available(*, deprecated, message:  "Use roundedCorners")
     public func addBorderToCustomRounded(colour: UIColor, width: CGFloat) {
         let borderLayer = CAShapeLayer()
         borderLayer.path = (self.layer.mask! as! CAShapeLayer).path! // Reuse the Bezier path
@@ -81,5 +84,19 @@ extension UIView{
         borderLayer.frame = self.bounds
         self.layer.addSublayer(borderLayer)
     }
+    
+    public func roundedCorners(corners : UIRectCorner, radius : CGFloat) {
+        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        layer.mask = mask
+    }
+    
+//    func roundCorners(with CACornerMask: CACornerMask, radius: CGFloat) {
+//        self.layer.cornerRadius = radius
+//        self.layer.maskedCorners = [CACornerMask]
+//    }
+    
+//    roundCorners(with: [.layerMinXMinYCorner], radius: 20) // top right etc....
 }
 
