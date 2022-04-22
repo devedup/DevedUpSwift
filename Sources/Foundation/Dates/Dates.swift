@@ -230,7 +230,7 @@ extension Date {
         }
     }
     
-    public static func hoursMinutes(fromMinutes: Double) -> String {
+    public static func hoursMinutesString(fromMinutes: Double) -> String {
         let formatar = DateFormatter()
         let calendar = Calendar.autoupdatingCurrent
         formatar.locale = Locale.current
@@ -249,5 +249,23 @@ extension Date {
         return ""
     }
     
+    public static func hoursMinutes(fromMinutes: Double) -> (hours: Int, minutes: Int) {
+        let formatar = DateFormatter()
+        let calendar = Calendar.autoupdatingCurrent
+        formatar.locale = Locale.current
+        formatar.dateFormat = "HH:mm"
+
+        var startDate = formatar.date(from: "00:00")
+        startDate?.addTimeInterval(fromMinutes * 60.0)
+        
+        if let date = startDate {
+            let comp = calendar.dateComponents([.hour, .minute], from: date)
+            if let hora = comp.hour, let minute = comp.minute {
+                return (hora, minute)
+            }
+        }
+        
+        return (0,0)
+    }
     
 }
