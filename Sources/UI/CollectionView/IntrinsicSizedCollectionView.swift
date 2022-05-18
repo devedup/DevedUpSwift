@@ -20,25 +20,24 @@ import UIKit
  */
 public class IntrinsicSizedCollectionView: UICollectionView {
     
+    // This is exposed to allow the container that hosts the collection view to pass through a constraint for its' height
+    // Then we autolayout runs it sets the height appropriately. I don't know why this just doesn't work on its own,
+    // Maybe I overlooked something and this is superfluous.. but it's working
     public var containerHeightConstraint: NSLayoutConstraint?
     
     public override func layoutSubviews() {
         super.layoutSubviews()
-//        print("Laying out IntrinsicSizedCollectionView")
-//        print("Bounds size \(bounds.size)")
-//        print("Intrinsic size \(intrinsicContentSize)")
+
+        // This is forcing the intrinsic content size to reset if there is a difference between it's own size
+        // and what intrinsic size is reporting
         if !__CGSizeEqualToSize(bounds.size, self.intrinsicContentSize) {
             self.invalidateIntrinsicContentSize()
         }
-//
-//        if bounds.size != intrinsicContentSize {
-//            invalidateIntrinsicContentSize()
-//        }
     }
     
     public override var intrinsicContentSize: CGSize {
-//        print("Container Height Constraint \(containerHeightConstraint?.constant)")
-//        print("Content Size \(self.contentSize.height)")
+        // This passes up the new size to the container to allow it to resize itself
+        // Not sure why this wouldn't work without this bit of code
         containerHeightConstraint?.constant = self.contentSize.height
         return self.contentSize
     }
