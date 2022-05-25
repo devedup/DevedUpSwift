@@ -16,6 +16,7 @@ public protocol NetworkAuthentication {
     func prepareHeadersWithAccessToken(headers: inout [String: String], _ accessTokenNeeded: Bool) throws
     func queryItemsToAppend() -> [URLQueryItem]?
     func userAgentToAppend() -> String
+    func headersToAppend() -> [String: String]?
     func removeAccessToken()
     func storeUserId(userId: String)
 }
