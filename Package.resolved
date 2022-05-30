@@ -1,16 +1,14 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "JWTDecode",
-        "repositoryURL": "https://github.com/auth0/JWTDecode.swift.git",
-        "state": {
-          "branch": null,
-          "revision": "65b03eae055ef22f93e6acd3c0d6153cc0f6ec8d",
-          "version": "2.6.2"
-        }
+  "pins" : [
+    {
+      "identity" : "jwtdecode.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/JWTDecode.swift.git",
+      "state" : {
+        "revision" : "3cd207fb9e943b6168a117baa3936c823204c2dc",
+        "version" : "2.6.3"
       }
-    ]
-  },
-  "version": 1
+    }
+  ],
+  "version" : 2
 }
