@@ -280,4 +280,21 @@ public struct FoundationError  {
         
         public var underlyingError: Error? { error ?? self }
     }
+    
+    public struct SocketError: FoundationErrorType {
+        public init(details: String?, error: Error?) {
+            self.details = details
+            self.error = error
+        }
+        
+        let details: String?
+        let error: Error?
+        
+        public var description: String {
+            return "Socket.Error".localized(with: details ?? "")
+        }
+        
+        public var underlyingError: Error? { error ?? self }
+    }
+    
 }
