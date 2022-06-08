@@ -73,7 +73,7 @@ public class DefaultSocketService: NSObject, SocketService, URLSessionWebSocketD
     // Probably cases that this doesn't cover
     private func forceReconnect() {
         if(isConnected) {
-            disconnect(closeCode: .goingAway)
+            disconnect()
         }
         if let url = self.url, let delegate = self.delegate, let headers = self.headers {
             print("Going to connect from forceReconnect")
@@ -86,7 +86,7 @@ public class DefaultSocketService: NSObject, SocketService, URLSessionWebSocketD
         print("Socket open \(Date())")
         DispatchQueue.main.async {
             self.isConnected = true
-            //self.startHeartbeat()
+            self.startHeartbeat()
             self.listen()
             self.delegate?.onConnect(socket: self)
         }
@@ -138,13 +138,9 @@ public class DefaultSocketService: NSObject, SocketService, URLSessionWebSocketD
     
     // MARK: Disconnecting
     
-    public func disconnect() {
-        disconnect(closeCode: .normalClosure)
-    }
-    
     /// Force a disconnect
-    private func disconnect(closeCode: URLSessionWebSocketTask.CloseCode = .normalClosure) {
-        socket?.cancel(with: closeCode, reason: nil)
+    public func disconnect() {
+        socket?.cancel(with: .goingAway, reason: nil)
         self.heartbeatTimer?.invalidate()
         isConnected = false
         // On closing socket, the URLSessionWebSocketDelegate.didCloseWith will be called
