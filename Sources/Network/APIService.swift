@@ -243,18 +243,9 @@ public class DefaultAPIService: APIService {
                 }()
                 
                 return "\(osName) \(versionString)"
-            }()
+            }()            
             
-            let devedupSwiftVersion: String = {
-                guard
-                    let duInfo = Bundle(for: DefaultAPIService.self).infoDictionary,
-                    let build = duInfo["CFBundleShortVersionString"]
-                    else { return "Unknown" }
-                
-                return "DevedUpSwift-Network/\(build)"
-            }()
-            
-            return "\(executable)/\(appVersion) (\(bundle); build:\(appBuild); \(osNameVersion)) \(devedupSwiftVersion)"
+            return "\(executable)/\(appVersion) (\(bundle); build:\(appBuild); \(osNameVersion)) "
         }
         
         return "DevedUpSwift-Network"

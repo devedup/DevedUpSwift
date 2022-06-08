@@ -24,7 +24,7 @@ public protocol SocketService {
     func send(data: Data)
 }
 
-public class DefaultSocketService: NSObject, SocketService {
+public class DefaultSocketService: NSObject, SocketService, URLSessionWebSocketDelegate {
     
     private var isConnected = false
     private var socket: URLSessionWebSocketTask?
@@ -32,16 +32,29 @@ public class DefaultSocketService: NSObject, SocketService {
     private var heartbeatTimer: Timer?
     private var url: URL?
     private var headers: [String: String]?
+    private let keepaliveInterval: Int
+    
+    public init(keepaliveInterval: Int = 60) {
+        self.keepaliveInterval = keepaliveInterval
+    }
     
     private func debug(message: String) {
         self.delegate?.debug(message: message)
     }
 
+    // MARK: Connecting
+    
+    /// Connect to the socket
+    ///
+    /// - Parameters:
+    ///   - url: the endpoint url
+    ///   - delegate: callback url
+    ///   - headers: any headers such as auth headers you might want to add on
     public func connect(url: URL, delegate: SocketServiceDelegate, headers: [String: String]) {
         self.delegate = delegate
         self.url = url
         self.headers = headers
-        if !isConnected {            
+        if !isConnected {
             var request = URLRequest(url: url)
             headers.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key)}
             
@@ -49,64 +62,59 @@ public class DefaultSocketService: NSObject, SocketService {
             let webSocket = session.webSocketTask(with: request)
             webSocket.resume()
             self.socket = webSocket
+            
+            // On connection, the URLSessionWebSocketDelegate.didOpen will be called
         } else {
-            debug(message: "already connected")
-        }
-    }
-            
-    public func disconnect() {
-        socket?.cancel(with: .goingAway, reason: nil)
-        self.heartbeatTimer?.invalidate()
-        if isConnected {
-            isConnected = false
-            self.delegate?.onDisconnect(socket: self, closeCode: .goingAway, error: nil)
+            debug(message: "Already connected")
         }
     }
     
-    private func socketDidConnect() {
-        isConnected = true
-        listen()
-        startHeartbeat()
-        self.delegate?.onConnect(socket: self)
-    }
-    
-    private func tryReconnect() {
-        if !isConnected {
-            if let url = self.url, let delegate = self.delegate, let headers = self.headers {
-                connect(url: url, delegate: delegate, headers: headers)
-            }
+    // This is called on some errors
+    // Probably cases that this doesn't cover
+    private func forceReconnect() {
+        if(isConnected) {
+            disconnect(closeCode: .goingAway)
+        }
+        if let url = self.url, let delegate = self.delegate, let headers = self.headers {
+            print("Going to connect from forceReconnect")
+            connect(url: url, delegate: delegate, headers: headers)
         }
     }
     
-    private func socketDidDisconnect(reason: String, closeCode: URLSessionWebSocketTask.CloseCode) {
-        if isConnected {
-            isConnected = false
-            self.delegate?.onDisconnect(socket: self,  closeCode: closeCode, error: FoundationError.SocketError(details: reason, error: nil))
-            
-//            switch closeCode {
-//            case .normalClosure, .goingAway:
-//                reconnect()
-//            default:
-//                break
-//            }
+    // URLSessionWebSocketDelegate
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
+        print("Socket open \(Date())")
+        DispatchQueue.main.async {
+            self.isConnected = true
+            //self.startHeartbeat()
+            self.listen()
+            self.delegate?.onConnect(socket: self)
         }
-        print("URLSessionWebSocketTask is closed: code=\(closeCode), reason=\(reason)")
     }
+    
+    // MARK: Heartbeat
     
     private func startHeartbeat() {
-        let timer = Timer(timeInterval: 5, repeats: true, block: { [weak self] timer in
+        let interval = Double(keepaliveInterval)
+        let timer = Timer(timeInterval: interval, repeats: true, block: { [weak self] timer in
             self?.heartbeat()
         })
-        RunLoop.current.add(timer, forMode: .common) // i.e. have it on something other than main thread so UI doesn't block it
+        // i.e. have it on something other than main thread so UI doesn't block it
+        RunLoop.current.add(timer, forMode: .common)
         self.heartbeatTimer = timer
     }
     
     private func heartbeat() {
-        print("Sending hearbeat")
+        print("Sending socket hearbeat \(Date())")
         socket?.sendPing(pongReceiveHandler: { error in
-                
+            if let error = error {
+                // This is untested - 8 June 2022
+                self.delegate?.onError(connection: self, error: FoundationError.SocketError(details: "Heartbeat Error", error: error))
+            }
         })
     }
+    
+    // MARK: Incoming Listener
     
     private func listen() {
         socket?.receive { result in
@@ -128,9 +136,51 @@ public class DefaultSocketService: NSObject, SocketService {
         }
     }
     
+    // MARK: Disconnecting
+    
+    public func disconnect() {
+        disconnect(closeCode: .normalClosure)
+    }
+    
+    /// Force a disconnect
+    private func disconnect(closeCode: URLSessionWebSocketTask.CloseCode = .normalClosure) {
+        socket?.cancel(with: closeCode, reason: nil)
+        self.heartbeatTimer?.invalidate()
+        isConnected = false
+        // On closing socket, the URLSessionWebSocketDelegate.didCloseWith will be called
+    }
+    
+    // URLSessionWebSocketDelegate
+    public func urlSession(_ session: URLSession,
+                           webSocketTask: URLSessionWebSocketTask,
+                           didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
+                           reason: Data?) {
+        
+        print("Socket closed \(Date())")
+        let reasonString: String
+        if let reason = reason, let string = String(data: reason, encoding: .utf8) {
+            reasonString = string
+        } else {
+            reasonString = ""
+        }
+        //            switch closeCode {
+        //            case .normalClosure, .goingAway:
+        //                reconnect()
+        //            default:
+        //                break
+        //            }
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.delegate?.onDisconnect(socket: self,  closeCode: closeCode, error: FoundationError.SocketError(details: reasonString, error: nil))
+        }
+    }
+    
+    // MARK: Sending Data
+    
     public func send(text: String) {
         if !isConnected {
-            self.delegate?.onError(connection: self, error: FoundationError.SocketError(details: "not Connected", error: nil))
+            let error = FoundationError.SocketNotConnectedError(details: "Tried to send text when not connected")
+            self.delegate?.onError(connection: self, error: error)
         } else {
             socket?.send(URLSessionWebSocketTask.Message.string(text)) { error in
                 if let error = error {
@@ -142,7 +192,8 @@ public class DefaultSocketService: NSObject, SocketService {
     
     public func send(data: Data) {
         if !isConnected {
-            self.delegate?.onError(connection: self, error: FoundationError.SocketError(details: "not Connected", error: nil))
+            let error = FoundationError.SocketNotConnectedError(details: "Tried to send data when not connected")
+            self.delegate?.onError(connection: self, error: error)
         } else {
             socket?.send(URLSessionWebSocketTask.Message.data(data)) { error in
                 if let error = error {
@@ -152,6 +203,9 @@ public class DefaultSocketService: NSObject, SocketService {
         }
     }
     
+    // MARK: Error handling
+    
+    // Send and listen errors
     private func handleError(_ error: Error) {
         delegate?.onError(connection: self, error: FoundationError.SocketError(details: nil, error: error))
         let code = (error as NSError).code
@@ -159,43 +213,19 @@ public class DefaultSocketService: NSObject, SocketService {
         // 53 Software cuased connection abort
         switch code {
         case 53, 54, 57:
-            tryReconnect()
+            forceReconnect() // <-- timing won't let this work
         default:
             break
             
         }
-        print(error)
     }
     
-}
-
-extension DefaultSocketService: URLSessionWebSocketDelegate {
-    
+    // General socket closing errors
+    // URLSessionWebSocketDelegate
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        print("Socket ended \(Date())")
         if let error = error {
-            self.delegate?.onError(connection: self, error: FoundationError.SocketError(details: nil, error: error))
-        }
-    }
-    
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
-        DispatchQueue.main.async {
-            self.socketDidConnect()
-        }
-    }
-    
-    public func urlSession(_ session: URLSession,
-                           webSocketTask: URLSessionWebSocketTask,
-                           didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
-                           reason: Data?) {
-        
-        let reasonString: String
-        if let reason = reason, let string = String(data: reason, encoding: .utf8) {
-            reasonString = string
-        } else {
-            reasonString = ""
-        }
-        DispatchQueue.main.async {
-            self.socketDidDisconnect(reason: reasonString, closeCode: closeCode)
+            self.delegate?.onError(connection: self, error: FoundationError.SocketEndedError(details: "Socket completed", error: error))
         }
     }
     

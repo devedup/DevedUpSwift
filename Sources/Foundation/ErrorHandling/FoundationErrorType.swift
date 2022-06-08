@@ -17,6 +17,12 @@ public protocol NetworkDataProcessable {
     mutating func processDataForContext(processor: (Data) -> String)
 }
 
+/*
+ 
+    The reason for all the substructs in here is because they surface in Firebase nicely when
+    they have their own class/struct name
+ 
+ */
 public struct FoundationError  {
     
     public struct ContactsAuthDenied: FoundationErrorType {
@@ -295,6 +301,34 @@ public struct FoundationError  {
         }
         
         public var underlyingError: Error? { error ?? self }
+    }
+    
+    public struct SocketEndedError: FoundationErrorType {
+        public init(details: String?, error: Error?) {
+            self.details = details
+            self.error = error
+        }
+        
+        let details: String?
+        let error: Error?
+        
+        public var description: String {
+            return "Socket.Error".localized(with: details ?? "")
+        }
+        
+        public var underlyingError: Error? { error ?? self }
+    }
+    
+    public struct SocketNotConnectedError: FoundationErrorType {
+        public init(details: String?) {
+            self.details = details
+        }
+        
+        let details: String?
+        
+        public var description: String {
+            return "Socket.Error".localized(with: details ?? "")
+        }
     }
     
 }
