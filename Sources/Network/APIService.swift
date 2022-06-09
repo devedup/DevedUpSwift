@@ -27,7 +27,7 @@ public class DefaultAPIService: APIService {
 //        configuration.waitsForConnectivity = true
 //        configuration.timeoutIntervalForResource = 30
         if Debug.isDebugging() {
-            configuration.timeoutIntervalForRequest = 60
+            configuration.timeoutIntervalForRequest = 60 // this is the default anyway
         }
         return URLSession(configuration: configuration)
     }()

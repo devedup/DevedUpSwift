@@ -331,4 +331,12 @@ public struct FoundationError  {
         }
     }
     
+    public struct SocketNoInternetConnection: FoundationErrorType {
+        public init() {}
+        public var description: String {
+            "Please check your network settings. You don't appear to have an active internet connection"
+        }
+        
+    }
+    
 }
