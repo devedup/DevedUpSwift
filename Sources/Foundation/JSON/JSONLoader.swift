@@ -82,5 +82,14 @@ public class JSONLoader {
         }
     }
     
+    public static func loadJSON<T:Decodable>(fromJSONData data: Data) throws -> T {
+        do {
+            let object = try JSONDecoder().decode(T.self, from: data)
+            return object
+        } catch {
+            throw FoundationError.JSONParsingError(parseError: "Could not parse JSON", error: error)
+        }
+    }
+    
 }
  
