@@ -13,9 +13,22 @@ class PaddedLabel: UILabel {
     @IBInspectable var topPadding: CGFloat = 0
     @IBInspectable var bottomPadding: CGFloat = 0
     
+    var insets: UIEdgeInsets {
+        get {
+            return UIEdgeInsets(top: topPadding, left: leftPadding, bottom: bottomPadding, right: rightPadding)
+        }
+        set {
+            topPadding = newValue.top
+            leftPadding = newValue.left
+            bottomPadding = newValue.bottom
+            rightPadding = newValue.right
+            invalidateIntrinsicContentSize()
+            setNeedsDisplay()
+        }
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        sharedInit()
     }
     
     override func prepareForInterfaceBuilder() {
@@ -23,20 +36,24 @@ class PaddedLabel: UILabel {
     }
     
     func sharedInit() {
-        leftPadding = 25
     }
     
     override func drawText(in rect: CGRect) {
-        let insets = UIEdgeInsets(top: topPadding, left: leftPadding, bottom: bottomPadding, right: rightPadding)
-        super.drawText(in: rect.inset(by:insets))
+        super.drawText(in: rect.inset(by: insets))
     }
     
     override public var intrinsicContentSize: CGSize {
-        let size = super.intrinsicContentSize
-        let horizontalPadding = leftPadding + rightPadding
-        let verticalPadding = topPadding + bottomPadding
-        return CGSize(width: size.width + horizontalPadding,
-                      height: size.height + verticalPadding)
+        var contentSize = super.intrinsicContentSize
+            contentSize.width += leftPadding + rightPadding
+            contentSize.height += topPadding + bottomPadding
+        return contentSize
+    }
+    
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var adjSize = super.sizeThatFits(size)
+        adjSize.width += leftPadding + rightPadding
+        adjSize.height += topPadding + bottomPadding
+        return adjSize
     }
     
 }
