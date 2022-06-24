@@ -23,15 +23,18 @@ import UIKit
     How to use (cos i always forget)
     ----------
  
-    1. Create your view in a nib. Your custom view is Files owner NOT the top level view, which can just be a UIView.
-    2. Make your custom view extend NibLoadableView
+    1. Create your view in a nib file and create your view swift class that extends NibReplacableView
+        Set FilesOwner to your custom swift view file
+        The top level view can just be a UIView NOT your custom view
+        Wire up your outlets to FilesOwner
+    2. Make your custom view extend NibReplacableView
     3. Give your custom view this method:
  
         override var nibName: String {
             return String(describing: Self.self) // defaults to the name of the class implementing this protocol.
         }
  
-    4. You can now add your custom view into another nib. Add a UIView and set it's class to your new view class.
+    4. You can now add a UIView to any other storyboard and set it's class to the name of your new view class and it will inject it automatically at runtime. (It adds it as a subview to the placeholder view you just put here)
  
  */
 
