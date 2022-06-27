@@ -8,6 +8,7 @@ protocol ___VARIABLE_sceneName___View: AnyObject, ActivityIndicatorPresentable, 
 
 }
 
+@MainActor
 class ___VARIABLE_sceneName___Presenter {
     
     private weak var view: ___VARIABLE_sceneName___View?
