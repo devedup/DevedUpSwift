@@ -8,8 +8,8 @@
 import Foundation
 import DevedUpSwiftFoundation
 
-public final class APILogger {
-    
+public final class NetworkLogger: Loggable {
+           
     private static let backgroundQueue = DispatchQueue(label: "NetworkLogger", attributes: .concurrent)
     
     static var logDateFormatter: DateFormatter = {
@@ -30,11 +30,16 @@ public final class APILogger {
         logger.write(message)
     }
     
+    // Pass it on...
+    public func write(_ string: String) {
+        logger.write(string)
+    }
+    
     public func log(request: URLRequest?, response: HTTPURLResponse?, responseData: Data?, isLogin: Bool = false) {
-        APILogger.backgroundQueue.async {
+        NetworkLogger.backgroundQueue.async {
             if let request = request, let response = response {
                 if request.url != nil {
-                    var logString = "\n[>>>>> START REQUEST \(APILogger.logDateFormatter.string(from: Date()))]\n"
+                    var logString = "\n[>>>>> START REQUEST \(NetworkLogger.logDateFormatter.string(from: Date()))]\n"
                     logString.append("\(request.httpMethod ?? "GET") \(request)")
                     
                     logString.append("\n[HEADERS]")
@@ -75,7 +80,7 @@ public final class APILogger {
                             logString.append("\n\(jsonString)")
                         }
                     }
-                    logString.append("\n[END REQUEST \(APILogger.logDateFormatter.string(from: Date())) <<<<<]\n")
+                    logString.append("\n[END REQUEST \(NetworkLogger.logDateFormatter.string(from: Date())) <<<<<]\n")
                     
                     // Write to file
                     self.logger.write(logString)                                        

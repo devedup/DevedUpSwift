@@ -8,13 +8,13 @@
 import Foundation
 import DevedUpSwiftFoundation
 
-public protocol NetworkAuthentication {
+/// Your auth delegate is going to keep your token for subsequent requests and perform other network alterations
+public protocol NetworkAuthDelegate: AnyObject {
     var log: Loggable { get set }
     var accessToken: String? { get set }
     func processResponseHeaders(_ allHeaderFields: [AnyHashable : Any])
     func processSessionExpiry(isLoginRequest: Bool, data: Data?) -> ErrorType
     func prepareHeadersWithAccessToken(headers: inout [String: String], _ accessTokenNeeded: Bool) throws
-    func queryItemsToAppend() -> [URLQueryItem]?
     func userAgentToAppend() -> String
     func headersToAppend() -> [String: String]?
     func removeAccessToken()

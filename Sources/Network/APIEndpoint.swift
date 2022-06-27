@@ -7,7 +7,8 @@
 
 import Foundation
 
-// This is just so that in autocomplete, you see 'APIResponseModel' instead of 'Decodable'. Makes it a bit clearer
+// This is just so that in autocomplete, you see 'APIResponseModel' instead of 'Decodable'.
+// Makes it a bit clearer
 public typealias APIResponseModel = Decodable
 
 public enum HTTPMethodType: String {

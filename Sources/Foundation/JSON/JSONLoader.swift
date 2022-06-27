@@ -90,6 +90,33 @@ public class JSONLoader {
             throw FoundationError.JSONParsingError(parseError: "Could not parse JSON", error: error)
         }
     }
+        
+    public static func parseData<ResponseModel: Decodable>(networkResponse data: Data, logger: Loggable? = nil) throws -> ResponseModel {
+        do {
+            let response = try JSONDecoder().decode(ResponseModel.self, from: data)
+            return response
+        } catch DecodingError.keyNotFound(let key, let context) {
+            let parseError = "Could not find key \(key) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger?.write(parseError)
+            throw FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError)
+        } catch DecodingError.valueNotFound(let type, let context) {
+            let parseError = "Could not find type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger?.write(parseError)
+            throw FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError)
+        } catch DecodingError.typeMismatch(let type, let context) {
+            let parseError = "Type mismatch for type \(type) in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger?.write(parseError)
+            throw FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError)
+        } catch DecodingError.dataCorrupted(let context) {
+            let parseError = "Data found to be corrupted in JSON: \(context.debugDescription)\n\n \(context.codingPath)"
+            logger?.write(parseError)
+            throw FoundationError.JSONParsingError(parseError: parseError, error: context.underlyingError)
+        } catch let error as NSError {
+            let parseError = "Error in read(from:ofType:) domain= \(error.domain), description= \(error.localizedDescription)"
+            logger?.write(parseError)
+            throw FoundationError.JSONParsingError(parseError: parseError, error: error)
+        }
+    }
     
 }
  
