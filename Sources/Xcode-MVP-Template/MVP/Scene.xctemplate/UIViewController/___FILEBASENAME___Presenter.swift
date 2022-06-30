@@ -4,6 +4,7 @@
 import UIKit
 import DevedUpSwiftUI
 
+@MainActor
 protocol ___VARIABLE_sceneName___View: AnyObject, ActivityIndicatorPresentable, ErrorPresentable  {
 
 }

@@ -265,7 +265,6 @@ extension DefaultIAPService: SKProductsRequestDelegate {
 extension DefaultIAPService: SKRequestDelegate {
     
     public func requestDidFinish(_ request: SKRequest) {
-        print("The request finished successfully")
         self.receiptRequestCompletion?()
     }
 

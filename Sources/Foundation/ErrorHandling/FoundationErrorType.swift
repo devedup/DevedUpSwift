@@ -3,6 +3,7 @@ import Foundation
 import DevedUpSwiftLocalisation
 
 public protocol FoundationErrorType: ErrorType {
+    
 }
 public extension FoundationErrorType {
     // A default value for title here
@@ -13,16 +14,13 @@ public extension FoundationErrorType {
     }
 }
 
+/// Indicate the error has more details about the failure
 public protocol NetworkDataProcessable {
     mutating func processDataForContext(processor: (Data) -> String)
 }
 
-/*
- 
-    The reason for all the substructs in here is because they surface in Firebase nicely when
-    they have their own class/struct name
- 
- */
+/// The reason for all the substructs in here is because they surface in Firebase nicely when
+/// they have their own class/struct name
 public struct FoundationError  {
     
     public struct ContactsAuthDenied: FoundationErrorType {

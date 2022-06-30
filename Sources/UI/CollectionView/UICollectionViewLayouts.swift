@@ -28,7 +28,7 @@ final public class CollectionViewLayouts {
         // Section
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = spacing
-        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
         //section.orthogonalScrollingBehavior = .groupPaging
         
         let layout = UICollectionViewCompositionalLayout(section: section)
@@ -52,7 +52,7 @@ final public class CollectionViewLayouts {
         // Section
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = spacing
-        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
         //section.orthogonalScrollingBehavior = .groupPaging
         
         let layout = UICollectionViewCompositionalLayout(section: section)
