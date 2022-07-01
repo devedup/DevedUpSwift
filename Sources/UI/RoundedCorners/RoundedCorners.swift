@@ -62,7 +62,6 @@ extension UIBezierPath {
 
 extension UIView {
     
-    @available(*, deprecated, message: "Use roundedCorners")
     public func roundCorners(topLeft: CGFloat = 0, topRight: CGFloat = 0, bottomLeft: CGFloat = 0, bottomRight: CGFloat = 0) {//(topLeft: CGFloat, topRight: CGFloat, bottomLeft: CGFloat, bottomRight: CGFloat) {
         let topLeftRadius = CGSize(width: topLeft, height: topLeft)
         let topRightRadius = CGSize(width: topRight, height: topRight)
@@ -74,7 +73,6 @@ extension UIView {
         layer.mask = shape
     }
     
-    @available(*, deprecated, message:  "Use roundedCorners")
     public func addBorderToCustomRounded(colour: UIColor, width: CGFloat) {
         let borderLayer = CAShapeLayer()
         borderLayer.path = (self.layer.mask! as! CAShapeLayer).path! // Reuse the Bezier path

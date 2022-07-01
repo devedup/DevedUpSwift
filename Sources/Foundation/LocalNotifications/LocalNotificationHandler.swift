@@ -38,7 +38,7 @@ final public class DefaultLocalNotificationHandler: LocalNotificationHandler {
         // Schedule the request with the system.
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.add(request) { (error) in
-            if error != nil {
+            if let error = error {
                 print(error)
                 // Handle any errors.
             }
@@ -60,7 +60,8 @@ final public class DefaultLocalNotificationHandler: LocalNotificationHandler {
         // Schedule the request with the system.
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.add(request) { (error) in
-            if error != nil {
+            if let error = error {
+                print(error)
                 // Handle any errors.
             }
         }

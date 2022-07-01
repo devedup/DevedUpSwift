@@ -77,12 +77,12 @@ extension UIStoryboardSegue {
         }
     }
     
-    public func segueableDestination<T: UIViewController & SegueableDestination>() -> T? {
-        if let navigationController = self.destination as? UINavigationController {
-            return navigationController.topViewController as? T
-        } else {
-            return self.destination as? T
-        }
-    }
+//    public func segueableDestination<T: UIViewController & SegueableDestination>() -> T? {
+//        if let navigationController = self.destination as? UINavigationController {
+//            return navigationController.topViewController as? T
+//        } else {
+//            return self.destination as? T
+//        }
+//    }
     
 }
