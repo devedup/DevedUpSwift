@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-class PaddedLabel: UILabel {
+open class PaddedLabel: UILabel {
     
     @IBInspectable var leftPadding: CGFloat = 0
     @IBInspectable var rightPadding: CGFloat = 0
@@ -27,18 +27,19 @@ class PaddedLabel: UILabel {
         }
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-    }
-    
-    override func prepareForInterfaceBuilder() {
         sharedInit()
     }
     
-    func sharedInit() {
+    open override func prepareForInterfaceBuilder() {
+        sharedInit()
     }
     
-    override func drawText(in rect: CGRect) {
+    open func sharedInit() {
+    }
+    
+    open override func drawText(in rect: CGRect) {
         super.drawText(in: rect.inset(by: insets))
     }
     
@@ -49,7 +50,7 @@ class PaddedLabel: UILabel {
         return contentSize
     }
     
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
+    open override func sizeThatFits(_ size: CGSize) -> CGSize {
         var adjSize = super.sizeThatFits(size)
         adjSize.width += leftPadding + rightPadding
         adjSize.height += topPadding + bottomPadding
