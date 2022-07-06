@@ -23,7 +23,6 @@ open class PaddedLabel: UILabel {
             bottomPadding = newValue.bottom
             rightPadding = newValue.right
             invalidateIntrinsicContentSize()
-            setNeedsDisplay()
         }
     }
     
@@ -43,6 +42,10 @@ open class PaddedLabel: UILabel {
         super.drawText(in: rect.inset(by: insets))
     }
     
+    open override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+        return super.textRect(forBounds: bounds.inset(by: insets), limitedToNumberOfLines: numberOfLines)
+    }
+
     override public var intrinsicContentSize: CGSize {
         var contentSize = super.intrinsicContentSize
             contentSize.width += leftPadding + rightPadding

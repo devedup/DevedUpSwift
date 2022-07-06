@@ -10,6 +10,14 @@ import UIKit
 
 public struct AppVersion {
     
+    public static let buildVersion: Int = {
+        if let info = Bundle.main.infoDictionary {
+            let appBuild = info[kCFBundleVersionKey as String] as? String ?? "Unknown"
+            return Int(appBuild) ?? 0
+        }
+        return 0
+    }()
+    
     public static let versionString: String = {
         if let info = Bundle.main.infoDictionary {
             let appVersion = info["CFBundleShortVersionString"] as? String ?? "Unknown"

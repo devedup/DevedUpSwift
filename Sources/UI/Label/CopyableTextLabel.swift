@@ -9,10 +9,18 @@
 import Foundation
 import UIKit
 
-public class CopyableTextLabel: PaddedLabel {
+public class CopyableTextLabel: UILabel {
     
-    public override func sharedInit() {
-        super.sharedInit()
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        sharedInit()
+    }
+    
+    open override func prepareForInterfaceBuilder() {
+        sharedInit()
+    }
+    
+    public func sharedInit() {
         isUserInteractionEnabled = true
         addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(showMenu)))
     }
@@ -20,7 +28,6 @@ public class CopyableTextLabel: PaddedLabel {
     public override var canBecomeFirstResponder: Bool {
         return true
     }
-    
     
     public override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         return action == #selector(UIResponderStandardEditActions.copy)
@@ -39,7 +46,7 @@ public class CopyableTextLabel: PaddedLabel {
         guard !menu.isMenuVisible else {
             return
         }
-        menu.showMenu(from: self, rect: bounds)
+        menu.showMenu(from: self, rect: self.bounds)
     }
     
 }
