@@ -11,9 +11,8 @@ import UIKit
 @available(iOS 13, *)
 final public class CollectionViewLayouts {
     
-    public static func verticalScrollGridFillWidth(estimatedItemHeight: CGFloat, spacing: CGFloat = 30) -> UICollectionViewLayout {
-        let itemHeight = NSCollectionLayoutDimension.estimated(estimatedItemHeight)
-        
+    public static func verticalScrollGridFillWidth(itemHeight: NSCollectionLayoutDimension, spacing: CGFloat = 30) -> UICollectionViewLayout {
+                
         // Item Size
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
                                               heightDimension: itemHeight)
