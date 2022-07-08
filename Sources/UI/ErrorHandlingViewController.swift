@@ -38,6 +38,7 @@ extension NotificationCenter {
 
 /// Presenter views which want to display errors should implement this protocol
 public protocol ErrorPresentable {
+    func present(_ error: Error)
     func present(_ error: ErrorType)
     func presentErrorAsAlert(_ error: ErrorType, onDismiss: (() -> Void)?)
     func presentErrorAfterPop(_ error: ErrorType)
@@ -47,6 +48,14 @@ public protocol ErrorPresentable {
 // MARK: - Lets make all ViewControllers be ErrorPresentable
 extension UIViewController: ErrorPresentable {
 
+    public func present(_ error: Error) {
+        if let errorType = error as? ErrorType {
+            present(errorType)
+        } else {
+            present(FoundationError.GeneralError(error))
+        }
+    }
+    
     /// - Parameter error: the error you are presenting
     public func present(_ error: ErrorType) {
         NotificationCenter.present(error: error)
