@@ -37,7 +37,10 @@ let package = Package(
             targets: ["DevedUpSwiftHealthKit"]),
         .library(
             name: "DevedUpSwiftContacts",
-            targets: ["DevedUpSwiftContacts"])
+            targets: ["DevedUpSwiftContacts"]),
+        .library(
+            name: "DevedUpSwiftImage",
+            targets: ["DevedUpSwiftImage"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -90,6 +93,10 @@ let package = Package(
             name: "DevedUpSwiftContacts",
             dependencies: ["DevedUpSwiftFoundation"],
             path: "Sources/Contacts"),
+        .target(
+            name: "DevedUpSwiftImage",
+            dependencies: ["DevedUpSwiftFoundation"],
+            path: "Sources/Images"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
             dependencies: ["DevedUpSwiftFoundation"]),
