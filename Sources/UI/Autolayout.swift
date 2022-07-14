@@ -29,6 +29,15 @@ extension UIView {
         bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
     }
     
+    public func pinVerticallyToSuperview() {
+        guard let superview = self.superview else {
+            preconditionFailure("Error! `superview` was nil – call `addSubview(view: UIView)` before calling `pinToSuperview()` to fix this.")
+        }
+        translatesAutoresizingMaskIntoConstraints = false
+        topAnchor.constraint(equalTo: superview.topAnchor).isActive = true
+        bottomAnchor.constraint(equalTo: superview.bottomAnchor).isActive = true
+    }
+    
     /// Convenience method to centre this view in its superview
     public func centreInSuperview() {
         guard let superview = self.superview else {
