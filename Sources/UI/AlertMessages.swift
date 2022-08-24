@@ -17,14 +17,16 @@ import DevedUpSwiftLocalisation
  */
 
 public struct OptionMessage {
-    let title: String
+    let title: String?
+    let message: String
     let confirmTitle: String
     let cancelTitle: String
     let confirmAction: () -> Void
     let cancelAction: () -> Void
     
-    public init(title: String, confirmTitle: String, cancelTitle: String, confirmAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
+    public init(title: String? = nil, message: String, confirmTitle: String, cancelTitle: String, confirmAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
         self.title = title
+        self.message = message
         self.confirmTitle = confirmTitle
         self.cancelTitle = cancelTitle
         self.confirmAction = confirmAction
@@ -87,7 +89,7 @@ extension UIViewController: MessagePresentable {
     }
                
     public func presentOption(optionMessage: OptionMessage) {
-        presentOption(message: optionMessage.title, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
+        presentOption(title: optionMessage.title, message: optionMessage.message, confirmTitle: optionMessage.confirmTitle, cancelTitle: optionMessage.cancelTitle, tintColour: nil, onOK: optionMessage.confirmAction, onCancel: optionMessage.cancelAction)
     }
     
     public func presentOptionDestructive(message: String, confirmTitle: String, onOK: @escaping (() -> Void)) {
@@ -123,15 +125,16 @@ extension UIViewController: MessagePresentable {
         presentOption(message: message, confirmTitle: confirmTitle, cancelTitle: cancelTitle, tintColour: tintColour, style: style, onOK: onOK, onCancel: onCancel)
     }
 
-    private func presentOption(message: String,
-                       confirmTitle: String? = DefaultButtonTitles.confirm,
+    private func presentOption(title: String? = nil,
+                            message: String,
+                        confirmTitle: String? = DefaultButtonTitles.confirm,
                        cancelTitle: String? = DefaultButtonTitles.cancel,
                        tintColour: UIColor?,
                        style: UIAlertController.Style = .alert,
                        onOK: (() -> Void)? = nil,
                        onCancel: (() -> Void)? = nil) {
         
-        let alertController = UIAlertController(title: nil, message: message, preferredStyle: style)
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: style)
         
         // This is .cancel on purpose, because it's mor prominent
         let OKAction = UIAlertAction(title: confirmTitle, style: .default) { (action) in
