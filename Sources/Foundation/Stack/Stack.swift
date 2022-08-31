@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Stack<T> {
+public struct Stack<T: Equatable> {
     
     public init() {
     }
@@ -29,4 +29,9 @@ public struct Stack<T> {
     public var count: Int {
         return array.count
     }
+    
+    public func contains(_ item: T) -> Bool {
+        array.contains(item)
+    }
+    
 }
