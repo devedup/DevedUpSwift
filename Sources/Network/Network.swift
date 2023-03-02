@@ -84,10 +84,10 @@ public class DefaultNetworkService: NetworkService {
             "Accept": "application/json",
             "User-Agent": userAgent + " \(authDelegate?.userAgentToAppend() ?? "" )"
         ]
-        if endpoint.isAuthenticatedRequest {
-            // We don't want to be calling endpoint if no token, so throw the error here
-            try? authDelegate?.prepareHeadersWithAccessToken(headers: &headers, endpoint.isAuthenticatedRequest)
-        }
+        
+        // We don't want to be calling endpoint if no token, so throw the error here
+        try? authDelegate?.prepareHeadersWithAccessToken(headers: &headers, endpoint.isAuthenticatedRequest)
+        
         
         // Build the request
         var request = URLRequest(url: url)
