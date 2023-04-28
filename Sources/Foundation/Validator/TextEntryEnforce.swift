@@ -14,14 +14,24 @@ public class TextEntryEnforce {
         if text == "0" {
             return false
         }
-        if text.hasPrefix("0"){
+        if text.hasPrefix("0") {
             textField.text = String(text.dropFirst())
-            return false
+            return true
         }
         if text.count > 15 {
             return false
         }
-        return true
+        return false
+    }
+    
+    public static func enforceNoCountryCode(countryCode: String, text: String, textField: UITextField) -> Bool {
+        if text.hasPrefix(countryCode) {
+            let newText = text.replacingOccurrences(of: countryCode, with: "")
+            textField.text = newText
+            return true
+        } else {
+            return false
+        }
     }
     
     public static func enforceCountryCodeLeadingPlus(text: String, textField: UITextField) -> Bool {
