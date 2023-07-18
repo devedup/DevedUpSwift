@@ -61,7 +61,8 @@ public class ProgressCircle: UIView {
     }
     
     public func animate(toAngle angle: Float, completion: (() -> Void)? = nil) {
-        circleLayer?.removeFromSuperlayer()
+        let animationKey = "CircleStroke"
+        circleLayer?.removeFromSuperlayer()        
         
         CATransaction.begin()
         
@@ -85,7 +86,7 @@ public class ProgressCircle: UIView {
             completion?()
         }
 
-        circleLayer.add(animation, forKey: "myStroke")
+        circleLayer.add(animation, forKey: animationKey)
         CATransaction.commit()
         
         self.layer.addSublayer(circleLayer)

@@ -34,6 +34,12 @@ import UIKit
 
     open weak var delegate: RangeSeekSliderDelegate?
 
+    @IBInspectable open var isFixedStart: Bool = false {
+        didSet {
+            refresh()
+        }
+    }
+    
     /// The minimum possible value to select in the range
     @IBInspectable open var minValue: CGFloat = 0.0 {
         didSet {
@@ -129,11 +135,16 @@ import UIKit
     @IBInspectable open var maxLabelColor: UIColor?
 
     /// Handle slider with custom color, you can set custom color for your handle
-    @IBInspectable open var handleColor: UIColor?
+    @IBInspectable open var handleLeftColor: UIColor?
 
+    /// Handle slider with custom color, you can set custom color for your handle
+    @IBInspectable open var handleRightColor: UIColor?
+    
     /// Handle slider with custom border color, you can set custom border color for your handle
-    @IBInspectable open var handleBorderColor: UIColor?
+    @IBInspectable open var handleLeftBorderColor: UIColor?
 
+    @IBInspectable open var handleRightBorderColor: UIColor?
+    
     /// Set slider line tint color between handles
     @IBInspectable open var colorBetweenHandles: UIColor?
 
@@ -300,7 +311,7 @@ import UIKit
         let insetExpansion: CGFloat = -30.0
         let isTouchingLeftHandle: Bool = leftHandle.frame.insetBy(dx: insetExpansion, dy: insetExpansion).contains(touchLocation)
         let isTouchingRightHandle: Bool = rightHandle.frame.insetBy(dx: insetExpansion, dy: insetExpansion).contains(touchLocation)
-
+        
         guard isTouchingLeftHandle || isTouchingRightHandle else { return false }
 
 
@@ -315,6 +326,12 @@ import UIKit
         } else {
             handleTracking = .right
         }
+        
+        // We have a fixed start position, so not allowing left track movement
+        if(isFixedStart && handleTracking == .left) {
+            return false
+        }
+        
         let handle: CALayer = (handleTracking == .left) ? leftHandle : rightHandle
         animate(handle: handle, selected: true)
 
@@ -327,16 +344,16 @@ import UIKit
         guard handleTracking != .none else { return false }
 
         let location: CGPoint = touch.location(in: self)
-        print("location \(location)")
+//        print("location \(location)")
         // find out the percentage along the line we are in x coordinate terms (subtracting half the frames width to account for moving the middle of the handle, not the left hand side)
         let maxWidth = (self.frame.maxX - self.frame.minX)
         let percentage: CGFloat = location.x / maxWidth
-        print("percent \(percentage)")
+//        print("percent \(percentage)")
         
         // multiply that percentage by self.maxValue to get the new selected minimum value
         let selectedValue: CGFloat = percentage * (maxValue - minValue) + minValue
 
-        print("selected value \(selectedValue)")
+//        print("selected value \(selectedValue)")
         
         switch handleTracking {
         case .left:
@@ -404,11 +421,11 @@ import UIKit
     private func setup() {
         isAccessibilityElement = false
         accessibleElements = [leftHandleAccessibilityElement, rightHandleAccessibilityElement]
-
+        
         // draw the slider line
         layer.addSublayer(backgroundLine)
         layer.addSublayer(sliderLine)
-
+        
         // draw the track distline
         layer.addSublayer(sliderLineBetweenHandles)
 
@@ -416,19 +433,19 @@ import UIKit
         leftHandle.cornerRadius = handleDiameter / 2.0
         leftHandle.borderWidth = handleBorderWidth
         layer.addSublayer(leftHandle)
-        leftHandle.shadowRadius = 2
-        leftHandle.shadowOffset = CGSize(width: 0, height: 2)
-        leftHandle.shadowOpacity = 0.2
-        leftHandle.shadowColor = UIColor.black.cgColor
+//        leftHandle.shadowRadius = 2
+//        leftHandle.shadowOffset = CGSize(width: 0, height: 2)
+//        leftHandle.shadowOpacity = 0.2
+//        leftHandle.shadowColor = UIColor.black.cgColor
 
         // draw the maximum slider handle
         rightHandle.cornerRadius = handleDiameter / 2.0
         rightHandle.borderWidth = handleBorderWidth
         layer.addSublayer(rightHandle)
-        rightHandle.shadowRadius = 2
-        rightHandle.shadowOffset = CGSize(width: 0, height: 2)
-        rightHandle.shadowOpacity = 0.2
-        rightHandle.shadowColor = UIColor.black.cgColor
+//        rightHandle.shadowRadius = 2
+//        rightHandle.shadowOffset = CGSize(width: 0, height: 2)
+//        rightHandle.shadowOpacity = 0.2
+//        rightHandle.shadowColor = UIColor.black.cgColor
 
         let handleFrame: CGRect = CGRect(x: 0.0, y: 0.0, width: handleDiameter, height: handleDiameter)
         leftHandle.frame = handleFrame
@@ -498,7 +515,8 @@ import UIKit
                                       y: yMiddle,
                                       width: frame.width,
                                       height: lineHeight)
-        //sliderLine.cornerRadius = lineHeight / 2.0
+        backgroundLine.cornerRadius = lineHeight / 2.0
+        sliderLine.cornerRadius = lineHeight / 2.0
         //sliderLineBetweenHandles.cornerRadius = sliderLine.cornerRadius
     }
 
@@ -549,16 +567,16 @@ import UIKit
             sliderLine.backgroundColor = tintCGColor
             backgroundLine.backgroundColor = tintCGColor
             
-            let color: CGColor
-            if let _ = handleImage {
-                color = UIColor.clear.cgColor
-            } else {
-                color = handleColor?.cgColor ?? tintCGColor
-            }
-            leftHandle.backgroundColor = color
-            leftHandle.borderColor = handleBorderColor.map { $0.cgColor }
-            rightHandle.backgroundColor = color
-            rightHandle.borderColor = handleBorderColor.map { $0.cgColor }
+//            let color: CGColor
+//            if let _ = handleImage {
+//                color = UIColor.clear.cgColor
+//            } else {
+//                color = handleColor?.cgColor ?? tintCGColor
+//            }
+            leftHandle.backgroundColor = handleLeftColor?.cgColor
+            leftHandle.borderColor = handleLeftBorderColor?.cgColor
+            rightHandle.backgroundColor = handleRightColor?.cgColor
+            rightHandle.borderColor = handleRightBorderColor?.cgColor
         }
     }
 
@@ -570,7 +588,7 @@ import UIKit
         leftHandle.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         leftHandle.position = CGPoint(x: xPositionAlongLine(for: selectedMinValue),
                                       y: sliderLine.frame.midY)
-
+        
         rightHandle.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         rightHandle.position = CGPoint(x: xPositionAlongLine(for: selectedMaxValue),
                                        y: sliderLine.frame.midY)

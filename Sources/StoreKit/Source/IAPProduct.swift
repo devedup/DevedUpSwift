@@ -33,6 +33,14 @@ public struct IAPProduct {
         }
     }
     
+    public var displayPeriodNumeric: String {
+        return "\(months)"
+    }
+    
+    public var displayPeriodText: String {
+        return "month" + (months > 1 ? "s" : "")
+    }
+    
     public var displayMonths: String {
         return "\(months) month" + (months > 1 ? "s" : "")
     }
