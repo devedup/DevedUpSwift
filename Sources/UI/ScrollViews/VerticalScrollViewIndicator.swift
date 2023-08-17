@@ -13,7 +13,7 @@ public class CustomScrollView: UIScrollView, UIGestureRecognizerDelegate {
     private var slider = VerticalScrollViewIndicator()
     private var sliderYPosition: NSLayoutConstraint?
     private var indicatorYPadding: CGFloat = 5
-    private var indicatorXPadding: CGFloat = -10
+    private var indicatorXPadding: CGFloat = -4
     
     @IBInspectable
     public var sliderColour: UIColor = UIColor.white {
