@@ -14,7 +14,7 @@ open class DUBaseViewController: UIViewController {
         super.viewWillAppear(animated)
         if isInsideModalPresentation {
             if navigationController?.viewControllers.first == self {
-                navigationItem.leftBarButtonItem?.image = UIImage(named: "nav-close-icon")
+                navigationItem.leftBarButtonItem?.image = UIImage(named: "nav-close-creamy")
                 //navigationItem.leftBarButtonItem?.tintColor = .black
                 //navigationItem.leftBarButtonItem?.action = #selector(navigateBack(_:))
             }
@@ -34,7 +34,7 @@ open class DUBaseViewController: UIViewController {
     }
     
     public func createBackButton() {
-        navigationItem.leftBarButtonItem?.image = UIImage(named: "nav-back-icon")
+        navigationItem.leftBarButtonItem?.image = UIImage(named: "nav-back-white-icon")
         //navigationItem.leftBarButtonItem?.tintColor = .black
         navigationItem.leftBarButtonItem?.action = #selector(navigateBack(_:))
     }
