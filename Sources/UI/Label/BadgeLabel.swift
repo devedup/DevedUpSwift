@@ -14,6 +14,7 @@ public class BadgeLabel: UILabel {
     
     private let insets = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
     
+    @IBInspectable
     public var borderColour: UIColor = .white {
         didSet {
             setNeedsDisplay()
