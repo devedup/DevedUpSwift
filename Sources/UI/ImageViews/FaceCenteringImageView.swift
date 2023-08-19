@@ -16,10 +16,7 @@ public class FaceCenteringImageView: UIView {
     public var debugFace = false // This doesn't work
     private var debugFaceOverlay: UIView?
     
-    public private (set) var imageView: UIImageView!
-    
-    @IBInspectable
-    public var rounded: Bool = false
+    public private (set) var imageView: UIImageView!        
     
     public var faceBoundingBox: CGRect = CGRect.zero
     public var image: UIImage? {
@@ -67,12 +64,7 @@ public class FaceCenteringImageView: UIView {
             scaleImageToFill(isFaceCentering: false)
             //imageView.contentMode = .scaleAspectFill
             //imageView.frame = self.bounds
-        }
-        
-        if rounded {
-            self.layer.cornerRadius = self.bounds.width / 2
-            self.clipsToBounds = true
-        }
+        }    
     }
 
     @discardableResult
