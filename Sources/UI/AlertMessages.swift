@@ -16,6 +16,11 @@ import DevedUpSwiftLocalisation
  
  */
 
+public protocol MenuItem {
+    var title: String { get }
+    var action: () -> Void { get }
+}
+
 public struct OptionMessage {
     let title: String?
     let message: String
@@ -43,6 +48,9 @@ public struct DefaultButtonTitles {
 /// Presenter views which want to display errors should implement this protocol
 public protocol MessagePresentable {
 
+    // Menu / Action Sheet
+    func presentMenu(menuOptions: [MenuItem], sourceView: UIView)
+    
     // Present Alert
     func presentAlertOption(message: String, onOK: (() -> Void)?, onCancel: (() -> Void)?)
     func presentAlertOption(message: String, confirmTitle: String?, cancelTitle: String?, tintColour: UIColor?, onOK: (() -> Void)?, onCancel: (() -> Void)?)
@@ -151,4 +159,21 @@ extension UIViewController: MessagePresentable {
         self.present(alertController, animated: true, completion: nil)
         alertController.view.tintColor = tintColour
     }
+    
+    public func presentMenu(menuOptions: [MenuItem], sourceView: UIView) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+//        alertController.view.tintColor = ColourNames.fitafyBlue.colour
+        menuOptions.forEach{ (menuItem) in
+            alertController.addAction(UIAlertAction(title: menuItem.title, style: .default) { (action) in
+                menuItem.action()
+            })
+        }
+        alertController.addAction(UIAlertAction(title: "General.Button.Close".localized, style: .cancel) { (action) in
+        })
+        alertController.popoverPresentationController?.sourceView = sourceView
+        alertController.popoverPresentationController?.sourceRect = CGRect(x: sourceView.bounds.midX, y: sourceView.bounds.midY, width: 0, height: 0)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
 }

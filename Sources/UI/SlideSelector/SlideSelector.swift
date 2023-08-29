@@ -4,18 +4,25 @@
 //
 import UIKit
 
+public enum SlideSelectorStyle {
+    case roundedButtons
+    case underline
+}
+
+
 public typealias SelectionChangeHandler = (_ sliderText: String, _ position: Int) -> Void
 public typealias SelectionShouldChangeHandler = (_ sliderText: String, _ position: Int) -> Bool
     
 public final class SlideSelectorView: UIView {
     
-    public var sliderColor = UIColor.clear
+    public var sliderColor = UIColor.green
     public var sliderFont = UIFont.systemFont(ofSize: 10)
     public var sliderTextColor = UIColor.clear
-    public var sliderBackgroundColour = UIColor.clear
+    public var sliderBackgroundColour = UIColor.yellow
     public var otherTextColor = UIColor.clear
     public var sliderBorderColour = UIColor.black
     public var sliderBorderColourSelected = UIColor.red
+    public var lowerLineColour = UIColor.red
     
     public var selectionShouldChange: SelectionShouldChangeHandler?
     public var selectionDidChange: SelectionChangeHandler?
@@ -33,7 +40,7 @@ public final class SlideSelectorView: UIView {
                 componentLabel.text = $0
                 componentLabel.font = sliderFont
                 componentLabel.textColor = otherTextColor
-                componentLabel.layer.zPosition = 10.0
+                componentLabel.layer.zPosition = 0.0
                 componentLabels.append(componentLabel)
                 addSubview(componentLabel)
             }
@@ -43,7 +50,7 @@ public final class SlideSelectorView: UIView {
     
     private var isPanning = false
     private var componentLabels = [UILabel]()
-    private var slider: SliderButton?
+    private var slider: SliderButton2?
     public var sliderPosition: Int = 0 {
         didSet {
             if oldValue != sliderPosition {
@@ -120,7 +127,7 @@ public final class SlideSelectorView: UIView {
     
     private func createSlider() {
         if slider == nil {
-            let slider = SliderButton(frame: CGRect.zero, sliderColor: sliderColor, sliderBorderColor: sliderBorderColourSelected)
+            let slider = SliderButton2(frame: CGRect.zero, sliderColor: sliderColor, sliderBorderColor: sliderBorderColourSelected)
             addSubview(slider)
             self.slider = slider
             _ = GestureFactory.addPan(to: slider, target: self, action: #selector(SlideSelectorView.handlePan(_:)))
@@ -213,6 +220,21 @@ public final class SlideSelectorView: UIView {
         let bodyPath = UIBezierPath(roundedRect: bodyRect, cornerRadius: height / 2)
         context?.addPath(bodyPath.cgPath)
         context?.setLineWidth(2)
+        context?.drawPath(using: .fillStroke)
+        
+        // Draw line along bottom
+        lowerLineColour.setFill()
+        lowerLineColour.setStroke()
+        let horizontalPadding: CGFloat = 1
+        let verticalPadding: CGFloat = 1
+        let lineWidth: CGFloat = bounds.size.width - (2 * horizontalPadding)
+        let lineHeight: CGFloat = 2
+        let xPosition: CGFloat = horizontalPadding
+        let yPosition: CGFloat = bounds.size.height - verticalPadding - lineHeight
+        let lineRect = CGRect(x: xPosition, y: yPosition , width: lineWidth, height: lineHeight)
+        let linePath = UIBezierPath(roundedRect: lineRect, cornerRadius: lineHeight/2)
+        context?.addPath(linePath.cgPath)
+        context?.setLineWidth(lineHeight)
         context?.drawPath(using: .fillStroke)
     }
     
@@ -341,5 +363,46 @@ private class SliderButton: UIView {
 //        layer.insertSublayer(l, at: 0)
 //        return l
 //    }()
+    
+}
+
+private class SliderButton2: UIView {
+    
+    private let sliderColor: UIColor
+    private let sliderBorderColour: UIColor
+
+    // MARK: - Init
+    
+    init(frame: CGRect, sliderColor: UIColor, sliderBorderColor: UIColor) {
+        self.sliderBorderColour = sliderBorderColor
+        self.sliderColor = sliderColor
+        
+        super.init(frame: frame)
+        clipsToBounds = false
+        backgroundColor = UIColor.clear
+        autoresizingMask = .flexibleWidth
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        preconditionFailure()
+    }
+    
+    // MARK: - Drawing & Layout
+    
+    override func draw(_ rect: CGRect) {
+        let context = UIGraphicsGetCurrentContext()
+        let width = bounds.size.width - 2
+        let height: CGFloat = 2
+        sliderColor.setFill()
+        sliderBorderColour.setStroke()
+        let verticalPadding: CGFloat = 1
+        let xPosition: CGFloat = verticalPadding
+        let yPosition: CGFloat = bounds.size.height - verticalPadding - height
+        let bodyRect = CGRect(x: xPosition, y: yPosition , width: width, height: height)
+        let bodyPath = UIBezierPath(roundedRect: bodyRect, cornerRadius: height/2)
+        context?.addPath(bodyPath.cgPath)
+        context?.setLineWidth(2)
+        context?.drawPath(using: .fillStroke)
+    }
     
 }
