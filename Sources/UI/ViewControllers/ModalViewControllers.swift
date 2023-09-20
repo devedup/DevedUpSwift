@@ -27,8 +27,9 @@ extension UIViewController {
 // DEPRECATED
 extension UIViewController {
     
+    @objc
     @available(*, deprecated, message: "Use isInsideModalPresentation")
-    open func wasPresentedModally() -> Bool {
+    public func wasPresentedModally() -> Bool {
         if let navigationController = self.navigationController{
             if navigationController.viewControllers.first != self{
                 return false
@@ -46,8 +47,9 @@ extension UIViewController {
         return false
     }
     
+    @objc
     @available(*, deprecated, message: "Use isInsideModalPresentation")
-    open func isModal() -> Bool {
+    public func isModal() -> Bool {
         if self.presentingViewController != nil {
             return true
         }
