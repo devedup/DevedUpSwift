@@ -139,6 +139,10 @@ public class Validator {
         return text.count >= min
     }
     
+    public static func validateMinimumMaximumLength(_ text: String, min: Int, max: Int) -> Bool {
+        return text.count >= min && text.count <= max
+    }
+    
     public static func validateSingleNumber(_ text: String) -> Bool {
         do {
             let regex = try NSRegularExpression(pattern: "^[0-9]$", options: [])
