@@ -153,9 +153,9 @@ extension UIView
 
 extension UIView
 {
-    public class func nibFile() -> UINib {
+    public class func nibFile(bundle: Bundle? = nil) -> UINib {
         let nibName = String(describing: Self.self)
-        let nib = UINib(nibName: nibName, bundle: nil)
+        let nib = UINib(nibName: nibName, bundle: bundle)
         return nib
     }
     

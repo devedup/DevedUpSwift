@@ -72,7 +72,10 @@ let package = Package(
             name: "DevedUpSwiftUI",
             dependencies: ["DevedUpSwiftLocalisation", "DevedUpSwiftFoundation"],
             path: "Sources/UI",
-            exclude: ["NibLoadable/README.txt"]),
+            resources: [
+                .process("Sources/UI/SlideSelector/LableAndBadgeView.xib")
+            ]
+        ),
         .target(
             name: "DevedUpSwiftNetwork",
             dependencies: ["DevedUpSwiftFoundation"],

@@ -12,7 +12,7 @@ public enum SlideSelectorStyle {
 
 public typealias SelectionChangeHandler = (_ sliderText: String, _ position: Int) -> Void
 public typealias SelectionShouldChangeHandler = (_ sliderText: String, _ position: Int) -> Bool
-    
+
 public final class SlideSelectorView: UIView {
     
     public var sliderColor = UIColor.green
@@ -27,6 +27,8 @@ public final class SlideSelectorView: UIView {
     public var selectionShouldChange: SelectionShouldChangeHandler?
     public var selectionDidChange: SelectionChangeHandler?
     
+    public var hideBadgeCount: Bool = true
+    
     public var components: [String] = [] {
         didSet {
             componentLabels.forEach {
@@ -34,22 +36,39 @@ public final class SlideSelectorView: UIView {
             }
             componentLabels.removeAll()
             components.forEach {
-                let componentLabel = UILabel(frame: CGRect.zero)
-                componentLabel.backgroundColor = UIColor.clear
-                componentLabel.textAlignment = .center
-                componentLabel.text = $0
-                componentLabel.font = sliderFont
-                componentLabel.textColor = otherTextColor
-                componentLabel.layer.zPosition = 0.0
-                componentLabels.append(componentLabel)
-                addSubview(componentLabel)
+                
+                let nib = LabelAndBadgeView.nibFile(bundle: Bundle.module)
+                if let labelAndBadge: LabelAndBadgeView = nib.mainView() {
+                    if let componentLabel = labelAndBadge.label {
+                        componentLabel.backgroundColor = UIColor.clear
+                        componentLabel.text = $0
+                        componentLabel.font = sliderFont
+                        componentLabel.textColor = otherTextColor
+                        componentLabel.layer.zPosition = 0.0
+                    }
+              
+                    labelAndBadge.badge.isHidden = true
+                    labelAndBadge.badge.superview?.isHidden = true
+                    componentLabels.append(labelAndBadge)
+                    
+                    addSubview(labelAndBadge)
+                }
             }
             setNeedsLayout()
         }
     }
     
+    public func setBadgeCount(count: Int, component: Int) {
+        if !hideBadgeCount {
+            componentLabels[component].badge.count = count
+            componentLabels[component].badge.isHidden = count <= 0
+            componentLabels[component].badge.superview?.isHidden = count <= 0
+        }
+        
+    }
+    
     private var isPanning = false
-    private var componentLabels = [UILabel]()
+    private (set) var componentLabels = [LabelAndBadgeView]()
     private var slider: SliderButton2?
     public var sliderPosition: Int = 0 {
         didSet {
@@ -112,11 +131,11 @@ public final class SlideSelectorView: UIView {
             }
             let nextCenter: CGPoint = centerPositionForSlider(atPosition: nextPosition)
             if nextCenter.x > minBounds && nextCenter.x < maxBounds {
-                for label: UILabel in componentLabels {
-                    label.textColor = otherTextColor
+                for labelAndBadge: LabelAndBadgeView in componentLabels {
+                    labelAndBadge.label?.textColor = otherTextColor
                 }
-                let newLabel = componentLabels[nextPosition]
-                newLabel.textColor = sliderTextColor
+                let newLabel = componentLabels[nextPosition].label
+                newLabel?.textColor = sliderTextColor
                 break
             }
             nextPosition += 1
@@ -147,10 +166,15 @@ public final class SlideSelectorView: UIView {
         slider?.center = centerPositionForSlider(atPosition: sliderPosition)
         //now the background labels
         var position: Int = 0
-        for label: UILabel in componentLabels {
-            label.frame = CGRect(x: 0, y: 0, width: sliderWidth, height: sliderHeight)
-            label.center = centerPositionForSlider(atPosition: position)
+        for labelAndBadge: LabelAndBadgeView in componentLabels {
+            labelAndBadge.frame = CGRect(x: 0, y: 0, width: sliderWidth, height: sliderHeight)
+            labelAndBadge.center = centerPositionForSlider(atPosition: position)
             position += 1
+            
+            if hideBadgeCount {
+                labelAndBadge.badge.isHidden = true
+                labelAndBadge.badge.superview?.isHidden = true // The badge container
+            }
         }
         if let slider = slider {
             bringSubviewToFront(slider)
