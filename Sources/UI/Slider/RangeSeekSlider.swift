@@ -312,7 +312,10 @@ import UIKit
         let isTouchingLeftHandle: Bool = leftHandle.frame.insetBy(dx: insetExpansion, dy: insetExpansion).contains(touchLocation)
         let isTouchingRightHandle: Bool = rightHandle.frame.insetBy(dx: insetExpansion, dy: insetExpansion).contains(touchLocation)
         
-        guard isTouchingLeftHandle || isTouchingRightHandle else { return false }
+        guard isTouchingLeftHandle || isTouchingRightHandle else {
+            print("not touching a handle")
+            return false
+        }
 
 
         // the touch was inside one of the handles so we're definitely going to start movign one of them. But the handles might be quite close to each other, so now we need to find out which handle the touch was closest too, and activate that one.
@@ -422,6 +425,8 @@ import UIKit
         isAccessibilityElement = false
         accessibleElements = [leftHandleAccessibilityElement, rightHandleAccessibilityElement]
         
+//        backgroundColor = .red
+        
         // draw the slider line
         layer.addSublayer(backgroundLine)
         layer.addSublayer(sliderLine)
@@ -501,7 +506,7 @@ import UIKit
 
     private func updateLineHeight() {
         let barSidePadding: CGFloat = handleDiameter / 2
-        let yMiddle: CGFloat = frame.height / 2.0
+        let yMiddle: CGFloat = 0 //frame.height / 2.0
         let lineLeftSide: CGPoint = CGPoint(x: barSidePadding, y: yMiddle)
         let lineRightSide: CGPoint = CGPoint(x: frame.width - barSidePadding,
                                              y: yMiddle)
