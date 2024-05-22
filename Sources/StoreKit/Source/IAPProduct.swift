@@ -13,15 +13,38 @@ public struct IAPProduct {
     
     public let skProduct: SKProduct
     
+    public var subscriptionPeriod: IAPProductSubscriptionPeriod? {
+        guard let period = skProduct.subscriptionPeriod else {
+            return nil
+        }
+        return IAPProductSubscriptionPeriod(skSubscriptionPeriod: period, price: skProduct.price, priceLocale: skProduct.priceLocale)
+    }
+    
+    public var introductoryPeriod: IAPProductSubscriptionPeriod? {
+        guard let introPrice = skProduct.introductoryPrice else {
+            return nil
+        }
+        return IAPProductSubscriptionPeriod(skSubscriptionPeriod: introPrice.subscriptionPeriod, price: introPrice.price, priceLocale: introPrice.priceLocale)
+    }
+    
+}
+
+public struct IAPProductSubscriptionPeriod {
+    let skSubscriptionPeriod: SKProductSubscriptionPeriod
+    let price: NSDecimalNumber
+    let priceLocale: Locale
+    
     public var displayPrice: String {
-        return skProduct.priceString
+        let numberFormat = NumberFormatter()
+        numberFormat.numberStyle = .currency
+        numberFormat.formatterBehavior = .behavior10_4
+        numberFormat.locale = priceLocale
+        return numberFormat.string(from: price) ?? ""
     }
     
     public var months: Int {
-        guard let unit = skProduct.subscriptionPeriod?.unit,
-            let number = skProduct.subscriptionPeriod?.numberOfUnits else {
-            return 0
-        }
+        let unit = skSubscriptionPeriod.unit
+        let number = skSubscriptionPeriod.numberOfUnits
         
         switch unit {
         case .month:
@@ -46,26 +69,13 @@ public struct IAPProduct {
     }
     
     private var perMonth: Decimal {
-        let price = skProduct.price as Decimal
+        let price = price as Decimal
         let perMonth = price / Decimal(integerLiteral: months)
         return perMonth
     }
     
     public var displayPerMonth: String {
-        let amount = Currency.formatted(amount: perMonth, locale: skProduct.priceLocale)
+        let amount = Currency.formatted(amount: perMonth, locale: priceLocale)
         return "(\(amount) / month)"
     }
-    
-}
-
-extension SKProduct {
-        
-    var priceString: String {
-        let numberFormat = NumberFormatter()
-        numberFormat.numberStyle = .currency
-        numberFormat.formatterBehavior = .behavior10_4
-        numberFormat.locale = priceLocale
-        return numberFormat.string(from: price) ?? ""
-    }
-    
 }

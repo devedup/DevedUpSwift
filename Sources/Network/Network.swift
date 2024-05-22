@@ -99,6 +99,8 @@ public class DefaultNetworkService: NetworkService {
         return try await processRequest(endpoint, request: request)
     }
     
+//    private var tasksInProgress: []
+    
     private func processRequest<Endpoint: APIEndpoint>(_ endpoint: Endpoint, request: URLRequest) async throws -> (Endpoint.ResponseModel) {
         return try await withCheckedThrowingContinuation { continuation in
             let task = session.dataTask(with: request) { data, response, error in
