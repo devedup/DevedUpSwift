@@ -40,7 +40,10 @@ let package = Package(
             targets: ["DevedUpSwiftContacts"]),
         .library(
             name: "DevedUpSwiftImage",
-            targets: ["DevedUpSwiftImage"])
+            targets: ["DevedUpSwiftImage"]),
+        .library(
+            name: "DevedUpNearbyInteraction",
+            targets: ["DevedUpSwiftNearbyInteraction"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -100,6 +103,10 @@ let package = Package(
             name: "DevedUpSwiftImage",
             dependencies: ["DevedUpSwiftFoundation"],
             path: "Sources/Images"),
+        .target(
+            name: "DevedUpSwiftNearbyInteraction",
+            dependencies: ["DevedUpSwiftFoundation"],
+            path: "Sources/NearbyInteraction"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
             dependencies: ["DevedUpSwiftFoundation"]),
