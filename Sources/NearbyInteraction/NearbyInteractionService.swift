@@ -104,10 +104,10 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
     private var mpc: MPCSession?
     private var connectedPeer: MCPeerID?
     private var peerDisplayName: String?
-           
-//    public init(proximityThresholds: ProximityThresholds = ProximityThresholds(veryCloseThreshold: 0.1, withinRangeThresholdLow: 0.3, withinRangeThresholdHigh: 0.6, tooFarThreshold: 0.8)) {
-//        self.proximityThresholds = proximityThresholds
-//    }
+    
+    //    public init(proximityThresholds: ProximityThresholds = ProximityThresholds(veryCloseThreshold: 0.1, withinRangeThresholdLow: 0.3, withinRangeThresholdHigh: 0.6, tooFarThreshold: 0.8)) {
+    //        self.proximityThresholds = proximityThresholds
+    //    }
     
     public enum DistanceDirectionState {
         case closeUpInFOV, notCloseUpInFOV, outOfFOV, unknown
@@ -137,7 +137,7 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         
         // Because the session is new, reset the token-shared flag.
         sharedTokenWithPeer = false
-
+        
         // If `connectedPeer` exists, share the discovery token, if needed.
         if connectedPeer != nil && mpc != nil {
             if let myToken = session?.discoveryToken {
@@ -167,11 +167,11 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
     private func startupMPC() {
         if mpc == nil {
             // Prevent Simulator from finding devices.
-            #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
             mpc = MPCSession(service: "nisample", identity: "com.example.apple-samplecode.simulator.peekaboo-nearbyinteraction", maxPeers: 1)
-            #else
+#else
             mpc = MPCSession(service: "nisample", identity: "com.example.apple-samplecode.peekaboo-nearbyinteraction", maxPeers: 1)
-            #endif
+#endif
             mpc?.peerConnectedHandler = connectedToPeer
             mpc?.peerDataHandler = dataReceivedHandler
             mpc?.peerDisconnectedHandler = disconnectedFromPeer
@@ -184,29 +184,29 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         guard let myToken = session?.discoveryToken else {
             fatalError("Unexpectedly failed to initialize nearby interaction session.")
         }
-
+        
         if connectedPeer != nil {
             fatalError("Already connected to a peer.")
         }
-
+        
         if !sharedTokenWithPeer {
             shareMyDiscoveryToken(token: myToken)
         }
-
+        
         connectedPeer = peer
         peerDisplayName = peer.displayName
-
-//        centerInformationLabel.text = peerDisplayName
-//        detailDeviceNameLabel.text = peerDisplayName
+        
+        //        centerInformationLabel.text = peerDisplayName
+        //        detailDeviceNameLabel.text = peerDisplayName
     }
-
+    
     func disconnectedFromPeer(peer: MCPeerID) {
         if connectedPeer == peer {
             connectedPeer = nil
             sharedTokenWithPeer = false
         }
     }
-
+    
     func dataReceivedHandler(data: Data, peer: MCPeerID) {
         guard let discoveryToken = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NIDiscoveryToken.self, from: data) else {
             fatalError("Unexpectedly failed to decode discovery token.")
@@ -228,9 +228,9 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         }
         // Create a configuration.
         peerDiscoveryToken = token
-
+        
         let config = NINearbyPeerConfiguration(peerToken: token)
-
+        
         // Run the session.
         session?.run(config)
     }
@@ -245,24 +245,24 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         if nearbyObject.distance == nil && nearbyObject.direction == nil {
             return .unknown
         }
-
+        
         let isNearby = nearbyObject.distance.map(isNearby(_:)) ?? false
         let directionAvailable = nearbyObject.direction != nil
-
+        
         if isNearby && directionAvailable {
             return .closeUpInFOV
         }
-
+        
         if !isNearby && directionAvailable {
             return .notCloseUpInFOV
         }
-
+        
         return .outOfFOV
     }
-
+    
     private func updateState(from currentState: DistanceDirectionState, to nextState: DistanceDirectionState, with peer: NINearbyObject) {
-//        let azimuth = peer.direction.map(azimuth(from:))
-//        let elevation = peer.direction.map(elevation(from:))
+        //        let azimuth = peer.direction.map(azimuth(from:))
+        //        let elevation = peer.direction.map(elevation(from:))
         
         currentInteractionState = nextState
         // If the app transitions from unavailable, present the app's display
@@ -274,36 +274,36 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
             
         }
         
-//        if nextState == .unknown {
-//            // start hiding stuff
-//            
-//        }
+        //        if nextState == .unknown {
+        //            // start hiding stuff
+        //
+        //        }
         
-//        if nextState == .outOfFOV || nextState == .unknown {
-//            detailAngleInfoView.alpha = 0.0
-//        } else {
-//            detailAngleInfoView.alpha = 1.0
-//        }
+        //        if nextState == .outOfFOV || nextState == .unknown {
+        //            detailAngleInfoView.alpha = 0.0
+        //        } else {
+        //            detailAngleInfoView.alpha = 1.0
+        //        }
         
         // Set the app's display based on peer state.
-//        switch nextState {
-//        case .closeUpInFOV:
-//            monkeyLabel.text = "🙉"
-//        case .notCloseUpInFOV:
-//            monkeyLabel.text = "🙈"
-//        case .outOfFOV:
-//            monkeyLabel.text = "🙊"
-//        case .unknown:
-//            monkeyLabel.text = ""
-//        }
+        //        switch nextState {
+        //        case .closeUpInFOV:
+        //            monkeyLabel.text = "🙉"
+        //        case .notCloseUpInFOV:
+        //            monkeyLabel.text = "🙈"
+        //        case .outOfFOV:
+        //            monkeyLabel.text = "🙊"
+        //        case .unknown:
+        //            monkeyLabel.text = ""
+        //        }
         
         distance = peer.distance
-//
-//        if peer.distance != nil {
-//            detailDistanceLabel.text = String(format: "%0.2f m", peer.distance!)
-//        }
+        //
+        //        if peer.distance != nil {
+        //            detailDistanceLabel.text = String(format: "%0.2f m", peer.distance!)
+        //        }
         
-//        monkeyLabel.transform = CGAffineTransform(rotationAngle: CGFloat(azimuth ?? 0.0))
+        //        monkeyLabel.transform = CGAffineTransform(rotationAngle: CGFloat(azimuth ?? 0.0))
         
         // Don't update visuals if the peer device is unavailable or out of the
         // U1 chip's field of view.
@@ -320,22 +320,22 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
         guard let peerToken = peerDiscoveryToken else {
             fatalError("don't have peer token")
         }
-
+        
         // Find the right peer.
         let peerObj = nearbyObjects.first { (obj) -> Bool in
             return obj.discoveryToken == peerToken
         }
-
+        
         guard let nearbyObjectUpdate = peerObj else {
             return
         }
-
+        
         // Update the the state and visualizations.
         let nextState = getDistanceDirectionState(from: nearbyObjectUpdate)
         updateState(from: currentDistanceDirectionState, to: nextState, with: nearbyObjectUpdate)
         currentDistanceDirectionState = nextState
     }
-
+    
     public func session(_ session: NISession, didRemove nearbyObjects: [NINearbyObject], reason: NINearbyObject.RemovalReason) {
         guard let peerToken = peerDiscoveryToken else {
             fatalError("don't have peer token")
@@ -344,13 +344,13 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
         let peerObj = nearbyObjects.first { (obj) -> Bool in
             return obj.discoveryToken == peerToken
         }
-
+        
         if peerObj == nil {
             return
         }
-
+        
         currentDistanceDirectionState = .unknown
-
+        
         switch reason {
         case .peerEnded:
             // The peer token is no longer valid.
@@ -361,7 +361,7 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
             session.invalidate()
             
             // Restart the sequence to see if the peer comes back.
-//            startup()
+            //            startup()
             
             // Update the app's display.
             connectivityState = .peerEnded
@@ -377,12 +377,12 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
             fatalError("Unknown and unhandled NINearbyObject.RemovalReason")
         }
     }
-
+    
     public func sessionWasSuspended(_ session: NISession) {
         currentDistanceDirectionState = .unknown
         connectivityState = .sessionSuspended
     }
-
+    
     public func sessionSuspensionEnded(_ session: NISession) {
         // Session suspension ended. The session can now be run again.
         if let config = self.session?.configuration {
@@ -391,47 +391,47 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
             // Create a valid configuration.
             startup()
         }
-
-//        centerInformationLabel.text = peerDisplayName
-//        detailDeviceNameLabel.text = peerDisplayName
+        
+        //        centerInformationLabel.text = peerDisplayName
+        //        detailDeviceNameLabel.text = peerDisplayName
     }
-
+    
     public func session(_ session: NISession, didInvalidateWith error: Error) {
         currentDistanceDirectionState = .unknown
-
+        
         // If the app lacks user approval for Nearby Interaction, present
         // an option to go to Settings where the user can update the access.
         if case NIError.userDidNotAllow = error {
-//            if #available(iOS 15.0, *) {
-                // In iOS 15.0, Settings persists Nearby Interaction access.
-                connectivityState = .nearbyInteractionPermissionRequired
-                // Create an alert that directs the user to Settings.
-                let accessAlert = UIAlertController(title: "Access Required",
-                                                    message: """
+            //            if #available(iOS 15.0, *) {
+            // In iOS 15.0, Settings persists Nearby Interaction access.
+            connectivityState = .nearbyInteractionPermissionRequired
+            // Create an alert that directs the user to Settings.
+            let accessAlert = UIAlertController(title: "Access Required",
+                                                message: """
                                                     NIPeekaboo requires access to Nearby Interactions for this sample app.
                                                     Use this string to explain to users which functionality will be enabled if they change
                                                     Nearby Interactions access in Settings.
                                                     """,
-                                                    preferredStyle: .alert)
-                accessAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-                accessAlert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: {_ in
-                    // Send the user to the app's Settings to update Nearby Interactions access.
-                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
-                    }
-                }))
-
-                // Display the alert.
-//                present(accessAlert, animated: true, completion: nil)
-//            } else {
-//                // Before iOS 15.0, ask the user to restart the app so the
-//                // framework can ask for Nearby Interaction access again.
-//                connectivityState = .nearbyInteractionPermissionRequired // restart required
-//            }
-
+                                                preferredStyle: .alert)
+            accessAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            accessAlert.addAction(UIAlertAction(title: "Go to Settings", style: .default, handler: {_ in
+                // Send the user to the app's Settings to update Nearby Interactions access.
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+                }
+            }))
+            
+            // Display the alert.
+            //                present(accessAlert, animated: true, completion: nil)
+            //            } else {
+            //                // Before iOS 15.0, ask the user to restart the app so the
+            //                // framework can ask for Nearby Interaction access again.
+            //                connectivityState = .nearbyInteractionPermissionRequired // restart required
+            //            }
+            
             return
         }
-
+        
         // Recreate a valid session.
         startup()
     }
