@@ -3,7 +3,7 @@
 
 import UIKit
 import NearbyInteraction
-import MultipeerConnectivity
+import DevedUpMultipeerConnectivity
 
 @available(iOS 17.0, *)
 public protocol NearbyInteractionService {
@@ -58,16 +58,12 @@ public struct DefaultProximityThresholds: ProximityThresholds {
 @Observable
 public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionService {
     
-    public static let sharedInstance = DefaultNearbyInteractionService()
-    
     public var connectivityState: NearbyInteractionConnectionState = .initialising
     public var currentInteractionState: DistanceDirectionState = .unknown
     private var distance: Float? {
         didSet {
             if let dist = distance {
                 distanceString = String(format: "%0.1f m", dist)
-                
-                print(dist)
                 switch dist {
                 case ..<proximityThresholds.veryCloseThreshold:
                     proximity = .veryClose
@@ -86,11 +82,7 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         }
     }
     public var distanceString: String = ""
-    public var proximity: Proximity = .tooFar {
-        didSet {
-            print(proximity)
-        }
-    }
+    public var proximity: Proximity = .tooFar
     
     public var proximityThresholds: ProximityThresholds = DefaultProximityThresholds(veryCloseThreshold: 0.1, withinRangeThresholdLow: 0.3, withinRangeThresholdHigh: 0.6, tooFarThreshold: 0.8)
     
@@ -100,30 +92,24 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
     private var peerDiscoveryToken: NIDiscoveryToken?
     private var currentDistanceDirectionState: DistanceDirectionState = .unknown
     
-    // Multipeer
-    private var mpc: MPCSession?
-    private var connectedPeer: MCPeerID?
-    private var peerDisplayName: String?
-    
-    //    public init(proximityThresholds: ProximityThresholds = ProximityThresholds(veryCloseThreshold: 0.1, withinRangeThresholdLow: 0.3, withinRangeThresholdHigh: 0.6, tooFarThreshold: 0.8)) {
-    //        self.proximityThresholds = proximityThresholds
-    //    }
+    // Multipeer Stuff
+    private let serviceName: String
+    private let identityName: String
+    private var mpc: SinglePeerMultipeerSession?
     
     public enum DistanceDirectionState {
         case closeUpInFOV, notCloseUpInFOV, outOfFOV, unknown
     }
     
+    public init(serviceName: String, identityName: String) {
+        self.serviceName = serviceName
+        self.identityName = identityName
+    }
+    
     public func cleanup() {
         session?.delegate = nil
         session?.invalidate()
-        
-        mpc?.peerDataHandler = nil
-        mpc?.peerConnectedHandler = nil
-        mpc?.peerDisconnectedHandler = nil
-        mpc?.invalidate()
-        
-        
-        connectedPeer = nil
+        mpc?.cleanupMPC()
         sharedTokenWithPeer = false
         peerDiscoveryToken = nil
     }
@@ -139,7 +125,7 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         sharedTokenWithPeer = false
         
         // If `connectedPeer` exists, share the discovery token, if needed.
-        if connectedPeer != nil && mpc != nil {
+        if let mpc = self.mpc, mpc.isConnected {
             if let myToken = session?.discoveryToken {
                 if !sharedTokenWithPeer {
                     shareMyDiscoveryToken(token: myToken)
@@ -154,78 +140,55 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
             }
         } else {
             connectivityState = .discoveringPeer
-            startupMPC()
+            weak var weakSelf = self
+            let mpc = SinglePeerMultipeerSession(serviceName: self.serviceName,
+                                                 identityName: identityName,
+                                                 onConnect: { weakSelf?.onConnect() },
+                                                 onDisconnect: { weakSelf?.onDisconnect() },
+                                                 onData: { (data) in weakSelf?.onData(data: data)})
+            mpc.startupMPC()
+            self.mpc = mpc
             
             // Set the display state.
             currentDistanceDirectionState = .unknown
         }
     }
     
+    // MARK: Peer Handlers
     
-    // MARK: Multi Peer Connectivity
-    
-    private func startupMPC() {
-        if mpc == nil {
-            // Prevent Simulator from finding devices.
-#if targetEnvironment(simulator)
-            mpc = MPCSession(service: "nisample", identity: "com.example.apple-samplecode.simulator.peekaboo-nearbyinteraction", maxPeers: 1)
-#else
-            mpc = MPCSession(service: "nisample", identity: "com.example.apple-samplecode.peekaboo-nearbyinteraction", maxPeers: 1)
-#endif
-            mpc?.peerConnectedHandler = connectedToPeer
-            mpc?.peerDataHandler = dataReceivedHandler
-            mpc?.peerDisconnectedHandler = disconnectedFromPeer
-        }
-        mpc?.invalidate()
-        mpc?.start()
-    }
-    
-    func connectedToPeer(peer: MCPeerID) {
-        guard let myToken = session?.discoveryToken else {
+    private func onConnect() {
+        guard let myToken = self.session?.discoveryToken else {
             fatalError("Unexpectedly failed to initialize nearby interaction session.")
         }
-        
-        if connectedPeer != nil {
-            fatalError("Already connected to a peer.")
-        }
-        
         if !sharedTokenWithPeer {
             shareMyDiscoveryToken(token: myToken)
         }
-        
-        connectedPeer = peer
-        peerDisplayName = peer.displayName
-        
-        //        centerInformationLabel.text = peerDisplayName
-        //        detailDeviceNameLabel.text = peerDisplayName
     }
     
-    func disconnectedFromPeer(peer: MCPeerID) {
-        if connectedPeer == peer {
-            connectedPeer = nil
-            sharedTokenWithPeer = false
-        }
+    private func onDisconnect() {
+        sharedTokenWithPeer = false
     }
     
-    func dataReceivedHandler(data: Data, peer: MCPeerID) {
+    private func onData(data: Data) {
+        // Assuming the data is a discovery token here
         guard let discoveryToken = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NIDiscoveryToken.self, from: data) else {
             fatalError("Unexpectedly failed to decode discovery token.")
         }
-        peerDidShareDiscoveryToken(peer: peer, token: discoveryToken)
+        peerDidShareDiscoveryToken(token: discoveryToken)
     }
     
-    func shareMyDiscoveryToken(token: NIDiscoveryToken) {
+    
+    // MARK: Sharing tokens
+    
+    private func shareMyDiscoveryToken(token: NIDiscoveryToken) {
         guard let encodedData = try?  NSKeyedArchiver.archivedData(withRootObject: token, requiringSecureCoding: true) else {
             fatalError("Unexpectedly failed to encode discovery token.")
         }
-        mpc?.sendDataToAllPeers(data: encodedData)
+        mpc?.sendData(data: encodedData)
         sharedTokenWithPeer = true
     }
     
-    func peerDidShareDiscoveryToken(peer: MCPeerID, token: NIDiscoveryToken) {
-        if connectedPeer != peer {
-            fatalError("Received token from unexpected peer.")
-        }
+    private func peerDidShareDiscoveryToken(token: NIDiscoveryToken) {
         // Create a configuration.
         peerDiscoveryToken = token
         
@@ -391,9 +354,6 @@ extension DefaultNearbyInteractionService: NISessionDelegate {
             // Create a valid configuration.
             startup()
         }
-        
-        //        centerInformationLabel.text = peerDisplayName
-        //        detailDeviceNameLabel.text = peerDisplayName
     }
     
     public func session(_ session: NISession, didInvalidateWith error: Error) {

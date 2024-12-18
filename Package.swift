@@ -43,7 +43,10 @@ let package = Package(
             targets: ["DevedUpSwiftImage"]),
         .library(
             name: "DevedUpNearbyInteraction",
-            targets: ["DevedUpSwiftNearbyInteraction"])
+            targets: ["DevedUpSwiftNearbyInteraction"]),
+        .library(
+            name: "DevedUpMultipeerConnectivity",
+            targets: ["DevedUpMultipeerConnectivity"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -105,8 +108,12 @@ let package = Package(
             path: "Sources/Images"),
         .target(
             name: "DevedUpSwiftNearbyInteraction",
-            dependencies: ["DevedUpSwiftFoundation"],
+            dependencies: ["DevedUpSwiftFoundation", "DevedUpMultipeerConnectivity"],
             path: "Sources/NearbyInteraction"),
+        .target(
+                name: "DevedUpMultipeerConnectivity",
+                dependencies: ["DevedUpSwiftFoundation"],
+                path: "Sources/MultipeerConnectivity"),
         .testTarget(
             name: "DevedUpSwiftFoundationTests",
             dependencies: ["DevedUpSwiftFoundation"]),
