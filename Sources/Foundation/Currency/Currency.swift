@@ -13,7 +13,6 @@ extension Decimal {
     
     public var asCurrencyString: String {
         let currencyFormatter = Currency.formatter
-        print(currencyFormatter)
         if let feeString = currencyFormatter.string(from: self as NSDecimalNumber) {
             return feeString
         } else {
@@ -24,7 +23,6 @@ extension Decimal {
     public var asCurrencyStringWithPound: String {
         let currencyFormatter = Currency.formatter
         currencyFormatter.numberStyle = .currency
-        print(currencyFormatter)
         if let feeString = currencyFormatter.string(from: self as NSDecimalNumber) {
             return feeString
         } else {
@@ -39,7 +37,6 @@ public class Currency {
     
     fileprivate static let penceFormatter: NumberFormatter = {
         let currencyFormatter = NumberFormatter()
-        print("here")
         currencyFormatter.usesGroupingSeparator = false
         currencyFormatter.maximumIntegerDigits = 0
         currencyFormatter.maximumFractionDigits = 2
@@ -50,7 +47,6 @@ public class Currency {
     
     fileprivate static let poundFormatter: NumberFormatter = {
         let currencyFormatter = NumberFormatter()
-        print("here")
         currencyFormatter.usesGroupingSeparator = false
         currencyFormatter.maximumFractionDigits = 0
         currencyFormatter.roundingMode = .down

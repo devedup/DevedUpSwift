@@ -27,7 +27,7 @@ public enum NearbyInteractionConnectionState {
 }
 
 @available(iOS 17.0, *)
-public enum Proximity {
+public enum Proximity: String {
     case veryClose
     case withinRange
     case tooFar
@@ -65,25 +65,33 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
         didSet {
             if let dist = distance {
                 distanceString = String(format: "%0.1f m", dist)
+                var newProximity: Proximity = proximity
                 switch dist {
                 case ..<proximityThresholds.veryCloseThreshold:
-                    proximity = .veryClose
+                    newProximity = .veryClose
                 case proximityThresholds.veryCloseThreshold...proximityThresholds.withinRangeThresholdLow:
                     break // no nothing, dead area
                 case proximityThresholds.withinRangeThresholdLow...proximityThresholds.withinRangeThresholdHigh:
-                    proximity = .withinRange
+                    newProximity = .withinRange
                 case proximityThresholds.withinRangeThresholdHigh...proximityThresholds.tooFarThreshold:
                     break // do nothing, dead area
                 case proximityThresholds.tooFarThreshold...:
-                    proximity = .tooFar
+                    newProximity = .tooFar
                 default:
-                    proximity = .tooFar
+                    newProximity = .tooFar
+                }
+                if (newProximity != proximity) {
+                    proximity = newProximity
                 }
             }
         }
     }
     public var distanceString: String = ""
-    public var proximity: Proximity = .tooFar
+    public var proximity: Proximity = .tooFar {
+        didSet {
+            print("proximity set to \(proximity)")
+        }
+    }
     
     public var proximityThresholds: ProximityThresholds = DefaultProximityThresholds(veryCloseThreshold: 0.1, withinRangeThresholdLow: 0.3, withinRangeThresholdHigh: 0.6, tooFarThreshold: 0.8)
     
