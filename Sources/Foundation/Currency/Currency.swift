@@ -5,6 +5,12 @@ import Foundation
 
 extension Decimal {
     
+    public var asCurrencyPoundsAndPence: (pounds: String, pence: String) {
+        let pounds = Currency.poundFormatter.string(from: self as NSDecimalNumber) ?? ""
+        let pence = Currency.penceFormatter.string(from: self as NSDecimalNumber) ?? ""
+        return (pounds, pence)
+    }
+    
     public var asCurrencyString: String {
         let currencyFormatter = Currency.formatter
         print(currencyFormatter)
@@ -30,6 +36,27 @@ extension Decimal {
 
 
 public class Currency {
+    
+    fileprivate static let penceFormatter: NumberFormatter = {
+        let currencyFormatter = NumberFormatter()
+        print("here")
+        currencyFormatter.usesGroupingSeparator = false
+        currencyFormatter.maximumIntegerDigits = 0
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.locale = Locale(identifier: "en_GB") // obviously this isn't going to work long term with multiple currencies
+        return currencyFormatter
+    }()
+    
+    fileprivate static let poundFormatter: NumberFormatter = {
+        let currencyFormatter = NumberFormatter()
+        print("here")
+        currencyFormatter.usesGroupingSeparator = false
+        currencyFormatter.maximumFractionDigits = 0
+        currencyFormatter.roundingMode = .down
+        currencyFormatter.locale = Locale(identifier: "en_GB") // obviously this isn't going to work long term with multiple currencies
+        return currencyFormatter
+    }()
     
     fileprivate static let formatter: NumberFormatter = {
         let currencyFormatter = NumberFormatter()

@@ -7,6 +7,7 @@ import DevedUpMultipeerConnectivity
 
 @available(iOS 17.0, *)
 public protocol NearbyInteractionService {
+    var mpc: SinglePeerMultipeerSession? { get }
     var distanceString: String { get }
     var connectivityState: NearbyInteractionConnectionState { get }
     var proximity: Proximity { get }
@@ -95,15 +96,17 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
     // Multipeer Stuff
     private let serviceName: String
     private let identityName: String
-    private var mpc: SinglePeerMultipeerSession?
-    
+    private(set) public var mpc: SinglePeerMultipeerSession?
+    private let onData: ((Data) -> Void)?
+        
     public enum DistanceDirectionState {
         case closeUpInFOV, notCloseUpInFOV, outOfFOV, unknown
     }
     
-    public init(serviceName: String, identityName: String) {
+    public init(serviceName: String, identityName: String, onData: ((Data) -> Void)? = nil) {
         self.serviceName = serviceName
         self.identityName = identityName
+        self.onData = onData
     }
     
     public func cleanup() {
@@ -172,7 +175,8 @@ public final class DefaultNearbyInteractionService: NSObject, NearbyInteractionS
     private func onData(data: Data) {
         // Assuming the data is a discovery token here
         guard let discoveryToken = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NIDiscoveryToken.self, from: data) else {
-            fatalError("Unexpectedly failed to decode discovery token.")
+            self.onData?(data) // pass data onto client listener
+            return
         }
         peerDidShareDiscoveryToken(token: discoveryToken)
     }
