@@ -3,12 +3,22 @@
 
 import Foundation
 
+public struct PoundsAndPence: Equatable, Hashable {
+    public init(pounds: String, pence: String) {
+        self.pounds = pounds
+        self.pence = pence
+    }
+    
+    public let pounds: String
+    public let pence: String
+}
+
 extension Decimal {
     
-    public var asCurrencyPoundsAndPence: (pounds: String, pence: String) {
+    public var asCurrencyPoundsAndPence: PoundsAndPence {
         let pounds = Currency.poundFormatter.string(from: self as NSDecimalNumber) ?? ""
         let pence = Currency.penceFormatter.string(from: self as NSDecimalNumber) ?? ""
-        return (pounds, pence)
+        return PoundsAndPence(pounds: pounds, pence: pence)
     }
     
     public var asCurrencyString: String {
