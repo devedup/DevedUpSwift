@@ -1,5 +1,5 @@
 // Created by David Casserly on 16/12/2024.
-// Copyright (c) 2024 P4 Innovation. All rights reserved.
+// Copyright (c) 2024 DevedUp Ltd. All rights reserved.
 
 import UIKit
 import NearbyInteraction
